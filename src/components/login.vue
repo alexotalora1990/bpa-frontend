@@ -6,38 +6,52 @@
             <h3>Iniciar Sesión</h3>
           </div>
       
-          <q-input label="Correo electrónico" ></q-input>
-          <q-input label="Contraseña" type="password" ></q-input>
-          <q-btn class="submit" type="submit" color="primary">Ingresar</q-btn>
+         <q-input 
+          type="email"
+          v-model="correo"
+          label="Correo electrónico" 
+          >
+        </q-input>
+
+          <q-input 
+          v-model="contrasena"
+          label="Contraseña"
+           type="password" >
+          </q-input>
+          <q-btn class="submit" @click="login()" color="primary">Ingresar</q-btn>
+          <div class="forgot-password">
+            <router-link to="/recuperar-password">¿Olvidaste tu contraseña?</router-link>
+          </div>>
+        
         </div>
       </div>
     </div>
   </template>
-  <!-- <script setup>
+  <script setup>
   import {  ref } from 'vue';
-  // import { useStoreUsuario } from '../stores/usuarios';
+  
+  import { useAdministradorStore } from '../store/administrador.js';
   import { useRouter } from 'vue-router';
   const router = useRouter();
-  // const useUsuario = useStoreUsuario();
+  const useAdmin =useAdministradorStore()
   let correo = ref("")
   let contrasena = ref("")
   
   
   async function login() {
-      const r = await useUsuario.login(correo.value,contrasena.value)
-          .then((response) => {
-              console.log(response);
-              useUsuario.token=response.data.token
-              router.push("/home2")
-              console.log(useUsuario.token)
-          })
-          .catch((error) => {
+    try{
+      const response = await useAdmin.login(correo.value,contrasena.value)
+      console.log(response);
+      router.push("/home")
+      console.log(useAdmin.token)
+    }               
+    catch(error)  {
               console.log('Error de sede:', error);
-          })
+          }
   }
   
   
-  </script> -->
+  </script>
   
   <style>
   body,h1,h2,h3{
