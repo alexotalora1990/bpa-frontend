@@ -15,7 +15,7 @@
   
         <q-tabs align="right">
           <q-route-tab to="/home" label="Inicio" />
-          <q-route-tab to="/page2" label="Page Two" />
+          <q-route-tab to="/administrador" label="Administrador" />
           <q-route-tab to="/page3" label="Page Three" />
         </q-tabs>
       </q-header>
