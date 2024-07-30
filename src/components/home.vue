@@ -3,17 +3,21 @@
     <q-header elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+
         <q-toolbar-title align="center">
           <q-avatar>
             <!-- <img src=""> -->
           </q-avatar>
+
           BUENAS PRACTICAS AGRICOLAS
         </q-toolbar-title>
       </q-toolbar>
+
     </q-header>
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
       <q-list>
+
         <q-item clickable @click="toggleSubmenu('usuarios')">
           <q-item-section>
             <q-btn
@@ -120,6 +124,7 @@
               </q-item-section>
             </q-item>
           </router-link>
+
         </q-item>
       </q-list>
     </q-drawer>
@@ -138,6 +143,7 @@
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>
+
   </q-layout>
 </template>
 
@@ -145,6 +151,7 @@
 import { ref } from 'vue'
 
 const leftDrawerOpen = ref(false)
+
 const submenu = ref({
   usuarios: false,
   agro: false,
@@ -196,6 +203,7 @@ const inventarioItems = [
   { label: 'Insumos', to: '/insumo', icon: 'inventory' },
   { label: 'Maquinaria & Herramientas', to: '/maquinariaherramientas', icon: 'inventory' },
 ]
+
 </script>
 
 <style>
