@@ -8,7 +8,7 @@ export const useAdministradorStore = defineStore('administrador', () => {
 
     const getAdmin = async () => {
         try {
-            
+        
             const r = await axios.get("administrador");
             return r;
         } catch (error) {
