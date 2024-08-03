@@ -79,6 +79,7 @@ import { onMounted, ref } from 'vue';
 import { useFincaStore } from '../store/fincas.js';
 const useFinca=useFincaStore()
 
+const filter = ref("");//este filter es para el buscador de la tabla
 
 let rows = ref([]);
 let nombre = ref('');
@@ -96,25 +97,18 @@ let limites = ref({
 });
 const listados1 = ref("")
 const listados = ['Listar todos', 'Activos', 'Inactivos'];
+
 let alert = ref(false);
 let accion = ref(1);
 
-let sedes = [];
 let datos = {};
-let options = ref(sedes);
 
 function filtrar() {
     // Implement filtering logic
 }
 
-function filterFn(val, update, abort) {
-    update(() => {
-        const needle = val.toLowerCase();
-        options.value = sedes.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
-    });
-}
+//LISTAR EN LA TABLA
 
-const filter = ref("");
 
 async function listar() {
     const r = await useFinca.listarFincas()
@@ -185,7 +179,7 @@ const columns = ref([
         required: true,
         label: 'Límite Norte',
         align: 'center',
-        field: 'limites.norte',
+        field: (row) => row.limites?.norte || '',
         sortable: true
     },
     {
@@ -193,7 +187,7 @@ const columns = ref([
         required: true,
         label: 'Límite Sur',
         align: 'center',
-        field: 'limites.sur',
+        field: (row) => row.limites?.sur || '',
         sortable: true
     },
     {
@@ -201,7 +195,7 @@ const columns = ref([
         required: true,
         label: 'Límite Este',
         align: 'center',
-        field: 'limites.este',
+        field: (row) => row.limites?.este || '',
         sortable: true
     },
     {
@@ -209,7 +203,7 @@ const columns = ref([
         required: true,
         label: 'Límite Oeste',
         align: 'center',
-        field: 'limites.oeste',
+        field: (row) => row.limites?.oeste || '',
         sortable: true
     },
     {
@@ -230,19 +224,17 @@ const columns = ref([
     }
 ]);
 
-// Function to open the dialog
+// Funciones no tan importantes  ======================================
 function abrir() {
     alert.value = true;
     limpiarCampos();
     accion.value = 1;
 }
 
-// Function to close the dialog
 function cerrar() {
     alert.value = false;
 }
 
-// Function to clear form fields
 function limpiarCampos() {
     nombre.value = '';
     rut.value = '';
@@ -259,7 +251,7 @@ function limpiarCampos() {
     };
 }
 
-// Mounted lifecycle hook
+// El onMounted
 onMounted(() => {
     listar();
 });

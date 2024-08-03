@@ -12,7 +12,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+    <q-drawer show-if v-model="leftDrawerOpen" side="left" bordered>
       <q-list>
         <q-item clickable @click="toggleSubmenu('usuarios')">
           <q-item-section>
