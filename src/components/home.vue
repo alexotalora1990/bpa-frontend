@@ -7,13 +7,16 @@
           <q-avatar>
             <!-- <img src=""> -->
           </q-avatar>
+
           BUENAS PRACTICAS AGRICOLAS
         </q-toolbar-title>
       </q-toolbar>
+
     </q-header>
 
     <q-drawer show-if v-model="leftDrawerOpen" side="left" bordered>
       <q-list>
+
         <q-item clickable @click="toggleSubmenu('usuarios')">
           <q-item-section>
             <q-btn
@@ -31,6 +34,9 @@
 
         <div v-if="submenu.usuarios" class="subitem">
         <q-item  v-for="item in usuariosItems" :key="item.label">
+
+        <q-item v-if="submenu.usuarios" class="subitem" v-for="item in usuariosItems" :key="item.label">
+
           <router-link :to="item.to">
             <q-item clickable v-ripple class="my-item">
               <q-item-section avatar>
@@ -42,7 +48,9 @@
             </q-item>
           </router-link>
         </q-item>
+
       </div>
+
 
         <q-item clickable @click="toggleSubmenu('agro')">
           <q-item-section>
@@ -59,8 +67,12 @@
           </q-item-section>
         </q-item>
 
+
         <div v-if="submenu.agro" class="subitem">
         <q-item  v-for="item in agroItems" :key="item.label">
+
+        <q-item v-if="submenu.agro" class="subitem" v-for="item in agroItems" :key="item.label">
+
           <router-link :to="item.to">
             <q-item clickable v-ripple class="my-item">
               <q-item-section avatar>
@@ -72,7 +84,9 @@
             </q-item>
           </router-link>
         </q-item>
+
       </div>
+
 
         <q-item clickable @click="toggleSubmenu('gestion')">
           <q-item-section>
@@ -87,6 +101,7 @@
           <q-item-section avatar>
             <q-icon :name="submenu.gestion ? 'expand_less' : 'expand_more'" />
           </q-item-section>
+
         </q-item>
         
         <div v-if="submenu.gestion" class="subitem">
@@ -117,6 +132,48 @@
           <q-item-section avatar>
             <q-icon :name="submenu.inventario ? 'expand_less' : 'expand_more'" />
           </q-item-section>
+
+        </q-item>
+        <q-item v-if="submenu.gestion" class="subitem" v-for="item in gestionItems" :key="item.label">
+          <router-link :to="item.to">
+            <q-item clickable v-ripple class="my-item">
+              <q-item-section avatar>
+                <q-icon :name="item.icon" class="my-icon" />
+              </q-item-section>
+              <q-item-section>
+                {{ item.label }}
+              </q-item-section>
+            </q-item>
+          </router-link>
+        </q-item>
+
+        <q-item clickable @click="toggleSubmenu('inventario')">
+          <q-item-section>
+            <q-btn
+              label="Inventario"
+              color="green"
+              text-color="black"
+              flat
+              class="full-width"
+            />
+          </q-item-section>
+          <q-item-section avatar>
+            <q-icon :name="submenu.inventario ? 'expand_less' : 'expand_more'" />
+          </q-item-section>
+        </q-item>
+        <q-item v-if="submenu.inventario" class="subitem" v-for="item in inventarioItems" :key="item.label">
+          <router-link :to="item.to">
+            <q-item clickable v-ripple class="my-item">
+              <q-item-section avatar>
+                <q-icon :name="item.icon" class="my-icon" />
+              </q-item-section>
+              <q-item-section>
+                {{ item.label }}
+              </q-item-section>
+            </q-item>
+          </router-link>
+
+
         </q-item>
         <div v-if="submenu.inventario" class="subitem">
           <q-item  v-for="item in inventarioItems" :key="item.label">
@@ -151,6 +208,13 @@ const submenu = ref({
   inventario: false
 })
 
+const submenu = ref({
+  usuarios: false,
+  agro: false,
+  gestion: false,
+  inventario: false
+})
+
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
@@ -171,7 +235,9 @@ const agroItems = [
   { label: 'Cultivos', to: '/cultivo', icon: 'eco' },
   { label: 'Elaboracion Sustrato', to: '/elaboracionsustrato', icon: 'eco' },
   { label: 'Fertilizacion', to: '/fertilizacion', icon: 'eco' },
+
   { label: 'Fincas', to: '/Finca', icon: 'eco' },
+
   { label: 'Parcelas', to: '/parcela', icon: 'eco' },
   { label: 'Preparacion Suelo', to: '/preparacionsuelo', icon: 'eco' },
   { label: 'Procesos', to: '/proceso', icon: 'eco' },
@@ -195,6 +261,7 @@ const inventarioItems = [
   { label: 'Insumos', to: '/insumo', icon: 'inventory' },
   { label: 'Maquinaria & Herramientas', to: '/maquinariaherramientas', icon: 'inventory' },
 ]
+
 </script>
 
 <style>
@@ -216,4 +283,5 @@ const inventarioItems = [
 .my-icon {
   margin-right: 10px;
 }
+
 </style>
