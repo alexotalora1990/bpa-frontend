@@ -1,111 +1,105 @@
 <template>
-  <h1>Administrador</h1>
-  <q-btn color="green" icon="add" @click="agregar()">agregar</q-btn>
+  <div style="height: 100vh; overflow-y: auto;">
 
-  <!-- Formulario -->
-  <q-form class="q-gutter-md" @submit.prevent="procesarFormulario">
-    <div>
-      <q-input
-        v-model="nombre"
-        label="Nombre"
-        :rules="[(val) => !!val.trim() || 'Nombre no puede estar vacio']"
-      />
+    <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
+      <q-btn color="red" class="q-my-md q-ml-md" @click="abrir()">Crear Admin</q-btn>
+      <q-select outlined v-model="listar" label="Seleccione" :options="listados"
+        class="q-my-md q-mx-md custom-select" />
+      <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
+
     </div>
-    <div>
-      <q-input
-        v-model="direccion"
-        label="Dirección"
-        :rules="[(val) => !!val.trim() || 'Dirección no puede estar vacio ']"
-      />
-    </div>
-    <div>
-      <q-input
-        v-model="telefono"
-        label="Teléfono"
-        type="number"
-        :rules="[
-          (val) => !!val || 'Teléfono no puede estar vacío',
-          (val) =>
-            /^[0-9]{8,12}$/.test(val) ||
-            'Teléfono debe tener entre 8 y 12 dígitos',
-          (val) =>
-            !/\s/.test(val) || 'Telefono no puede contener espacios vacíos',
-        ]"
-      />
-    </div>
+
+    <!-- formulario -->
 
     <div>
-      <q-input
-        filled
-        v-model="correo"
-        label="Correo"
-        type="email"
-        :rules="[(val) => !!val || 'Email no debe estar vacío']"
-      />
+      <q-dialog v-model="alert" persistent>
+        <q-card class="" style="width: 700px">
+          <q-card-section style="background-color: #a1312d; margin-bottom: 20px">
+            <div class="text-h6 text-white">
+              {{ accion == 1 ? "Crear Admin" : "Editar Admin" }}
+            </div>
+          </q-card-section>
+          <q-input outlined v-model="nombre" label="Nombre" class="q-my-md q-mx-md" :rules="[
+            (val) => !!val.trim() || 'Nombre no puede estar vacio']" hide-bottom-space />
+
+          <q-input outlined v-model="direccion" label="Dirección" class="q-my-md q-mx-md" :rules="[
+            (val) => !!val.trim() || 'Dirección no puede estar vacio ']" hide-bottom-space />
+
+          <q-input outlined v-model="telefono" label="Teléfono" type="number" class="q-my-md q-mx-md" :rules="[
+            (val) => !!val || 'Teléfono no puede estar vacío',
+            (val) => /^[0-9]{8,12}$/.test(val) || 'Teléfono debe tener entre 8 y 12 dígitos',
+            (val) => !/\s/.test(val) || 'Telefono no puede contener espacios vacíos',
+          ]" hide-bottom-space />
+
+          <q-input outlined v-model="correo" label="Correo" type="email" class="q-my-md q-mx-md" :rules="[
+            (val) => !!val || 'Email no debe estar vacío'
+          ]" hide-bottom-space />
+          
+          <q-input outlined v-model="contrasena" label="Contrasenia" class="q-my-md q-mx-md" :rules="[
+            (val) => !!val.trim() || 'Contrasenia no puede estar vacio']" hide-bottom-space />
+
+          <q-select outlined v-model="rol" label="Rol*" :options="rolOptions" class="q-my-md q-mx-md"
+            :rules="[val => !!val.trim() || 'Debe seleccionar un rol']" hide-bottom-space />
+
+
+          <q-input outlined v-model="municipio" label="Municipio" class="q-my-md q-mx-md" :rules="[
+            (val) => !!val.trim() || 'Municipio no puede estar vacio '
+          ]" hide-bottom-space />
+
+
+          <q-card-actions align="right">
+            <q-btn @click=crear() color="red" class="text-white">
+              {{ accion == 1 ? "Agregar" : "Editar" }}
+            </q-btn>
+            <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </div>
 
-    <div>
-      <q-input
-        v-model="rol"
-        label="Rol"
-        :rules="[(val) => !!val.trim() || 'Rol no puede estar vacio ']"
-      />
+
+    <!-- Tabla -->
+    <div style="display: flex; justify-content: center">
+
+      <q-table title="Admin" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
+        :rows="rows" :filter="filter" :columns="columns" row-key="name" style="width: 90%; margin-bottom: 6%;">
+        <template v-slot:top-right>
+          <q-input color="black" v-model="filter" placeholder="Buscar">
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </template>
+
+
+
+
+
+        <template v-slot:body-cell-fechas="props">
+          <q-td :props="props"></q-td>
+        </template>
+        <template v-slot:body-cell-estado="props">
+          <q-td :props="props">
+            <p style="color: green;" v-if="props.row.estado == 1">Activo</p>
+            <p style="color: red;" v-else>Inactivo</p>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-opciones="props">
+          <q-td :props="props">
+            <q-btn @click="editar(props.row)">
+              <q-tooltip>Editar</q-tooltip>✏️</q-btn>
+            <q-btn @click="desactivar(props.row._id)" v-if="props.row.estado == 1">
+              <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
+            <q-btn @click="activar(props.row._id)" v-else>
+              <q-tooltip>Activar</q-tooltip>✅</q-btn>
+          </q-td>
+        </template>
+      </q-table>
+
+
     </div>
 
-    <div>
-      <q-input
-        v-model="municipio"
-        label="Rol"
-        :rules="[(val) => !!val.trim() || 'Municipio no puede estar vacio ']"
-      />
-    </div>
-    <div class="q-mt-md q-flex q-justify-end">
-      <q-btn label="Guardar" color="green" type="submit" class="q-mr-sm" />
-    </div>
-  </q-form>
-  <!-- Tabla -->
-
-  <q-table
-    title="Admin"
-    :rows="rows"
-    :columns="columns"
-    row-key="nombre"
-    class="table"
-  >
-    <template v-slot:header="props">
-      <q-tr :props="props" style="font-size: 30px" class="table1">
-        <q-th v-for="col in props.cols" :key="col.name" :props="props">{{
-          col.label
-        }}</q-th>
-      </q-tr>
-    </template>
-    <template v-slot:body-cell-estado="props">
-      <q-td :props="props">
-        <p :style="{ color: props.row.estado === 1 ? 'green' : 'red' }">
-          {{ props.row.estado === 1 ? "Activo" : "Inactivo" }}
-        </p>
-      </q-td>
-    </template>
-    <template v-slot:body-cell-opciones="props">
-      <q-td :props="props">
-        <q-btn @click="editar(props.row)">
-          <q-tooltip class="bg-accent">Editar</q-tooltip>🖋️
-        </q-btn>
-
-        <q-btn v-if="props.row.estado === 1" @click="desactivar(props.row._id)"
-          >❌
-          <q-tooltip class="bg-accent">Desactivar</q-tooltip>
-          <template> </template>
-        </q-btn>
-
-        <q-btn v-else @click="activar(props.row._id)"
-          >✅
-          <q-tooltip class="bg-accent">Activar</q-tooltip>
-          <template> </template>
-        </q-btn>
-      </q-td>
-    </template>
-  </q-table>
+  </div>
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
@@ -121,30 +115,70 @@ const direccion = ref();
 const correo = ref();
 const telefono = ref();
 const municipio = ref();
+const contrasena =ref()
 const rol = ref();
+const filter = ref();
+const listar = ref('');
+const listados = ['Listar todos', 'Activos', 'Inactivos'];
+const rolOptions = ['Administrador', 'Auxiliar',];
 
+let alert = ref(false);
+let accion = ref(1);
+
+// listar tabla
 const columns = ref([
-  { name: "nombre", label: "Nombre", field: "nombre", align: "center" },
+  {
+    name: "nombre",
+    label: "Nombre",
+    field: "nombre",
+    align: "center"
+  },
   {
     name: "direccion",
     label: "Dirección",
     field: "direccion",
     align: "center",
   },
-  { name: "correo", label: "Correo", field: "correo", align: "center" },
-  { name: "telefono", label: "Telefono", field: "telefono", align: "center" },
+  {
+    name: "correo",
+    label: "Correo",
+    field: "correo",
+    align: "center"
+  },
+  {
+    name: "telefono",
+    label: "Telefono",
+    field: "telefono",
+    align: "center"
+  },
   {
     name: "municipio",
     label: "Municipio",
     field: "municipio",
     align: "center",
   },
-  { name: "rol", label: "Categoria", field: "rol", align: "center" },
-  { name: "estado", label: "Estado", field: "estado", align: "center" },
-  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
+  {
+    name: "rol",
+    label: "Categoria",
+    field: "rol",
+    align: "center"
+  },
+  {
+    name: "estado",
+    label: "Estado",
+    field: "estado",
+    align: "center"
+  },
+  {
+    name: "opciones",
+    label: "Opciones",
+    field: "opciones",
+    align: "center"
+  },
 ]);
 
-async function listar() {
+// Funciones Listar
+async function listarAdmin() {
   try {
     const r = await useAdmin.getAdmin();
     rows.value = r.data.administrador;
@@ -154,23 +188,66 @@ async function listar() {
   }
 }
 
-onMounted(() => {
-  listar();
-});
-async function agregar() {
-  console.log("agregar");
+function filtrar() {
+  if (listar.value == 'Listar todos') {
+    listarAdmin();
+  } else if (listar.value == 'Activos') {
+    listarAdminActivos();
+  } else if (listar.value == 'Inactivos') {
+    listarAdminInactivos();
+  }
 }
+
+async function listarAdminActivos() {
+  const r = await useAdmin.getAdminActivos();
+  console.log(r.data.Administradores);
+  rows.value = r.data.Administradores;
+}
+
+async function listarAdminInactivos() {
+  const r = await useAdmin.getAdminDesactivados();
+  console.log(r.data.Administradores);
+  rows.value = r.data.Administradores;
+}
+
+// .................................................
+
+
+// AGREGAR EDITAR 
 
 async function editar() {
   console.log("editar");
 }
 
-const procesarFormulario = async () => {};
+async function crear() {
+
+  try {
+    const r = await useAdmin.postAdmin({
+      nombre: nombre.value,
+       direccion: direccion.value,
+       correo: correo.value,
+       contrasena:contrasena.value,
+       telefono:telefono.value,
+       municipio:municipio.value,
+       rol:rol.value
+    });      
+  }   catch (error) {
+    console.error("Error al agregar administrador:", error);
+    }    
+  console.log(r);
+    listarAdmin();
+    limpiarCampos();
+cerrar();
+}
+
+
+
+// FUNCIONES ACTIVAR-DESACTIVAR
 
 async function activar(id) {
   try {
     await useAdmin.putAdminActivar(id);
-    listar();
+    listarAdmin();
     Notify.create({
       type: "positive",
       message: "Administrador activado exitosamente",
@@ -188,11 +265,13 @@ async function activar(id) {
   } finally {
   }
 }
+
+
 async function desactivar(id) {
   try {
     await useAdmin.putAdminDesactivar(id);
     console.log(id);
-    listar();
+    listarAdmin();
     Notify.create({
       color: "orange",
       message: "Administrador desactivado exitosamente",
@@ -210,4 +289,41 @@ async function desactivar(id) {
   } finally {
   }
 }
+// ......................................................
+// OTRAS FUNCIONES 
+onMounted(() => {
+  listarAdmin();
+});
+
+
+function abrir() {
+  alert.value = true;
+  limpiarCampos();
+  accion.value = 1;
+}
+
+function cerrar() {
+  alert.value = false;
+}
+function limpiarCampos() {
+  nombre.value = '',
+    direccion.value = '',
+    correo.value = '',
+    telefono.value = '',
+    municipio.value = '',
+    rol.value = ''
+
+}
+
 </script>
+
+<style>
+.custom-select {
+  font-size: 14px;
+  border-radius: 4px;
+  padding: 8px 12px;
+  background-color: white;
+  color: #333;
+  min-width: 200px;
+}
+</style>
