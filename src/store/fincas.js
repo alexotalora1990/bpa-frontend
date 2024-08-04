@@ -64,7 +64,7 @@ export const useFincaStore = defineStore("store", () =>{
     const postFincas = async(data)=>{
         try {
             loading.value=true
-            const r = await axios.post("agregar", data, {
+            const r = await axios.post("finca/agregar", data, {
                 // headers:{
                 //     token:useAdministrador.token
                 // }
@@ -96,7 +96,7 @@ export const useFincaStore = defineStore("store", () =>{
     const putFincasActivar = async(id)=>{
         try {
             loading.value=true
-            const r = await axios.put(`activar/${id}`,{},{
+            const r = await axios.put(`finca/activar/${id}`,{},{
                 // headers:{
                 //     token:useAdministrador.token
                 // }
@@ -112,7 +112,7 @@ export const useFincaStore = defineStore("store", () =>{
     const putFincasDesactivar = async(id)=>{
         try {
             loading.value=true
-            const r = await axios.put(`desactivar/${id}`,{},{
+            const r = await axios.put(`finca/desactivar/${id}`,{},{
                 // headers:{
                 //     token:useAdministrador.token
                 // }
