@@ -6,6 +6,8 @@
                 class="q-my-md q-mx-md custom-select" />
             <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
         </div>
+
+
         <div>
             <q-dialog v-model="alert" persistent>
                 <q-card class="" style="width: 700px">
@@ -58,6 +60,9 @@
                         </template>
                     </q-input>
                 </template>
+
+
+                
                 <template v-slot:body-cell-fechas="props">
                     <q-td :props="props"></q-td>
                 </template>
