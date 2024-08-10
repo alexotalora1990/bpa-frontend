@@ -18,6 +18,7 @@ import 'quasar/src/css/index.sass';
 
 axios.defaults.baseURL="https://buenaspracticasagricolas.onrender.com/api/";
 
+
 const pinia= createPinia();
  pinia.use(piniaPluginPersistedstate);
 
