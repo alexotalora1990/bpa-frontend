@@ -50,7 +50,7 @@
 
 
           <q-card-actions align="right">
-            <q-btn @click=crear() color="red" class="text-white">
+            <q-btn @click=modify() color="red" class="text-white">
               {{ accion == 1 ? "Agregar" : "Editar" }}
             </q-btn>
             <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
@@ -63,7 +63,7 @@
     <!-- Tabla -->
     <div style="display: flex; justify-content: center">
 
-      <q-table title="Admin" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
+      <q-table title="Administrador" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
         :rows="rows" :filter="filter" :columns="columns" row-key="name" style="width: 90%; margin-bottom: 6%;">
         <template v-slot:top-right>
           <q-input color="black" v-model="filter" placeholder="Buscar">
@@ -88,7 +88,7 @@
         </template>
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
-            <q-btn @click="editar(props.row)">
+            <q-btn @click="traerDatos(props.row)">
               <q-tooltip>Editar</q-tooltip>✏️</q-btn>
             <q-btn @click="desactivar(props.row._id)" v-if="props.row.estado == 1">
               <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
@@ -111,7 +111,7 @@ import { useQuasar, Notify } from "quasar";
 
 const useAdmin = useAdministradorStore();
 const rows = ref([]);
-
+const id=ref()
 const nombre = ref();
 const direccion = ref();
 const correo = ref();
@@ -217,29 +217,97 @@ async function listarAdminInactivos() {
 
 // AGREGAR EDITAR 
 
-async function editar() {
-  console.log("editar");
-}
-
 async function crear() {
+  // Validación de campos
+  if (!nombre.value || !direccion.value || !correo.value || !contrasena.value || !telefono.value || !municipio.value || !rol.value) {
+    Notify.create({
+      type: "negative",
+      message: "Todos los campos son obligatorios",
+      icon: "error",
+      
+    });
+    return; // No proceder si los campos están vacíos
+  }
 
   try {
+    accion.value = 1;
     const r = await useAdmin.postAdmin({
       nombre: nombre.value,
-       direccion: direccion.value,
-       correo: correo.value,
-       contrasena:contrasena.value,
-       telefono:telefono.value,
-       municipio:municipio.value,
-       rol:rol.value
-    });      
-  }   catch (error) {
-    console.error("Error al agregar administrador:", error);
-    }    
-  console.log(r);
+      direccion: direccion.value,
+      correo: correo.value,
+      contrasena: contrasena.value,
+      telefono: telefono.value,
+      municipio: municipio.value,
+      rol: rol.value
+    });
+
+    // Notificación de éxito
+    Notify.create({
+      type: "positive",
+      message: "Administrador creado exitosamente",
+      icon: "check_circle",
+      position:"top",
+    });
+
+    // Limpia el formulario y cierra el modal
     listarAdmin();
     limpiarCampos();
-cerrar();
+    cerrar();
+
+    return r; // Retorna la respuesta si es necesario
+  } catch (error) {
+    console.error("Error al agregar administrador:", error);
+    Notify.create({
+      type: "negative",
+      message: "Error al agregar administrador",
+      icon: "error",
+    });
+  }
+}
+
+
+
+async function traerDatos(admin) {
+accion.value=2
+alert.value=true
+id.value=admin._id;
+       nombre.value= admin.nombre,
+       direccion.value= admin.direccion,
+       correo.value= admin.correo,
+       contrasena.value=admin.contrasena,
+       telefono.value=admin.telefono,
+       municipio.value=admin.municipio,
+       rol.value=admin.rol
+
+       console.log("Admin ID:", admin._id);
+   
+}
+async function editar() {
+  try {
+    const r = await useAdmin.putAdmin(id.value, {
+      nombre: nombre.value,
+      direccion: direccion.value,
+      correo: correo.value,
+      contrasena: contrasena.value,
+      telefono: telefono.value,
+      municipio: municipio.value,
+      rol: rol.value
+    });
+
+    console.log("Administrador editado con éxito:", r);
+    listarAdmin();  // Refresca la lista de administradores
+    limpiarCampos(); // Limpia el formulario
+    cerrar(); // Cierra el modal/formulario
+  } catch (error) {
+    console.error("Error al editar administrador:", error);
+  }
+}
+async function modify() {
+  if (accion.value === 1) {
+    await crear();
+  } else {
+    await editar();
+  }
 }
 
 
@@ -313,7 +381,8 @@ function limpiarCampos() {
     correo.value = '',
     telefono.value = '',
     municipio.value = '',
-    rol.value = ''
+    rol.value = '',
+    contrasena.value=''
 
 }
 
