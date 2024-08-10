@@ -80,7 +80,7 @@ export const useFincaStore = defineStore("store", () =>{
     const putFincas = async(id, data)=>{
         try {
             loading.value=true
-            const r = await axios.put(`actualizar/${id}`, data,{
+            const r = await axios.put(`finca/actualizar/${id}`, data,{
                 // headers:{
                 //     token:useAdministrador.token
                 // }
