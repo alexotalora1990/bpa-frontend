@@ -37,7 +37,7 @@
             (val) => !!val || 'Email no debe estar vacío'
           ]" hide-bottom-space />
           
-          <q-input outlined v-model="contrasena" label="Contrasenia" class="q-my-md q-mx-md" :rules="[
+          <q-input  v-if="accion === 1" outlined v-model="contrasena" label="Contrasenia" class="q-my-md q-mx-md" :rules="[
             (val) => !!val.trim() || 'Contrasenia no puede estar vacio']" hide-bottom-space />
 
           <q-select outlined v-model="rol" label="Rol*" :options="rolOptions" class="q-my-md q-mx-md"
@@ -186,7 +186,7 @@ async function listarAdmin() {
     rows.value = r.data.administrador;
     console.log(r.data.administrador);
   } catch (error) {
-    console.error("Error al listar todos los usuarios:", error);
+    console.error("Error al listar Administradores:", error);
   }
 }
 
