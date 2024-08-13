@@ -16,7 +16,7 @@
                             {{ accion == 1 ? "Crear Finca" : "Editar Finca" }}
                         </div>
                     </q-card-section>
-                    <q-select outlined v-model="idadmin" label="Seleccione un Admin" :options="options"
+                    <q-select outlined v-model="idadministrador" label="Seleccione un Admin" :options="options"
                         class="q-my-md q-mx-md"  @filter="filterFn"  hide-bottom-space/>
                     <q-input outlined v-model="nombre" label="Nombre de la Finca" class="q-my-md q-mx-md" type="text"
                         :rules="nombreRules" hide-bottom-space />
@@ -54,7 +54,7 @@
         </div>
         <div style="display: flex; justify-content: center">
             <q-table title="Fincas" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
-                :rows="rows" :filter="filter" :columns="columns" row-key="name" style="width: 90%; margin-bottom: 6%;">
+                :rows="rows" :filter="filter" :columns="columns" row-key="name" style="width: 90%; margin-bottom: 6%;" :loading="useFinca.loading">
                 <template v-slot:top-right>
                     <q-input color="black" v-model="filter" placeholder="Buscar">
                         <template v-slot:append>
@@ -62,14 +62,14 @@
                         </template>
                     </q-input>
                 </template>
-
-
-                
                 <template v-slot:body-cell-fechas="props">
                     <q-td :props="props"></q-td>
                 </template>
                 <template v-slot:body-cell-estado="props">
                     <q-td :props="props">
+                        <template v-slot:loading>
+                            <q-spinner color="primary" size="100px" style="align-self: center; margin-bottom: 10px;" />
+                        </template>
                         <p style="color: green;" v-if="props.row.estado == 1">Activo</p>
                         <p style="color: red;" v-else>Inactivo</p>
                     </q-td>
@@ -99,7 +99,7 @@ const useFinca = useFincaStore();
 
 const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 
-let idadmin = ref('');
+
 let admins = []
 let datos = {}
 let options = ref(admins)
@@ -173,9 +173,12 @@ function modify(){
 }
 
 async function crear() {
+    if (!validarCampos()) {
+    return;
+    }
     try {
         const r = await useFinca.postFincas({
-            idadministrador: idadmin.value.value,
+            idadministrador: idadministrador.value.value,
             nombre: nombre.value,
             rut: rut.value,
             direccion: direccion.value,
@@ -207,7 +210,7 @@ async function crear() {
 function traerDatos(fincas) {
     alert.value = true;
     accion.value = 2;
-    idadmin.value = {
+    idadministrador.value = {
     label: fincas.idadministrador.nombre,
     value: fincas.idadministrador._id
     }
@@ -228,6 +231,7 @@ function traerDatos(fincas) {
 async function editar() {
     try {
         await useFinca.putFincas(id.value, { 
+            idadministrador: idadministrador.value.value,
             nombre: nombre.value,
             rut: rut.value,
             direccion: direccion.value,
@@ -250,6 +254,7 @@ async function editar() {
             position: "center",
             color: "green"
         });
+        
     } catch (error) {
         Notify.create({
             type: 'negative',
@@ -257,6 +262,8 @@ async function editar() {
         });
         console.log('Error al modificar la finca', error);  
     }
+    
+    
     listarFincas(); 
     limpiarCampos();
     cerrar();
@@ -474,7 +481,7 @@ function cerrar() {
 }
 
 function limpiarCampos() {
-    idadmin.value= ""
+    idadministrador.value= ""
     nombre.value = '';
     rut.value = '';
     direccion.value = '';
@@ -492,6 +499,20 @@ function limpiarCampos() {
     };
 }
 
+function validarCampos() {
+  if (!idadministrador.value || !nombre.value || !rut.value || !direccion.value || 
+      !latitud.value || !longitud.value || !area.value || !departamento.value || 
+      !ciudad.value || !limites.value.norte || !limites.value.sur || 
+      !limites.value.este || !limites.value.oeste) {
+    Notify.create({
+      message: 'Por favor, completa todos los campos requeridos.',
+      color: 'negative',
+      position: 'top',
+    });
+    return false;
+  }
+  return true;
+}
 
 onMounted(() => {
     listarFincas();
