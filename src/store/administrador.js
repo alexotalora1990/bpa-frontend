@@ -34,7 +34,7 @@ return r;
     };
     const postAdmin = async(admin)=>{
         try {
-            const r= await axios.post('administrador/agregar',admin)
+            const r= await axios.post('administrador',admin)
             return r
         } catch (error) {
             return error
@@ -43,7 +43,7 @@ return r;
 
     const putAdmin = async(id, admin)=>{
         try {
-            const r= await axios.put(`administrador/actualizar/${id}`,admin)
+            const r= await axios.put(`administrador/${id}`,admin)
             return r
         } catch (error) {
             return error

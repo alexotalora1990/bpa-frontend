@@ -105,7 +105,6 @@
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
-
 import { useAdministradorStore } from "../store/administrador.js";
 import { useQuasar, Notify } from "quasar";
 
