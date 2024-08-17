@@ -4,6 +4,7 @@ import { Notify } from "quasar";
 import { ref } from "vue";
 
 
+// esto es una prueba
 
 
 export const useCultivosStore = defineStore("store", () =>{
