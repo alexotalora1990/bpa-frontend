@@ -4,7 +4,7 @@
     <div style="height: 100vh; overflow-y: auto;">
   
       <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
-        <q-btn color="red" class="q-my-md q-ml-md" @click="abrir()">Crear Cultivo</q-btn>
+        <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Parcela</q-btn>
         <q-select outlined v-model="listar" label="Seleccione" :options="listados"
           class="q-my-md q-mx-md custom-select" />
         <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
@@ -93,11 +93,11 @@
   
   
   import { useCultivosStore } from "../store/cultivos.js";
-//   import {useParcelasStoe} from "../store/parcelas.js"
+  import { useParcelaStore } from '../store/parcelas.js';
+  const useParcela = useParcelaStore();
   import { useQuasar, Notify } from "quasar";
   
-  const useCultivo = useCultivosStore();
-//   const useParcela =useParcelasStoe()
+  const useCultivo = useCultivosStore()
   const rows = ref([]);
   const id=ref()
   const nombre = ref();
@@ -107,11 +107,11 @@
    const filter = ref();
   const listar = ref('');
   const listados = ['Listar todos', 'Activos', 'Inactivos'];
-  let cultivos = []
+  let parcelas= []
 let datos = {}
-let options = ref(cultivos)
-  let alert = ref(false);
+let options = ref(parcelas)
   let accion = ref(1);
+  let alert = ref(false);
   
   // listar tabla
   const columns = ref([
@@ -151,29 +151,31 @@ let options = ref(cultivos)
   async function listarCultivos() {
     try {
       const r = await useCultivo.getCultivos();
-      rows.value = r.data.cultivo;
-      console.log(r.data.cultivo);
+      rows.value = r.data;
+      console.log(r.data);
     } catch (error) {
       console.error("Error al listar todos los cultivos:", error);
     }
   }
 
-//   async function listarParcelas() {
-//     const data = await useUse.getParcelasActivos()
-//     data.data.Fincas.forEach(item => {
-//         datos = {
-//             label: item.nombre,
-//             value: item._id
-//         }
-//         admins.push(datos)
-//     })
-//     console.log(cultivos);
-// }
+  async function listarParcelas() {
+    const data = await useParcela.getParcelasActivos()
+    console.log(data.data.parcelaActiva);
+    
+    data.data.parcelaActiva.forEach(item => {
+        datos = {
+            label: item.nombre,
+            value: item._id
+        }
+        parcelas.push(datos)
+    })
+    console.log(parcelas);
+}
   
   function filterFn(val, update, abort) {
   update(() => {
     const needle = val.toLowerCase();
-    options.value = cultivos.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+    options.value = parcelas.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
   })
 }
 
@@ -342,7 +344,7 @@ let options = ref(cultivos)
   // OTRAS FUNCIONES 
   onMounted(() => {
     listarCultivos();
-    // listarParcelas();
+    listarParcelas();
   });
   
   
