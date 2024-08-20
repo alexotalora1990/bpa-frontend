@@ -14,9 +14,10 @@ import '@quasar/extras/material-icons/material-icons.css';
 // Importa Quasar css
 import 'quasar/src/css/index.sass';
 
-// axios.defaults.baseURL="http://localhost:4500/api/";
+axios.defaults.baseURL="http://localhost:4500/api/";
 
-axios.defaults.baseURL="https://buenaspracticasagricolas.onrender.com/api/";
+// axios.defaults.baseURL="https://buenaspracticasagricolas.onrender.com/api/";
+
 
 const pinia= createPinia();
  pinia.use(piniaPluginPersistedstate);
