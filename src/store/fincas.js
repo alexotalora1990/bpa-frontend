@@ -6,7 +6,7 @@ import { useAdministradorStore} from "./administrador"
 
 
 
-export const useFincaStore = defineStore("store", () =>{
+export const useFincaStore = defineStore("fincastore", () =>{
     let loading = ref(false)
     let fincas = ref([]);
     const useAdministrador = useAdministradorStore()

@@ -4,12 +4,9 @@ import { Notify } from "quasar";
 import { ref } from "vue";
 
 
-
-
 export const useEmpleadoStore = defineStore("store", () =>{
     let loading = ref(false)
     let empleados = ref([]);
-
 
     const listarEmpleados = async () => {
         try {
@@ -44,7 +41,7 @@ export const useEmpleadoStore = defineStore("store", () =>{
             loading.value = true; 
             const response = await axios.get(`empleado/obtener/desactivados`, {
         });
-          fincas.value = response.data;
+          empleados.value = response.data;
           return response;
         } catch (error) {
           console.error("Error al obtener la lista de Empleados inactivos:", error);
@@ -105,6 +102,6 @@ export const useEmpleadoStore = defineStore("store", () =>{
         }
     }
 
-    return {listarEmpleados,getEmpleadosActivos,getEmpleadosInactivos,empleados,postEmpleado, putEmpleado, putEmpleadosActivar, putEmpleadosDesactivar}
+    return {listarEmpleados,getEmpleadosActivos,getEmpleadosInactivos,empleados,postEmpleado, putEmpleado, putEmpleadosActivar, putEmpleadosDesactivar, loading}
     
 },{persist:true})
