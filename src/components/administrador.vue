@@ -64,7 +64,7 @@
     <div style="display: flex; justify-content: center">
 
       <q-table title="Administrador" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
-        :rows="rows" :filter="filter" :columns="columns" row-key="name" style="width: 90%; margin-bottom: 6%;">
+        :rows="rows" :filter="filter" :columns="columns" :loading="useAdmin.loading" row-key="name" style="width: 90%; margin-bottom: 6%;">
         <template v-slot:top-right>
           <q-input color="black" v-model="filter" placeholder="Buscar">
             <template v-slot:append>
