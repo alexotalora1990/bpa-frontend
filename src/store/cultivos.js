@@ -13,14 +13,15 @@ export const useCultivosStore = defineStore("store", () =>{
     
 
     const getCultivos = async () => {
+        console.log("getCultivos called");
         try {
             loading.value = true;
-            const response = await axios.get("cultivo",{
+            const response = await axios.get("cultivo/listar",{
             // headers:{
             //     token:useAdministrador.token
             // }
         });
-        cultivos.value = response.data; 
+        // cultivos.value = response.data; 
         return response;
 
         } catch (error) {
