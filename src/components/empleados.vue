@@ -1,4 +1,5 @@
 <template>
+
     <div style="height: 100vh; overflow-y: auto;">
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Empleado</q-btn>
@@ -71,6 +72,7 @@
             </q-table>
         </div>
     </div>
+
 </template>
 
 <script setup>
@@ -93,6 +95,7 @@ const direccion = ref("");
 const telefono = ref("");
 const estudios = ref("");
 const descripcion = ref("");
+
 
 async function crear() {
     if (!validarCampos()) return;
@@ -183,6 +186,7 @@ const listar = ref('');
 const listados = ['Listar todos', 'Activos', 'Inactivos'];
 
 function filtrar() {
+
     if (listar.value == 'Listar todos') {
         listarTodo();
     } else if (listar.value == 'Activos') {
@@ -205,6 +209,7 @@ async function listarInactivos() {
     const r = await useEmpleado.getEmpleadosInactivos();
     console.log(r.data.empleados);
     rows.value = r.data.empleados;
+
 }
 // el r.data.{empleados}, empleado varia segun el rjson de la funcion get en el backend
 
@@ -213,6 +218,7 @@ async function listarInactivos() {
 
 //ACTIVAR Y DESACTIVAR EN LA TABLA =========================
 async function desactivar(empleados) {
+
     const r = await useEmpleado.putEmpleadosDesactivar(empleados._id)
         .then((response) => {
             Notify.create({
@@ -239,10 +245,12 @@ async function activar(empleados) {
         .catch((error) => {
             console.log('Error de Empleado:', error);
         })
+
 }
 //ACTIVAR Y DESACTIVAR EN LA TABLA =========================
 
 const columns = ref([
+
     {
         name: 'nombre',
         required: true,
@@ -315,6 +323,7 @@ const columns = ref([
         field: 'opciones',
         sortable: true
     }
+
 ]);
 
 // Funciones no tan importantes ======================================
@@ -329,6 +338,7 @@ function cerrar() {
 }
 
 function limpiarCampos() {
+
     nombre.value = '';
     numdocumento.value = '';
     correo.value = '';
@@ -355,6 +365,7 @@ function validarCampos() {
 
 onMounted(() => {
     listarTodo();
+
 });
 // Funciones no tan importantes ======================================
 </script>
