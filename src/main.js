@@ -8,6 +8,7 @@ import App from './App.vue'
 import router from "./routes/routes.js"
 import axios from "axios"
 
+
 import {Quasar, Notify, Loading} from 'quasar'
 // Importa icon libraries
 import '@quasar/extras/material-icons/material-icons.css';
