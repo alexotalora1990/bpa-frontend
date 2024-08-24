@@ -5,9 +5,12 @@ import Administrador from "../components/administrador.vue"
 import Finca from "../components/fincas.vue"
 import Cultivo from "../components/cultivos.vue"
 import Parcela from "../components/parcelas.vue";
-import Empleados from '../components/empleados.vue';
+
 import Proveedores from '../components/proveedores.vue';
 import Insumos from '../components/insumos.vue'
+
+import Empleado from "../components/empleados.vue"
+
 
 const routes = [
     { path: "/", component: Login },
@@ -16,10 +19,10 @@ const routes = [
             { path: "/administrador", component: Administrador },
             { path: "/finca", component: Finca },
             { path:"/cultivo", component: Cultivo},
-            { path:"/empleado", component: Empleados},
-            { path:"/proveedor", component: Proveedores},
-            {path:"/insumo",component: Insumos},
-            { path:"/parcela", component: Parcela}
+
+            { path:"/parcela", component: Parcela},
+            {path:"/empleados", component: Empleado}
+
         ]
     }
 ];

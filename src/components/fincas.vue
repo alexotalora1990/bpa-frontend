@@ -22,9 +22,9 @@
                         :rules="rutRules" hide-bottom-space />
                     <q-input outlined v-model="direccion" label="Dirección de la Finca" class="q-my-md q-mx-md"
                         type="text" :rules="direccionRules" hide-bottom-space />
-                    <q-input outlined v-model="latitud" label="Ubicación de latitud" class="q-my-md q-mx-md"
+                    <q-input outlined v-model="ubicacion.latitud" label="Ubicación de latitud" class="q-my-md q-mx-md"
                         type="text" :rules="ubicacionRules" hide-bottom-space />
-                    <q-input outlined v-model="longitud" label="Ubicación de longitud" class="q-my-md q-mx-md"
+                    <q-input outlined v-model="ubicacion.longitud" label="Ubicación de longitud" class="q-my-md q-mx-md"
                         type="text" :rules="ubicacionRules" hide-bottom-space />
                     <q-input outlined v-model="area" label="Área de la Finca" class="q-my-md q-mx-md" type="text"
                         :rules="areaRules" hide-bottom-space />
@@ -106,11 +106,12 @@ let rows = ref([]);
 let nombre = ref('');
 let idadministrador = ref('');
 let id = ref("")
-let latitud = ref("")
-let longitud = ref("")
 let rut = ref('');
 let direccion = ref('');
-let ubicacion = ref('');
+let ubicacion = ref({
+    latitud:"",
+    longitud:""
+});
 let area = ref('');
 let departamento = ref('');
 let ciudad = ref('');
@@ -180,7 +181,10 @@ async function crear() {
             nombre: nombre.value,
             rut: rut.value,
             direccion: direccion.value,
-            ubicacion: ubicacion.value,
+            ubicacion:{
+                latitud: ubicacion.value.latitud,
+                longitud: ubicacion.value.longitud,
+            },
             area: area.value,
             departamento: departamento.value,
             ciudad: ciudad.value,
@@ -190,7 +194,8 @@ async function crear() {
                 este: limites.value.este,
                 oeste: limites.value.oeste
             }
-        })}
+        })
+    }
         catch (error) {
             Notify.create({
             message: 'Esta mal!', 
@@ -216,8 +221,8 @@ function traerDatos(fincas) {
     nombre.value = fincas.nombre;  
     rut.value = fincas.rut;
     direccion.value = fincas.direccion;
-    latitud.value = fincas.ubicacion?.latitud || '';
-    longitud.value = fincas.ubicacion?.longitud || '';
+    ubicacion.value.latitud=fincas.ubicacion?.latitud;
+    ubicacion.value.longitud=fincas.ubicacion?.longitud;
     area.value = fincas.area;
     departamento.value = fincas.departamento;
     ciudad.value = fincas.ciudad;
@@ -234,8 +239,8 @@ async function editar() {
             rut: rut.value,
             direccion: direccion.value,
             ubicacion: {
-                latitud: latitud.value,
-                longitud: longitud.value
+                latitud: ubicacion.value.latitud,
+                longitud: ubicacion.value.longitud
             },
             area: area.value,
             departamento: departamento.value,
@@ -300,7 +305,7 @@ async function listarFincasInactivos() {
 }
 
 async function listarAdmin() {
-    const data = await useAdmin.getAdminActivos()
+    const data = await useAdmin.getAdminActivos() 
     data.data.Administradores.forEach(item => {
         datos = {
             label: item.nombre,
@@ -482,13 +487,14 @@ function limpiarCampos() {
     idadministrador.value= ""
     nombre.value = '';
     rut.value = '';
+    ubicacion.value = {
+        latitud:"",
+        longitud:""
+    }
     direccion.value = '';
-    ubicacion.value = '';
     area.value = '';
     departamento.value = '';
     ciudad.value = '';
-    latitud.value = '';
-    longitud.value = '';
     limites.value = {
         norte: '',
         sur: '',
@@ -499,7 +505,7 @@ function limpiarCampos() {
 
 function validarCampos() {
   if (!idadministrador.value || !nombre.value || !rut.value || !direccion.value || 
-      !latitud.value || !longitud.value || !area.value || !departamento.value || 
+      !ubicacion.value.latitud || !ubicacion.value.longitud || !area.value || !departamento.value || 
       !ciudad.value || !limites.value.norte || !limites.value.sur || 
       !limites.value.este || !limites.value.oeste) {
     Notify.create({

@@ -92,12 +92,12 @@
   import { ref, onMounted } from "vue";
   
   
-  import { useCultivosStore } from "../store/cultivos.js";
+  import {useCultivosStore} from '../store/cultivos.js'
   import { useParcelaStore } from '../store/parcelas.js';
   const useParcela = useParcelaStore();
   import { useQuasar, Notify } from "quasar";
   
-  const useCultivo = useCultivosStore()
+  const useCultivo= useCultivosStore();
   const rows = ref([]);
   const id=ref()
   const nombre = ref();
@@ -150,9 +150,9 @@ let options = ref(parcelas)
   // Funciones Listar
   async function listarCultivos() {
     try {
-      const r = await useCultivo.getCultivos();
-      rows.value = r.data;
-      console.log(r.data);
+      const data = await useCultivo.getCultivos();
+      rows.value = data.data;
+      console.log(data.data);
     } catch (error) {
       console.error("Error al listar todos los cultivos:", error);
     }
