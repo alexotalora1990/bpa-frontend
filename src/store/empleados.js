@@ -102,6 +102,8 @@ export const useEmpleadoStore = defineStore("store", () =>{
         }
     }
 
+
     return {listarEmpleados,getEmpleadosActivos,getEmpleadosInactivos,empleados,postEmpleado, putEmpleado, putEmpleadosActivar, putEmpleadosDesactivar, loading}
+
     
 },{persist:true})
