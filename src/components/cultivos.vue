@@ -1,378 +1,343 @@
-<!-- prueba -->
-
 <template>
-    <div style="height: 100vh; overflow-y: auto;">
-  
+  <div style="height: 100vh; overflow-y: auto;">
       <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
-        <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Parcela</q-btn>
-        <q-select outlined v-model="listar" label="Seleccione" :options="listados"
-          class="q-my-md q-mx-md custom-select" />
-        <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
-  
+          <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Cultivo</q-btn>
+          <q-select outlined v-model="listar" label="Seleccione" :options="listados"
+              class="q-my-md q-mx-md custom-select" />
+          <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
       </div>
-  
-      <!-- formulario -->
-  
       <div>
-        <q-dialog v-model="alert" persistent>
-          <q-card class="" style="width: 700px">
-            <q-card-section style="background-color: #a1312d; margin-bottom: 20px">
-              <div class="text-h6 text-white">
-                {{ accion == 1 ? "Crear Cultivo" : "Editar Cultivo" }}
-              </div>
-            </q-card-section>
-            <q-select outlined v-model="idParcela" label="Seleccione una Parcela" :options="options"
-                        class="q-my-md q-mx-md"  @filter="filterFn"  :rules="[
-              (val) => !!val || 'Parcela no puede estar vacio']" hide-bottom-space />
-  
-            <q-input outlined v-model="nombre" label="Nombre" class="q-my-md q-mx-md" :rules="[
-              (val) => !!val.trim() || 'Nombre no puede estar vacio ']" hide-bottom-space />
-  
-           
-            <q-input outlined v-model="tipo" label="Tipo"  class="q-my-md q-mx-md" :rules="[
-              (val) => !!val.trim() || 'Tipo de cultivo no debe estar vacío'
-            ]" hide-bottom-space />
-            
-             
-            <q-card-actions align="right">
-              <q-btn @click=modify() color="red" class="text-white">
-                {{ accion == 1 ? "Agregar" : "Editar" }}
-              </q-btn>
-              <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
+          <q-dialog v-model="alert" persistent>
+              <q-card style="width: 700px">
+                  <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
+                      <div class="text-h6 text-white">
+                          {{ accion == 1 ? "Crear Cultivo" : "Editar Cultivo" }}
+                      </div>
+                      <q-space />
+                      <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
+                  </q-card-section>
+                  <q-select outlined v-model="idparcela" label="Seleccione una Parcela" :options="options"
+                      class="q-my-md q-mx-md" @filter="filterFn" hide-bottom-space />                
+                  
+                  <q-input outlined v-model="nombre" label="Nombre de Cultivo" class="q-my-md q-mx-md" type="text" />
+                  <q-input outlined v-model="tipo" label="Tipo Cultivo" class="q-my-md q-mx-md" type="text" />
+                  
+                  <q-card-actions align="right">
+                      <q-btn @click="modify()" color="green" class="text-white">
+                          {{ accion == 1 ? "Agregar" : "Editar" }}
+                      </q-btn>
+                      <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+                  </q-card-actions>
+              </q-card>
+          </q-dialog>
       </div>
-  
-  
-      <!-- Tabla -->
       <div style="display: flex; justify-content: center">
-  
-        <q-table title="Cultivo" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
-          :rows="rows" :filter="filter" :columns="columns" row-key="name" style="width: 90%; margin-bottom: 6%;">
-          <template v-slot:top-right>
-            <q-input color="black" v-model="filter" placeholder="Buscar">
-              <template v-slot:append>
-                <q-icon name="search" />
+          <q-table title="Cultivos" title-class="text-green text-weight-bolder text-h5"
+              table-header-class="text-black" :rows="rows" :filter="filter" :columns="columns" row-key="name"
+              style="width: 90%; margin-bottom: 6%;" :loading="useParcela.loading">
+              <template v-slot:top-right>
+                  <q-input color="black" v-model="filter" placeholder="Buscar">
+                      <template v-slot:append>
+                          <q-icon name="search" />
+                      </template>
+                  </q-input>
               </template>
-            </q-input>
-          </template>
-  
-  
-  
-  
-  
-          <template v-slot:body-cell-fechas="props">
-            <q-td :props="props"></q-td>
-          </template>
-          <template v-slot:body-cell-estado="props">
-            <q-td :props="props">
-              <p style="color: green;" v-if="props.row.estado == 1">Activo</p>
-              <p style="color: red;" v-else>Inactivo</p>
-            </q-td>
-          </template>
-          <template v-slot:body-cell-opciones="props">
-            <q-td :props="props">
-              <q-btn @click="traerDatos(props.row)">
-                <q-tooltip>Editar</q-tooltip>✏️</q-btn>
-              <q-btn @click="desactivar(props.row._id)" v-if="props.row.estado == 1">
-                <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
-              <q-btn @click="activar(props.row._id)" v-else>
-                <q-tooltip>Activar</q-tooltip>✅</q-btn>
-            </q-td>
-          </template>
-        </q-table>
-  
-  
+              <template v-slot:body-cell-fechas="props">
+                  <q-td :props="props"></q-td>
+              </template>
+              <template v-slot:body-cell-estado="props">
+                  <q-td :props="props">
+                      <template v-slot:loading>
+                          <q-spinner color="primary" size="100px" style="align-self: center; margin-bottom: 10px;" />
+                      </template>
+                      <p style="color: green;" v-if="props.row.estado == 1">Activo</p>
+                      <p style="color: red;" v-else>Inactivo</p>
+                  </q-td>
+              </template>
+              <template v-slot:body-cell-opciones="props">
+                  <q-td :props="props">
+                      <q-btn @click="traerDatos(props.row)">
+                          <q-tooltip>Editar</q-tooltip>✏️</q-btn>
+                      <q-btn @click="desactivar(props.row)" v-if="props.row.estado == 1">
+                          <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
+                      <q-btn @click="activar(props.row)" v-else>
+                          <q-tooltip>Activar</q-tooltip>✅</q-btn>
+                  </q-td>
+              </template>
+          </q-table>
       </div>
-  
-    </div>
-  </template>
-  <script setup>
-  import { ref, onMounted } from "vue";
-  
-  
-  import {useCultivosStore} from '../store/cultivos.js'
-  import { useParcelaStore } from '../store/parcelas.js';
-  const useParcela = useParcelaStore();
-  import { useQuasar, Notify } from "quasar";
-  
-  const useCultivo= useCultivosStore();
-  const rows = ref([]);
-  const id=ref()
-  const nombre = ref();
-  const idParcela = ref();
-  const idparcela =ref();
-  const tipo = ref();
-   const filter = ref();
-  const listar = ref('');
-  const listados = ['Listar todos', 'Activos', 'Inactivos'];
-  let parcelas= []
+  </div>
+</template>
+
+<script setup>
+import { onMounted, ref } from 'vue';
+import { Notify } from "quasar"
+import { useCultivoStore } from "../store/cultivos.js";
+const useCultivo = useCultivoStore();
+import { useParcelaStore } from '../store/parcelas.js';
+const useParcela= useParcelaStore();
+
+const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
+let parcelas = []
 let datos = {}
 let options = ref(parcelas)
-  let accion = ref(1);
-  let alert = ref(false);
-  
-  // listar tabla
-  const columns = ref([
-    {
-      name: "idparcela",
-      label: "Parcela",
-      field: (row)=>row.idparcela.numero,
-      align: "center"
-    },
-    {
-      name: "nombre",
-      label: "Nombre Cultivo",
-      field: "nombre",
-      align: "center",
-    },
-    {
-      name: "tipo",
-      label: "Tipo",
-      field: "tipo",
-      align: "center"
-    },
-    {
-    name: "estado",
-    label: "Estado",
-    field: "estado",
-    align: "center"
-  },
-  {
-    name: "opciones",
-    label: "Opciones",
-    field: "opciones",
-    align: "center"
-  },
-  ]);
-  
-  // Funciones Listar
-  async function listarCultivos() {
-    try {
-      const data = await useCultivo.getCultivos();
-      rows.value = data.data;
-      console.log(data.data);
-    } catch (error) {
-      console.error("Error al listar todos los cultivos:", error);
-    }
-  }
 
-  async function listarParcelas() {
-    const data = await useParcela.getParcelasActivos()
-    console.log(data.data.parcelaActiva);
-    
-    data.data.parcelaActiva.forEach(item => {
-        datos = {
-            label: item.nombre,
-            value: item._id
-        }
-        parcelas.push(datos)
-    })
-    console.log(parcelas);
-}
-  
-  function filterFn(val, update, abort) {
+
+let rows = ref([]);
+
+let idparcela = ref('');
+let id = ref("")
+let nombre = ref('');
+let tipo = ref('');
+
+let alert = ref(false);
+let accion = ref(1);
+
+function filterFn(val, update, abort) {
   update(() => {
-    const needle = val.toLowerCase();
-    options.value = parcelas.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+      const needle = val.toLowerCase();
+      options.value = parcelas.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
   })
 }
 
-
-  function filtrar() {
-    if (listar.value == 'Listar todos') {
-      listarCultivos();
-    } else if (listar.value == 'Activos') {
-      listarCultivosActivos();
-    } else if (listar.value == 'Inactivos') {
-      listarCultivosInactivos();
-    }
+function modify() {
+  if (accion.value === 1) {
+      crear()
+  } else {
+      editar()
   }
-  
-  async function listarCultivosActivos() {
-    const r = await useCultivo.getCultivosActivos();
-    console.log(r.data.cultivosActivos);
-    rows.value = r.data.cultivosActivos;
-  }
-  
-  async function listarCultivosInactivos() {
-    const r = await useCultivo.getCultivosInactivos();
-    console.log(r.data.cultivosInactivos);
-    rows.value = r.data.cultivosInactivos;
-  }
-  
-  // .................................................
-  
-  
-  // AGREGAR EDITAR 
-  
-  async function crear() {
-    // Validación de campos
-    if (!nombre.value || !tipo.value || !idParcela.value ) {
-      Notify.create({
-        type: "negative",
-        message: "Todos los campos son obligatorios",
-        icon: "error",
-        
+}
+async function crear() {
+  if (!validarCampos()) {return;}
+  try {
+      await useCultivo.postCultivos({
+          idparcela: idparcela.value.value,
+          nombre: nombre.value,
+          tipo: tipo.value,
+      
       });
-      return; // No proceder si los campos están vacíos
-    }
-  
-    try {
-      accion.value = 1;
-      const r = await useCultivo.postCultivos({
-        // idparcela=idParcela.value.value,
-        nombre: nombre.value,
-        tipo: tipo.value      });
-  
-      // Notificación de éxito
+  } catch (error) {
       Notify.create({
-        type: "positive",
-        message: "Cultivo creado exitosamente",
-        icon: "check_circle",
-        position:"top",
+          message: '¡Ocurrió un error al crear el cultivo!',
+          position: 'center',
+          color: 'red'
       });
-  
-      // Limpia el formulario y cierra el modal
-      listarCultivos();
+  } finally {
+      listarTodo();
       limpiarCampos();
       cerrar();
-  
-      return r; // Retorna la respuesta si es necesario
-    } catch (error) {
-      console.error("Error al agregar cultivo:", error);
+  }
+}
+
+
+function traerDatos(cultivo) {
+  alert.value = true;
+  accion.value = 2;
+  id.value = cultivo._id;
+  idparcela.value = {
+  label: cultivo.idparcela.nombre,
+  value: cultivo.idparcela._id
+  }
+  nombre.value = cultivo.nombre;
+  tipo.value = cultivo.tipo;
+ 
+}
+
+
+async function editar() {
+  if (!validarCampos()) return;
+  try {
+      await useCultivo.putCultivos(id.value, {
+          idparcela: idparcela.value.value,
+          nombre: nombre.value,      
+          tipo:tipo.value
+        });
+
       Notify.create({
-        type: "negative",
-        message: "Error al agregar cultivo",
-        icon: "error",
+          message: 'Cultivo actualizado correctamente!',
+          position: "center",
+          color: "green"
       });
-    }
-  }
-  
-  
-  
-  async function traerDatos(cultivo) {
-  accion.value=2
-  alert.value=true
-  idParcela.value = {
-    label: cultivo.idparcela.nombre,
-    value: cultivo.idparcela._id
-    }
-        id.value=cultivo._id;
-         nombre.value= cultivo.nombre,
-         tipo.value= cultivo.tipo,
-         
-  
-         console.log("cultivo ID:", cultivo._id);
-     
-  }
-  async function editar() {
-    try {
-      const r = await useCultivo.putCultivos(id.value, {
-        nombre: nombre.value,
-        tipo: tipo.value,
-        idparcela: idparcela.value,
-           });
-  
-      console.log("Cultivo editado con éxito:", r);
-      listarCultivos();  // Refresca la lista de administradores
-      limpiarCampos(); // Limpia el formulario
-      cerrar(); // Cierra el modal/formulario
-    } catch (error) {
-      console.error("Error al editar Cultivo:", error);
-    }
-  }
-  async function modify() {
-    if (accion.value === 1) {
-      await crear();
-    } else {
-      await editar();
-    }
-  }
-  
-  
-  
-  // FUNCIONES ACTIVAR-DESACTIVAR
-  
-  async function activar(id) {
-    try {
-      await useCultivo.putCultivosActivar(id);
-      listarCultivos();
+  } catch (error) {
       Notify.create({
-        type: "positive",
-        message: "Cultivo activado exitosamente",
-        icon: "check",
-        position: "top",
-        timeout: 3000,
+          type: 'negative',
+          message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar el cultivo',
       });
-    } catch (error) {
-      console.error("Error al activar Cultivo:", error);
-      Notify.create({
-        type: "negative",
-        message: "Error al activar cultivo",
-        icon: "error",
-      });
-    } finally {
+      console.error('Error al modificar el cultivo', error);
+  }
+  listarTodo();
+  limpiarCampos();
+  cerrar();
+}
+
+
+
+
+
+
+const listar = ref('');
+const listados = ['Listar todos', 'Activos', 'Inactivos'];
+
+function filtrar() {
+  if (listar.value == 'Listar todos') {
+      listarTodo();
+  } else if (listar.value == 'Activos') {
+      listarActivos();
+  } else if (listar.value == 'Inactivos') {
+      listarInactivos();
+  }
+}
+
+async function listarTodo() {
+  const r = await useCultivo.listarCultivos();
+  rows.value = r.data.cultivo;
+}
+async function listarActivos() {
+  const r = await useCultivo.getCultivosActivos();
+  console.log(r.data.cultivosActivos);
+  rows.value = r.data.cultivosActivos;
+}
+async function listarInactivos() {
+  const r = await useCultivo.getCultivosInactivos();
+  console.log(r.data.cultivosInactivos);
+  rows.value = r.data.cultivosInactivos;
+}
+async function listarParcelas() {
+  const data = await useParcela.getParcelasActivos();
+  console.log(data.data.parcelaActiva);
+
+  data.data.parcelaActiva.forEach(item => {
+      datos = {
+          label: item.numero,
+          value: item._id
+      }
+      parcelas.push(datos)
+  })
+  console.log(parcelas);
+}
+
+
+
+async function desactivar(cultivos) {
+  const r = await useCultivo.putCultivosDesactivar(cultivos._id)
+      .then((response) => {
+          Notify.create({
+              message: 'Cultivo Desactivado correctamente!',
+              position: "center",
+              color: "green"
+          });
+          listarTodo()
+      })
+      .catch((error) => {
+          console.log('Error de sede:', error);
+      })
+}
+async function activar(cultivos) {
+  const r = await useCultivo.putCultivosActivar(cultivos._id)
+      .then((response) => {
+          Notify.create({
+              message: 'cultivo activado correctamente!',
+              position: "center",
+              color: "green"
+          });
+          listarTodo()
+      })
+      .catch((error) => {
+          console.log('Error de cultivo:', error);
+      })
+}
+//ACTIVAR Y DESACTIVAR EN LA TABLA =========================
+
+const columns = ref([
+  {
+      name: 'idparcela',
+      required: true,
+      label: 'Parcela',
+      align: 'center',
+      field: (row) => row.idparcela.nombre,
+      sortable: true
+  },
+  {
+      name: 'Nombre',
+      required: true,
+      label: 'Nombre',
+      align: 'center',
+      field: 'nombre',
+      sortable: true
+  },
+  
+  {
+      name: 'tipo',
+      required: true,
+      label: 'Tipo Cultivo',
+      align: 'center',
+      field: 'tipo',
+      sortable: true
+  },
+    {
+        name: 'estado',
+        required: true,
+        label: 'Estado',
+        align: 'center',
+        field: 'estado',
+        sortable: true
+    },
+    {
+        name: 'opciones',
+        required: true,
+        label: 'Opciones',
+        align: 'center',
+        field: 'opciones',
+        sortable: true
     }
-  }
-  
-  
-  async function desactivar(id) {
-    try {
-      await useCultivo.putCultivosDesactivar(id);
-      console.log(id);
-      listarCultivos();
+]);
+
+// Funciones no tan importantes ======================================
+function abrir() {
+  alert.value = true;
+  limpiarCampos();
+  accion.value = 1;
+}
+
+function cerrar() {
+  alert.value = false;
+}
+
+function limpiarCampos() {
+  idparcela.value = '';
+  nombre.value = '';
+  tipo.value = '';
+ }
+
+
+function validarCampos() {
+  if (!idparcela.value || !nombre.value  ||!tipo.value ) {
       Notify.create({
-        color: "orange",
-        message: "Cultivo desactivado exitosamente",
-        icon: "check",
-        position: "top",
-        timeout: 3000,
+          message: 'Por favor, completa todos los campos requeridos.',
+          color: 'negative',
+          position: 'top',
       });
-    } catch (error) {
-      console.error("Error al desactivar cultivo:", error);
-      Notify.create({
-        type: "negative",
-        message: "Error al desactivar cultivo",
-        icon: "error",
-      });
-    } finally {
-    }
+      return false;
   }
-  // ......................................................
-  // OTRAS FUNCIONES 
-  onMounted(() => {
-    listarCultivos();
-    listarParcelas();
-  });
+  return true;
+}
+
+
+onMounted(() => {
   
-  
-  function abrir() {
-    alert.value = true;
-    limpiarCampos();
-    accion.value = 1;
-  }
-  
-  function cerrar() {
-    alert.value = false;
-  }
-  function limpiarCampos() {
-    idParcela.value = '',
-      nombre.value = '',
-      tipo.value = ''
-  
-  }
-  
-  </script>
-  
-  <style>
-  .custom-select {
-    font-size: 14px;
-    border-radius: 4px;
-    padding: 8px 12px;
-    background-color: white;
-    color: #333;
-    min-width: 200px;
-  }
-  </style>
+  listarTodo();
+  listarParcelas()
+});
+// Funciones no tan importantes ======================================
+</script>
+
+<style>
+.custom-select {
+  font-size: 14px;
+  border-radius: 4px;
+  padding: 8px 12px;
+  background-color: white;
+  color: #333;
+  min-width: 200px;
+}
+</style>

@@ -3,12 +3,10 @@ import Login from "../components/login.vue"
 import Home from "../components/home.vue"
 import Administrador from "../components/administrador.vue"
 import Finca from "../components/fincas.vue"
-import Cultivo from "../components/cultivos.vue"
 import Parcela from "../components/parcelas.vue";
-
+import Cultivo from "../components/cultivos.vue";
 import Proveedores from '../components/proveedores.vue';
 import Insumos from '../components/insumos.vue'
-
 import Empleado from "../components/empleados.vue"
 
 
@@ -19,8 +17,8 @@ const routes = [
             { path: "/administrador", component: Administrador },
             { path: "/finca", component: Finca },
             { path:"/cultivo", component: Cultivo},
-
             { path:"/parcela", component: Parcela},
+            { path:"/cultivo", component: Cultivo},
             {path:"/empleados", component: Empleado}
 
         ]

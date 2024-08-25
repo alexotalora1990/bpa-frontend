@@ -18,6 +18,7 @@ export const useFincaStore = defineStore("fincastore", () =>{
             // headers:{
             //     token:useAdministrador.token
             // }
+            
         });
         fincas.value = response.data; 
         return response;
