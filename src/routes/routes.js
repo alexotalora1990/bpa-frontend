@@ -8,6 +8,8 @@ import Cultivo from "../components/cultivos.vue";
 import Proveedores from '../components/proveedores.vue';
 import Insumos from '../components/insumos.vue'
 import Empleado from "../components/empleados.vue"
+import Maquinaria from "../components/maquinaria.vue"
+import Semillas from "../components/semillas.vue"
 
 
 const routes = [
@@ -19,7 +21,11 @@ const routes = [
             { path:"/cultivo", component: Cultivo},
             { path:"/parcela", component: Parcela},
             { path:"/cultivo", component: Cultivo},
-            {path:"/empleados", component: Empleado}
+            {path:"/empleados", component: Empleado},
+            {path:"/proveedores",component:Proveedores},
+            {path:"/insumo",component:Insumos},
+            {path:"/maquinaria",component:Maquinaria},
+            {path:"/semilla",component:Semillas}
 
         ]
     }

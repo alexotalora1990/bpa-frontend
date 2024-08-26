@@ -43,7 +43,7 @@
           </q-card-section>
           <q-select
             outlined
-            v-model="idadministrador"
+            v-model="idproveedor"
             label="Seleccione un Proveedor"
             :options="options"
             class="q-my-md q-mx-md"
@@ -194,7 +194,8 @@ async function crear() {
   if (!validarCampos()) return;
 
   try {
-    const insumoData = {
+    const r = await useInsumos.postInsumos({
+      idproveedor:idproveedor.value.value,
       nombre: nombre.value,
       relacion: relacion.value,
       cantidad: cantidad.value,
@@ -202,9 +203,7 @@ async function crear() {
       responsable: responsable.value,
       observaciones: observaciones.value,
       total: total.value,
-    };
-
-    await useInsumos.postInsumos(insumoData);
+    })
   } catch (error) {
     Notify.create({
       message: "¡Ocurrió un error al crear el insumo!",
@@ -321,9 +320,7 @@ async function listarInactivos() {
 function filterFn(val, update, abort) {
   update(() => {
     const needle = val.toLowerCase();
-    options.value = proveed.filter(
-      (v) => v.label.toLowerCase().indexOf(needle) > -1
-    );
+    options.value = proveed.filter( v=>v.label.toLowerCase().indexOF(needle)>-1);
   });
 }
 
@@ -447,6 +444,7 @@ function cerrar() {
 }
 
 function limpiarCampos() {
+  idproveedor.value="";
   nombre.value = "";
   relacion.value = "";
   cantidad.value = 0;

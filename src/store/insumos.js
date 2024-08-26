@@ -29,7 +29,7 @@ export const useInsumosStore = defineStore("store", () =>{
     const getInsumosActivos = async () => {
         try {
             loading.value = true;
-            const response = await axios.get(`insumos/obt/activos`, {
+            const response = await axios.get(`insumos/activos`, {
         });
           insumos.value = response.data;
           return response;
