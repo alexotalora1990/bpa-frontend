@@ -34,7 +34,7 @@
       <div style="display: flex; justify-content: center">
           <q-table title="Cultivos" title-class="text-green text-weight-bolder text-h5"
               table-header-class="text-black" :rows="rows" :filter="filter" :columns="columns" row-key="name"
-              style="width: 90%; margin-bottom: 6%;" :loading="useParcela.loading">
+              style="width: 90%; margin-bottom: 6%;" :loading="useCultivo.loading">
               <template v-slot:top-right>
                   <q-input color="black" v-model="filter" placeholder="Buscar">
                       <template v-slot:append>
@@ -189,21 +189,40 @@ function filtrar() {
 }
 
 async function listarTodo() {
-  const r = await useCultivo.listarCultivos();
-  rows.value = r.data.cultivo;
+    try {
+        const r = await useCultivo.listarCultivos();
+        rows.value = r.data.cultivo;
+    } catch (error) {
+        console.log(error);
+        
+    }
+ 
 }
 async function listarActivos() {
-  const r = await useCultivo.getCultivosActivos();
+    try {
+        const r = await useCultivo.getCultivosActivos();
   console.log(r.data.cultivosActivos);
   rows.value = r.data.cultivosActivos;
+    } catch (error) {
+        console.log(error);
+        
+    }
+  
 }
 async function listarInactivos() {
-  const r = await useCultivo.getCultivosInactivos();
+    try {
+        const r = await useCultivo.getCultivosInactivos();
   console.log(r.data.cultivosInactivos);
   rows.value = r.data.cultivosInactivos;
+    } catch (error) {
+        console.log(error);
+        
+    }
+  
 }
 async function listarParcelas() {
-  const data = await useParcela.getParcelasActivos();
+    try {
+        const data = await useParcela.getParcelasActivos();
   console.log(data.data.parcelaActiva);
 
   data.data.parcelaActiva.forEach(item => {
@@ -214,6 +233,11 @@ async function listarParcelas() {
       parcelas.push(datos)
   })
   console.log(parcelas);
+    } catch (error) {
+       console.log(error);
+        
+    }
+ 
 }
 
 
