@@ -4,7 +4,7 @@ import { Notify } from "quasar";
 import { ref } from "vue";
 
 
-export const useEmpleadoStore = defineStore("store", () =>{
+export const useEmpleadoStore = defineStore("empleado", () =>{
     let loading = ref(false)
     let empleados = ref([]);
 

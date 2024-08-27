@@ -7,7 +7,8 @@ import Parcela from "../components/parcelas.vue";
 import Cultivo from "../components/cultivos.vue";
 import Proveedores from '../components/proveedores.vue';
 import Insumos from '../components/insumos.vue'
-import Empleado from "../components/empleados.vue"
+import Empleado from "../components/empleados.vue" 
+import Proceso from "../components/procesos.vue"
 
 
 const routes = [
@@ -19,7 +20,9 @@ const routes = [
             { path:"/cultivo", component: Cultivo},
             { path:"/parcela", component: Parcela},
             { path:"/cultivo", component: Cultivo},
-            {path:"/empleados", component: Empleado}
+            {path:"/empleados", component: Empleado},
+            {path:"/proveedores", component: Proveedores},
+            {path:"/procesos",component:Proceso}
 
         ]
     }
