@@ -10,8 +10,14 @@ import Proceso from "../components/procesos.vue"
 import Cultivo from "../components/cultivos.vue";
 import Proveedores from '../components/proveedores.vue';
 import Insumos from '../components/insumos.vue'
-import Empleado from "../components/empleados.vue" 
+
+import Empleado from "../components/empleados.vue"
+import Maquinaria from "../components/maquinaria.vue"
+import Semillas from "../components/semillas.vue"
+
+
 import Proceso from "../components/procesos.vue"
+
 
 
 const routes = [
@@ -29,8 +35,12 @@ const routes = [
             { path:"/parcela", component: Parcela},
             { path:"/cultivo", component: Cultivo},
             {path:"/empleados", component: Empleado},
-            {path:"/proveedores", component: Proveedores},
+            {path:"/proveedores",component:Proveedores},
+            {path:"/insumo",component:Insumos},
+            {path:"/maquinaria",component:Maquinaria},
+            {path:"/semilla",component:Semillas}            
             {path:"/procesos",component:Proceso}
+
 
 
         ]

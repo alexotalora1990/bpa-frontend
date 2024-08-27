@@ -4,9 +4,7 @@ import { Notify } from "quasar";
 import { ref } from "vue";
 
 
-
-
-export const useInsumosStore = defineStore("store", () =>{
+export const useInsumosStore = defineStore("insumo", () =>{
     let loading = ref(false)
     let insumos = ref([]);
 

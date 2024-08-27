@@ -43,7 +43,7 @@
           </q-card-section>
           <q-select
             outlined
-            v-model="idadministrador"
+            v-model="idproveedor"
             label="Seleccione un Proveedor"
             :options="options"
             class="q-my-md q-mx-md"
@@ -155,7 +155,7 @@
         </template>
       </q-table>
     </div>
-    <q-btn @click="listarProveedores()">Prueba</q-btn>
+
   </div>
 </template>
   
@@ -175,9 +175,7 @@ let alert = ref(false);
 let accion = ref(1);
 //////////////////////////////
 
-let proveed = [];
-let datos = {};
-let options = ref(proveed);
+
 
 //////////////////////////////
 let id = ref("");
@@ -194,7 +192,8 @@ async function crear() {
   if (!validarCampos()) return;
 
   try {
-    const insumoData = {
+    const r = await useInsumos.postInsumos({
+      idproveedor:idproveedor.value.value,
       nombre: nombre.value,
       relacion: relacion.value,
       cantidad: cantidad.value,
@@ -202,9 +201,7 @@ async function crear() {
       responsable: responsable.value,
       observaciones: observaciones.value,
       total: total.value,
-    };
-
-    await useInsumos.postInsumos(insumoData);
+    })
   } catch (error) {
     Notify.create({
       message: "¡Ocurrió un error al crear el insumo!",
@@ -277,6 +274,18 @@ function modify() {
   }
 }
 
+let proveed = [];
+let datos = {};
+let options = ref(proveed);
+
+function filterFn(val, update, abort) {
+  update(() => {
+    const needle = val.toLowerCase();
+    options.value = proveed.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+  })
+}
+
+
 async function listarProveedores() {
   const data = await useProveedor.getProveedoresActivos();
   data.data.proveedores.forEach((item) => {
@@ -309,23 +318,16 @@ async function listarTodo() {
 
 async function listarActivos() {
   const r = await useInsumos.getInsumosActivos();
-  rows.value = r.data.insumo;
+  rows.value = r.data.insumos;
+  console.log(r.data.insumos)
 }
 
 async function listarInactivos() {
   const r = await useInsumos.getInsumosInactivos();
-  rows.value = r.data.insumo;
+  rows.value = r.data.insumos;
 }
 
 
-function filterFn(val, update, abort) {
-  update(() => {
-    const needle = val.toLowerCase();
-    options.value = proveed.filter(
-      (v) => v.label.toLowerCase().indexOf(needle) > -1
-    );
-  });
-}
 
 async function desactivar(insumo) {
   try {
@@ -447,6 +449,7 @@ function cerrar() {
 }
 
 function limpiarCampos() {
+  idproveedor.value="";
   nombre.value = "";
   relacion.value = "";
   cantidad.value = 0;
