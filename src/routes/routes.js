@@ -3,12 +3,16 @@ import Login from "../components/login.vue"
 import Home from "../components/home.vue"
 import Administrador from "../components/administrador.vue"
 import Finca from "../components/fincas.vue"
-import Cultivo from "../components/cultivos.vue"
 import Parcela from "../components/parcelas.vue";
 import Empleado from "../components/empleados.vue"
 import Clima from "../components/clima.vue"
-// import Proceso from "../components/procesos.vue"
-import Nomina from "../components/nomina.vue"
+import Proceso from "../components/procesos.vue"
+import Cultivo from "../components/cultivos.vue";
+import Proveedores from '../components/proveedores.vue';
+import Insumos from '../components/insumos.vue'
+import Empleado from "../components/empleados.vue" 
+import Proceso from "../components/procesos.vue"
+
 
 const routes = [
     { path: "/", component: Login },
@@ -21,6 +25,14 @@ const routes = [
             { path: "/empleados", component: Empleado},
             { path: "/clima", component: Clima},
             { path: "/nomina", component: Nomina}
+            { path:"/cultivo", component: Cultivo},
+            { path:"/parcela", component: Parcela},
+            { path:"/cultivo", component: Cultivo},
+            {path:"/empleados", component: Empleado},
+            {path:"/proveedores", component: Proveedores},
+            {path:"/procesos",component:Proceso}
+
+
         ]
     }
 ];

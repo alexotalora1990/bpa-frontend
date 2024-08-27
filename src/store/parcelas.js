@@ -9,12 +9,12 @@ import { useAdministradorStore} from "./administrador"
 export const useParcelaStore = defineStore("store", () =>{
     let loading = ref(false)
     let parcelas = ref([]);
-    const useAdministrador = useAdministradorStore()
+    
 
     const listarParcelas = async () => {
         try {
             loading.value = true;
-            const response = await axios.get("parcela/",{
+            const response = await axios.get("parcela",{
             // headers:{
             //     token:useAdministrador.token
             // }

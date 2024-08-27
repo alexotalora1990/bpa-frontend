@@ -1,7 +1,12 @@
-<!-- <template>
+
+<template>
     <div style="height: 100vh; overflow-y: auto;">
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Proceso</q-btn>
+            <q-select outlined v-model="listar" label="Seleccione" :options="listados"
+                class="q-my-md q-mx-md custom-select" />
+            <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
+
         </div>
         <div>
             <q-dialog v-model="alert" persistent>
@@ -13,12 +18,16 @@
                         <q-space />
                         <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                     </q-card-section>
-
-                    <q-select outlined v-model="idfincas" label="Seleccione una Finca" :options="options"  @filter="filter1" class="q-my-md q-mx-md" />
-                    <q-select outlined v-model="idempleado" label="Seleccione un Empleado" :options="opciones" @filter="filter2" class="q-my-md q-mx-md" />
-                    <q-input outlined v-model="tipo" label="Tipo de Clima" class="q-my-md q-mx-md" type="text" />
-
-                    <q-card-actions align="right">
+      
+                    <q-select outlined v-model="idcultivo" label="Seleccione un cultivo" :optionsCultivo="optionsCultivo"
+                        class="q-my-md q-mx-md" @filter="filterFnCultivo" hide-bottom-space />
+                    <q-select outlined v-model="idempleado" label="Seleccione un empleado" :optionsEmpleado="optionsEmpleado"
+                        class="q-my-md q-mx-md" @filter="filterFnEmpleado" hide-bottom-space />
+                    <q-input outlined v-model="tipo" label="Tipo" class="q-my-md q-mx-md" type="text" />
+                    <q-input outlined v-model="descripcion" label="Descripcion" class="q-my-md q-mx-md" type="text" />
+                    <q-input outlined v-model="fechainicio" label="Fecha Inicial" type="date" class="q-my-md q-mx-md" />
+                    <q-input outlined v-model="fechafinal" label="Fecha Final" type="date" class="q-my-md q-mx-md" />
+                                     <q-card-actions align="right">
                         <q-btn @click="modify()" color="green" class="text-white">
                             {{ accion == 1 ? "Agregar" : "Editar" }}
                         </q-btn>
@@ -28,9 +37,11 @@
             </q-dialog>
         </div>
         <div style="display: flex; justify-content: center">
-            <q-table title="Procesos" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
-                :rows="rows" :filter="filter" :columns="columns" row-key="name" style="width: 90%; margin-bottom: 6%;"
-                :loading="useProceso.loading">
+
+            <q-table title="Procesos" title-class="text-green text-weight-bolder text-h5"
+                table-header-class="text-black" :rows="rows" :filter="filter" :columns="columns" row-key="name"
+                style="width: 90%; margin-bottom: 6%;" :loading="useProceso.loading">
+
                 <template v-slot:top-right>
                     <q-input color="black" v-model="filter" placeholder="Buscar">
                         <template v-slot:append>
@@ -54,6 +65,12 @@
                     <q-td :props="props">
                         <q-btn @click="traerDatos(props.row)">
                             <q-tooltip>Editar</q-tooltip>✏️</q-btn>
+
+                        <q-btn @click="desactivar(props.row)" v-if="props.row.estado == 1">
+                            <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
+                        <q-btn @click="activar(props.row)" v-else>
+                            <q-tooltip>Activar</q-tooltip>✅</q-btn>
+
                     </q-td>
                 </template>
             </q-table>
@@ -64,49 +81,58 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { Notify } from "quasar"
-import { useEmpleadoStore } from "../store/empleados.js";
-const useEmpleado = useEmpleadoStore();
-import { useCultiStore } from "../store/fincas.js";
-const useFinca = useFincaStore();
-import { useProcesoStore } from "../store/procesos.js";
+  
+
+import { useProcesoStore } from '../store/procesos.js';
 const useProceso = useProcesoStore();
+import { useCultivoStore } from '../store/cultivos.js';
+const useCultivo = useCultivoStore();
+import { useEmpleadoStore } from '../store/empleados.js';
+const useEmpledo =useEmpleadoStore()
+import { format } from 'date-fns';
+
 
 const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 let rows = ref([]);
 let alert = ref(false);
 let accion = ref(1);
 
-let fincas = []
-let empleados = []
-let options = ref(fincas)
-let opciones = ref(empleados)
+let cultivos = []
+let datosCultivo = {}
+let optionsCultivo = ref(cultivos)
 
+let empleados = []
+let datosEmpleado = {}
+let optionsEmpleado = ref(empleados)
 
 let id = ref("")
-let idfincas = ref('');
-let idempleado = ref("");
-let tipo = ref("");
-let horaInicio = ref("");
-let horaFinal = ref("");
-let tempMin = ref("");
-let tempMax = ref("");
+let idcultivo = ref('');
+let idempleado =ref('')
+let numero = ref('');
+let tipo = ref('');
+let descripcion = ref('');
+let fechainicio = ref('');
+let fechafinal = ref('');
+
 
 
 async function crear() {
     if (!validarCampos()) {return;}
     try {
-        await useClima.postClimas({
-            idfincas: idfincas.value.value,
-            idempleado: idempleado.value.value,
+
+        await useProceso.postProcesos({
+            idcultivo: idcultivo.value.value,
+            idempleado:idempleado.value.value,
             tipo: tipo.value,
-            horaInicio: horaInicio.value,
-            horaFinal: horaFinal.value,
-            tempMin: tempMin.value,
-            tempMax: tempMax.value,
+            descripcion: descripcion.value,
+            fechainicio: fechainicio.value,
+            fechafinal: fechafinal.value
+        
         });
     } catch (error) {
         Notify.create({
-            message: '¡Ocurrió un error al crear la parcela!',
+            message: '¡Ocurrió un error al crear el cultivo!',
+
             position: 'center',
             color: 'red'
         });
@@ -116,23 +142,30 @@ async function crear() {
         cerrar();
     }
 }
-function traerDatos(clima) {
+
+const formatDates = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toISOString().substr(0,10);
+};
+
+function traerDatos(proceso) {
     alert.value = true;
     accion.value = 2;
-    id.value = clima._id;
-    idfincas.value = {
-    label: clima.idfincas.nombre,
-    value: clima.idfincas._id
-    }
+    id.value = proceso._id;
+    idcultivo.value = {
+    label: proceso.idcultivo.nombre,
+    value: proceso.idcultivo._id
+    };
     idempleado.value = {
-    label: clima.idempleado.nombre,
-    value: clima.idempleado._id
-    }
-    tipo.value = clima.tipo;
-    horaInicio.value = clima.horaInicio;
-    horaFinal.value = clima.horaFinal;
-    tempMin.value = clima.tempMin;
-    tempMax.value = clima.tempMax;
+    label: proceso.idempleado.nombre,
+    value: proceso.idempleado._id
+    };
+    tipo.value = proceso.tipo;
+    descripcion.value = proceso.descripcion;
+    fechainicio.value = formatDates(proceso.fechainicio);
+    fechafinal.value = formatDates(proceso.fechafinal);
+
 }
 
 
@@ -140,34 +173,34 @@ async function editar() {
     if (!validarCampos()) return;
 
     try {
-
-        await useClima.putClimas(id.value, {
-            idfincas: idfincas.value.value,
-            idempleado: idempleado.value.value,
+        await useProceso.putProcesos(id.value, {
+            idcultivo: idcultivo.value.value,
+            idempleado:idempleado.value.value,
             tipo: tipo.value,
-            horaInicio: horaInicio.value,
-            horaFinal: horaFinal.value,
-            tempMin: tempMin.value,
-            tempMax: tempMax.value
+            descripcion: descripcion.value,
+            fechainicio: fechainicio.value,
+            fechafinal: fechafinal.value
         });
 
         Notify.create({
-            message: 'Clima actualizado correctamente!',
+            message: 'Proceso actualizado correctamente!',
+
             position: "center",
             color: "green"
         });
     } catch (error) {
         Notify.create({
             type: 'negative',
-            message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar el clima',
+
+            message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar el proceso',
         });
-        console.error('Error al modificar el clima', error);
+        console.error('Error al modificar el proceso', error);
+
     }
     listarTodo();
     limpiarCampos();
     cerrar();
 }
-
 
 function modify() {
     if (accion.value === 1) {
@@ -179,60 +212,110 @@ function modify() {
 
 
 
-//APARTADO DE TRAER LOS DATOS =============================
-function filter1(val, update, abort) {
-    update(() => {
-        const needle = val.toLowerCase();
-        options.value = fincas.value.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
-    })
+const listar = ref('');
+const listados = ['Listar todos', 'Activos', 'Inactivos'];
+
+function filtrar() {
+    if (listar.value == 'Listar todos') {
+        listarTodo();
+    } else if (listar.value == 'Activos') {
+        listarActivos();
+    } else if (listar.value == 'Inactivos') {
+        listarInactivos();
+    }
 }
-
-function filter2(val, update, abort) {
-    update(() => {
-        const needle = val.toLowerCase();
-        opciones.value = empleados.value.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
-    })
-}
-
-
 
 async function listarTodo() {
-    const r = await useClima.listarClimas();
-    rows.value = r.data.clima;
+    const r = await useProceso.listarProcesos();
+    console.log(r.data);
+    
+    rows.value = r.data.procesos;
 }
-const listarFincas = async () => {
-    const data = await useFinca.getFincasActivos();
-    fincas.value = data.data.fincaActiva.map(item => ({
-        label: item.nombre,
-        value: item._id
-    }));
-    options.value = fincas.value;
-    console.log('Fincas:', fincas.value);
-};
-const listarEmpleados = async () => {
-    const data = await useEmpleado.getEmpleadosActivos();
-    empleados.value = data.data.empleados.map(item => ({
-        label: item.nombre,
-        value: item._id
-    }));
-    opciones.value = empleados.value;
-    console.log('Empleados:', empleados.value);
-};
+async function listarActivos() {
+    const r = await useProceso.getProcesosActivos();
+    console.log(r.data.procesoActivo);
+    rows.value = r.data.procesoActivo;
+}
+async function listarInactivos() {
+    const r = await useProceso.getProcesosInactivos();
+    console.log(r.data.procesoDesactivado);
+    rows.value = r.data.procesoDesactivado;
+}
+async function listarCultivos() {
+    const data = await useCultivo.getCultivosActivos()
+    data.data.cultivosActivos.forEach(item => {
+        datosCultivo = {
+            label: item.nombre,
+            value: item._id
+        }
+        cultivos.push(datosCultivo)
+    })
+    console.log(cultivos);
+}
++async function listarEmpleados() {
+    const data = await useEmpledo.getEmpleadosActivos()
+    data.data.empleadosActivos.forEach(item => {
+        datosEmpleado = {
+            label: item.nombre,
+            value: item._id
+        }
+        empleados.push(datosEmpleado)
+    })
+    console.log(empleados);
+}
+
+function filterFnEmpleado(val, update, abort) {
+    update(() => {
+        const needle = val.toLowerCase();
+        options.value = empleados.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+    })
+}
+function filterFnCultivo(val, update, abort) {
+    update(() => {
+        const needle = val.toLowerCase();
+        options.value = cultivos.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+    })
+}
 
 
-// el r.data.{empleados}, empleado varia segun el rjson de la funcion get en el backend
-
-//APARTADO DE TRAER LOS DATOS =============================
-
-
+async function desactivar(procesos) {
+    const r = await useProceso.putProcesosDesactivar(procesos._id)
+        .then((response) => {
+            Notify.create({
+                message: 'Proceso Desactivado correctamente!',
+                position: "center",
+                color: "green"
+            });
+            listarTodo()
+        })
+        .catch((error) => {
+            console.log('Error de proceso:', error);
+        })
+}
+async function activar(procesos) {
+    const r = await useProceso.putProcesosActivar(procesos._id)
+        .then((response) => {
+            Notify.create({
+                message: 'Proceso activado correctamente!',
+                position: "center",
+                color: "green"
+            });
+            listarTodo()
+        })
+        .catch((error) => {
+            console.log('Error de Proceso:', error);
+        })
+}
+//ACTIVAR Y DESACTIVAR EN LA TABLA =========================
 
 const columns = ref([
     {
-        name: 'idfincas',
+        name: 'idcultivo',
         required: true,
-        label: 'Finca',
+        label: 'Cultivo',
         align: 'center',
-        field: (row) => row.idfincas.nombre,
+        field: (row) => row.idcultivo.nombre,
+
         sortable: true
     },
     {
@@ -246,49 +329,47 @@ const columns = ref([
     {
         name: 'tipo',
         required: true,
-        label: 'Clima',
+
+        label: 'Tipo',
+
         align: 'center',
         field: 'tipo',
         sortable: true
     },
+
+        
     {
-        name: 'horaInicio',
+        name: 'descripcion',
         required: true,
-        label: 'Inicio',
+        label: 'Descripcion',
         align: 'center',
-        field: 'horaInicio',
+        field: 'descripcion',
         sortable: true
     },
     {
-        name: 'horaFinal',
+        name: 'fechaInicio',
         required: true,
-        label: 'Termino',
+        label: 'Fecha Inicial',
         align: 'center',
-        field: 'horaFinal',
+        field: (row)=>format(new Date(row.fechaInicio),'dd/MM/yyyy'),
         sortable: true
     },
     {
-        name: 'tempMin',
+        name: 'fechaFinal',
         required: true,
-        label: 'Temperatura Minima',
+        label: 'Fecha Final',
         align: 'center',
-        field: 'tempMin',
+        field: (row)=>format(new Date(row.fechaFinal),'dd/MM/yyyy'),
         sortable: true
     },
     {
-        name: 'tempMax',
+
+        name: 'estado',
         required: true,
-        label: 'Temperatura Maxima',
+        label: 'Estado',
         align: 'center',
-        field: 'tempMax',
-        sortable: true
-    },
-    {
-        name: 'createAt',
-        required: true,
-        label: 'Fecha del Clima',
-        align: 'center',
-        field: 'createAt',
+        field: 'estado',
+
         sortable: true
     },
     {
@@ -313,18 +394,19 @@ function cerrar() {
 }
 
 function limpiarCampos() {
-    idfincas.value = '';
+
+    idcultivo.value = '';
     idempleado.value = '';
-    tipo.value = '';
-    horaInicio.value = '';
-    horaFinal.value = '';
-    tempMin.value = '';
-    tempMax.value = '';
+    descripcion.value = '';
+    fechainicio.value = '';
+    fechafinal.value = '';
 }
 
+
 function validarCampos() {
-    if (!idfincas.value || !idempleado.value || !tipo.value || !horaInicio.value || 
-        !horaFinal.value || !tempMin.value || !tempMax.value) {
+    if (!idempleado.value || !idcultivo.value || !tipo.value || !descripcion.value || !fechafinal.value ||
+        !fechafinal.value) {
+
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
             color: 'negative',
@@ -338,9 +420,11 @@ function validarCampos() {
 
 
 onMounted(() => {
+    
     listarTodo();
-    listarFincas();
-    listarEmpleados();
+    listarEmpleados()
+    listarCultivos()
+
 });
 // Funciones no tan importantes ======================================
 </script>
@@ -354,4 +438,7 @@ onMounted(() => {
     color: #333;
     min-width: 200px;
 }
-</style> -->
+
+
+</style>
+

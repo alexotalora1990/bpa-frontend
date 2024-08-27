@@ -1,18 +1,18 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import { Notify } from "quasar";
 import { ref } from "vue";
+import { useParcelaStore } from "./parcelas";
+import { useAdministradorStore} from "./administrador"
 
 
-// esto es una prueba
 
-
-export const useCultivosStore = defineStore("store", () =>{
+export const useCultivoStore = defineStore("cultivo", () =>{
     let loading = ref(false)
-    let cultivos = ref([]);
+    let cultivos= ref([]);
     
-
-    const getCultivos = async () => {
+const useParcelas =useParcelaStore()
+const useAdministrador =useAdministradorStore()
+    const listarCultivos = async () => {
         try {
             loading.value = true;
             const response = await axios.get("cultivo",{
@@ -22,7 +22,6 @@ export const useCultivosStore = defineStore("store", () =>{
         });
         cultivos.value = response.data; 
         return response;
-
         } catch (error) {
           console.error("Error al obtener la lista de cultivos:", error);
           throw error;
@@ -57,7 +56,7 @@ export const useCultivosStore = defineStore("store", () =>{
           cultivos.value = response.data;
           return response;
         } catch (error) {
-          console.error("Error al obtener la lista de cultivos Inactivas:", error);
+          console.error("Error al obtener la lista de cultios Inactivos:", error);
         } finally {
           loading.value = false;
         }
@@ -79,6 +78,8 @@ export const useCultivosStore = defineStore("store", () =>{
         }
     }
     const putCultivos = async(id, data)=>{
+        console.log(data);
+        
         try {
             loading.value=true
             const r = await axios.put(`cultivo/actualizar/${id}`, data,{
@@ -127,6 +128,6 @@ export const useCultivosStore = defineStore("store", () =>{
         }
     }
 
-    return {getCultivos,getCultivosActivos,getCultivosInactivos,postCultivos,putCultivos,putCultivosActivar,putCultivosDesactivar,loading}
+    return {listarCultivos,getCultivosActivos,getCultivosInactivos,cultivos,postCultivos, putCultivos, putCultivosActivar, putCultivosDesactivar, loading}
     
 },{persist:true})
