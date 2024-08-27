@@ -155,7 +155,7 @@
         </template>
       </q-table>
     </div>
-    <q-btn @click="listarProveedores()">Prueba</q-btn>
+
   </div>
 </template>
   
@@ -175,9 +175,7 @@ let alert = ref(false);
 let accion = ref(1);
 //////////////////////////////
 
-let proveed = [];
-let datos = {};
-let options = ref(proveed);
+
 
 //////////////////////////////
 let id = ref("");
@@ -276,6 +274,18 @@ function modify() {
   }
 }
 
+let proveed = [];
+let datos = {};
+let options = ref(proveed);
+
+function filterFn(val, update, abort) {
+  update(() => {
+    const needle = val.toLowerCase();
+    options.value = proveed.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+  })
+}
+
+
 async function listarProveedores() {
   const data = await useProveedor.getProveedoresActivos();
   data.data.proveedores.forEach((item) => {
@@ -308,21 +318,16 @@ async function listarTodo() {
 
 async function listarActivos() {
   const r = await useInsumos.getInsumosActivos();
-  rows.value = r.data.insumo;
+  rows.value = r.data.insumos;
+  console.log(r.data.insumos)
 }
 
 async function listarInactivos() {
   const r = await useInsumos.getInsumosInactivos();
-  rows.value = r.data.insumo;
+  rows.value = r.data.insumos;
 }
 
 
-function filterFn(val, update, abort) {
-  update(() => {
-    const needle = val.toLowerCase();
-    options.value = proveed.filter( v=>v.label.toLowerCase().indexOF(needle)>-1);
-  });
-}
 
 async function desactivar(insumo) {
   try {

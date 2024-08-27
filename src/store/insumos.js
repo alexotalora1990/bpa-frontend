@@ -4,9 +4,7 @@ import { Notify } from "quasar";
 import { ref } from "vue";
 
 
-
-
-export const useInsumosStore = defineStore("store", () =>{
+export const useInsumosStore = defineStore("insumo", () =>{
     let loading = ref(false)
     let insumos = ref([]);
 
@@ -29,7 +27,7 @@ export const useInsumosStore = defineStore("store", () =>{
     const getInsumosActivos = async () => {
         try {
             loading.value = true;
-            const response = await axios.get(`insumos/activos`, {
+            const response = await axios.get(`insumos/obt/activos`, {
         });
           insumos.value = response.data;
           return response;

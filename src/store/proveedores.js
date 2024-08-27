@@ -6,7 +6,7 @@ import { ref } from "vue";
 
 
 
-export const useProveedoresStore = defineStore("store", () => {
+export const useProveedoresStore = defineStore("proveedores", () => {
     let loading = ref(false)
     let proveedores = ref([]);
 
