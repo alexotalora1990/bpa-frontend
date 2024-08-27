@@ -16,8 +16,15 @@
                       <q-space />
                       <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                   </q-card-section>
-                  <q-select outlined v-model="idparcela" label="Seleccione una Parcela" :options="options"
-                      class="q-my-md q-mx-md" @filter="filterFn" hide-bottom-space />                
+
+                  <q-select outlined v-model="idparcela" use-input hide-selected fill-input input-debounce="0"
+            class="q-my-md q-mx-md" :options="options" @filter="filtrarFn" label="Selecciona Parcela">
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey"> Sin resultados </q-item-section>
+              </q-item>
+            </template>
+     </q-select>              
                   
                   <q-input outlined v-model="nombre" label="Nombre de Cultivo" class="q-my-md q-mx-md" type="text" />
                   <q-input outlined v-model="tipo" label="Tipo Cultivo" class="q-my-md q-mx-md" type="text" />
@@ -34,7 +41,7 @@
       <div style="display: flex; justify-content: center">
           <q-table title="Cultivos" title-class="text-green text-weight-bolder text-h5"
               table-header-class="text-black" :rows="rows" :filter="filter" :columns="columns" row-key="name"
-              style="width: 90%; margin-bottom: 6%;" :loading="useParcela.loading">
+              style="width: 90%; margin-bottom: 6%;" :loading="useCultivo.loading">
               <template v-slot:top-right>
                   <q-input color="black" v-model="filter" placeholder="Buscar">
                       <template v-slot:append>
@@ -78,9 +85,6 @@ import { useParcelaStore } from '../store/parcelas.js';
 const useParcela= useParcelaStore();
 
 const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
-let parcelas = []
-let datos = {}
-let options = ref(parcelas)
 
 
 let rows = ref([]);
@@ -93,12 +97,7 @@ let tipo = ref('');
 let alert = ref(false);
 let accion = ref(1);
 
-function filterFn(val, update, abort) {
-  update(() => {
-      const needle = val.toLowerCase();
-      options.value = parcelas.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
-  })
-}
+
 
 function modify() {
   if (accion.value === 1) {
@@ -135,7 +134,7 @@ function traerDatos(cultivo) {
   accion.value = 2;
   id.value = cultivo._id;
   idparcela.value = {
-  label: cultivo.idparcela.nombre,
+  label: cultivo.idparcela.numero,
   value: cultivo.idparcela._id
   }
   nombre.value = cultivo.nombre;
@@ -189,21 +188,54 @@ function filtrar() {
 }
 
 async function listarTodo() {
-  const r = await useCultivo.listarCultivos();
-  rows.value = r.data.cultivo;
+    try {
+        const r = await useCultivo.listarCultivos();
+        rows.value = r.data.cultivo;
+    } catch (error) {
+        console.log(error);
+        
+    }
+ 
 }
 async function listarActivos() {
-  const r = await useCultivo.getCultivosActivos();
+    try {
+        const r = await useCultivo.getCultivosActivos();
   console.log(r.data.cultivosActivos);
   rows.value = r.data.cultivosActivos;
+    } catch (error) {
+        console.log(error);
+        
+    }
+  
 }
 async function listarInactivos() {
-  const r = await useCultivo.getCultivosInactivos();
+    try {
+        const r = await useCultivo.getCultivosInactivos();
   console.log(r.data.cultivosInactivos);
   rows.value = r.data.cultivosInactivos;
+    } catch (error) {
+        console.log(error);
+        
+    }
+  
 }
+
+// PARCELAS .........................................................
+
+let parcelas = []
+let datos = {}
+let options = ref(parcelas)
+
+function filterFn(val, update, abort) {
+  update(() => {
+    const needle = val.toLowerCase();
+    options.value = parcelas.filter((v) => v.label.toLowerCase().indexOf(needle) > -1);
+  });
+}
+
 async function listarParcelas() {
-  const data = await useParcela.getParcelasActivos();
+    try {
+        const data = await useParcela.getParcelasActivos();
   console.log(data.data.parcelaActiva);
 
   data.data.parcelaActiva.forEach(item => {
@@ -214,9 +246,19 @@ async function listarParcelas() {
       parcelas.push(datos)
   })
   console.log(parcelas);
+    } catch (error) {
+       console.log(error);
+        
+    }
+ 
 }
 
 
+
+//FILTROS
+
+
+// ACTIVAR Y DESACTIVAR ......................................................
 
 async function desactivar(cultivos) {
   const r = await useCultivo.putCultivosDesactivar(cultivos._id)
@@ -246,6 +288,7 @@ async function activar(cultivos) {
           console.log('Error de cultivo:', error);
       })
 }
+
 //ACTIVAR Y DESACTIVAR EN LA TABLA =========================
 
 const columns = ref([
@@ -254,7 +297,7 @@ const columns = ref([
       required: true,
       label: 'Parcela',
       align: 'center',
-      field: (row) => row.idparcela.nombre,
+      field: (row) => row.idparcela.numero,
       sortable: true
   },
   {

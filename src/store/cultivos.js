@@ -6,7 +6,7 @@ import { useAdministradorStore} from "./administrador"
 
 
 
-export const useCultivoStore = defineStore("store", () =>{
+export const useCultivoStore = defineStore("cultivo", () =>{
     let loading = ref(false)
     let cultivos= ref([]);
     

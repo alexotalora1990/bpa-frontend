@@ -4,12 +4,20 @@ import Home from "../components/home.vue"
 import Administrador from "../components/administrador.vue"
 import Finca from "../components/fincas.vue"
 import Parcela from "../components/parcelas.vue";
+import Empleado from "../components/empleados.vue"
+import Clima from "../components/clima.vue"
+import Proceso from "../components/procesos.vue"
 import Cultivo from "../components/cultivos.vue";
 import Proveedores from '../components/proveedores.vue';
 import Insumos from '../components/insumos.vue'
+
 import Empleado from "../components/empleados.vue"
 import Maquinaria from "../components/maquinaria.vue"
 import Semillas from "../components/semillas.vue"
+
+
+import Proceso from "../components/procesos.vue"
+
 
 
 const routes = [
@@ -18,6 +26,11 @@ const routes = [
         path: "/home", component: Home, children: [
             { path: "/administrador", component: Administrador },
             { path: "/finca", component: Finca },
+            { path: "/cultivo", component: Cultivo},
+            { path: "/parcela", component: Parcela},
+            { path: "/empleados", component: Empleado},
+            { path: "/clima", component: Clima},
+            { path: "/nomina", component: Nomina}
             { path:"/cultivo", component: Cultivo},
             { path:"/parcela", component: Parcela},
             { path:"/cultivo", component: Cultivo},
@@ -25,7 +38,10 @@ const routes = [
             {path:"/proveedores",component:Proveedores},
             {path:"/insumo",component:Insumos},
             {path:"/maquinaria",component:Maquinaria},
-            {path:"/semilla",component:Semillas}
+            {path:"/semilla",component:Semillas}            
+            {path:"/procesos",component:Proceso}
+
+
 
         ]
     }
