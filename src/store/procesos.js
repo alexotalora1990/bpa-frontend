@@ -1,3 +1,4 @@
+
 import { defineStore } from "pinia";
 import axios from "axios";
 import { Notify } from "quasar";
@@ -128,3 +129,4 @@ export const useProcesoStore = defineStore("proceso", () =>{
     return {listarProcesos,getProcesosActivos,getProcesosInactivos,procesos,postProcesos, putProcesos, putProcesosActivar, putProcesosDesactivar, loading}
     
 },{persist:true})
+

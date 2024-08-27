@@ -1,3 +1,4 @@
+
 <template>
     <div style="height: 100vh; overflow-y: auto;">
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
@@ -5,6 +6,7 @@
             <q-select outlined v-model="listar" label="Seleccione" :options="listados"
                 class="q-my-md q-mx-md custom-select" />
             <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
+
         </div>
         <div>
             <q-dialog v-model="alert" persistent>
@@ -16,6 +18,7 @@
                         <q-space />
                         <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                     </q-card-section>
+      
                     <q-select outlined v-model="idcultivo" label="Seleccione un cultivo" :optionsCultivo="optionsCultivo"
                         class="q-my-md q-mx-md" @filter="filterFnCultivo" hide-bottom-space />
                     <q-select outlined v-model="idempleado" label="Seleccione un empleado" :optionsEmpleado="optionsEmpleado"
@@ -24,8 +27,7 @@
                     <q-input outlined v-model="descripcion" label="Descripcion" class="q-my-md q-mx-md" type="text" />
                     <q-input outlined v-model="fechainicio" label="Fecha Inicial" type="date" class="q-my-md q-mx-md" />
                     <q-input outlined v-model="fechafinal" label="Fecha Final" type="date" class="q-my-md q-mx-md" />
-                   
-                    <q-card-actions align="right">
+                                     <q-card-actions align="right">
                         <q-btn @click="modify()" color="green" class="text-white">
                             {{ accion == 1 ? "Agregar" : "Editar" }}
                         </q-btn>
@@ -35,9 +37,11 @@
             </q-dialog>
         </div>
         <div style="display: flex; justify-content: center">
+
             <q-table title="Procesos" title-class="text-green text-weight-bolder text-h5"
                 table-header-class="text-black" :rows="rows" :filter="filter" :columns="columns" row-key="name"
                 style="width: 90%; margin-bottom: 6%;" :loading="useProceso.loading">
+
                 <template v-slot:top-right>
                     <q-input color="black" v-model="filter" placeholder="Buscar">
                         <template v-slot:append>
@@ -61,10 +65,12 @@
                     <q-td :props="props">
                         <q-btn @click="traerDatos(props.row)">
                             <q-tooltip>Editar</q-tooltip>✏️</q-btn>
+
                         <q-btn @click="desactivar(props.row)" v-if="props.row.estado == 1">
                             <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
                         <q-btn @click="activar(props.row)" v-else>
                             <q-tooltip>Activar</q-tooltip>✅</q-btn>
+
                     </q-td>
                 </template>
             </q-table>
@@ -75,6 +81,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { Notify } from "quasar"
+  
 
 import { useProcesoStore } from '../store/procesos.js';
 const useProceso = useProcesoStore();
@@ -83,6 +90,7 @@ const useCultivo = useCultivoStore();
 import { useEmpleadoStore } from '../store/empleados.js';
 const useEmpledo =useEmpleadoStore()
 import { format } from 'date-fns';
+
 
 const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 let rows = ref([]);
@@ -107,9 +115,11 @@ let fechainicio = ref('');
 let fechafinal = ref('');
 
 
+
 async function crear() {
     if (!validarCampos()) {return;}
     try {
+
         await useProceso.postProcesos({
             idcultivo: idcultivo.value.value,
             idempleado:idempleado.value.value,
@@ -122,6 +132,7 @@ async function crear() {
     } catch (error) {
         Notify.create({
             message: '¡Ocurrió un error al crear el cultivo!',
+
             position: 'center',
             color: 'red'
         });
@@ -131,6 +142,7 @@ async function crear() {
         cerrar();
     }
 }
+
 const formatDates = (dateString) => {
   if (!dateString) return "";
   const date = new Date(dateString);
@@ -153,11 +165,13 @@ function traerDatos(proceso) {
     descripcion.value = proceso.descripcion;
     fechainicio.value = formatDates(proceso.fechainicio);
     fechafinal.value = formatDates(proceso.fechafinal);
+
 }
 
 
 async function editar() {
     if (!validarCampos()) return;
+
     try {
         await useProceso.putProcesos(id.value, {
             idcultivo: idcultivo.value.value,
@@ -170,22 +184,23 @@ async function editar() {
 
         Notify.create({
             message: 'Proceso actualizado correctamente!',
+
             position: "center",
             color: "green"
         });
     } catch (error) {
         Notify.create({
             type: 'negative',
+
             message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar el proceso',
         });
         console.error('Error al modificar el proceso', error);
+
     }
     listarTodo();
     limpiarCampos();
     cerrar();
 }
-
-
 
 function modify() {
     if (accion.value === 1) {
@@ -194,6 +209,7 @@ function modify() {
         editar()
     }
 }
+
 
 
 const listar = ref('');
@@ -299,6 +315,7 @@ const columns = ref([
         label: 'Cultivo',
         align: 'center',
         field: (row) => row.idcultivo.nombre,
+
         sortable: true
     },
     {
@@ -312,11 +329,14 @@ const columns = ref([
     {
         name: 'tipo',
         required: true,
+
         label: 'Tipo',
+
         align: 'center',
         field: 'tipo',
         sortable: true
     },
+
         
     {
         name: 'descripcion',
@@ -349,6 +369,7 @@ const columns = ref([
         label: 'Estado',
         align: 'center',
         field: 'estado',
+
         sortable: true
     },
     {
@@ -373,6 +394,7 @@ function cerrar() {
 }
 
 function limpiarCampos() {
+
     idcultivo.value = '';
     idempleado.value = '';
     descripcion.value = '';
@@ -384,6 +406,7 @@ function limpiarCampos() {
 function validarCampos() {
     if (!idempleado.value || !idcultivo.value || !tipo.value || !descripcion.value || !fechafinal.value ||
         !fechafinal.value) {
+
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
             color: 'negative',
@@ -395,11 +418,13 @@ function validarCampos() {
 }
 
 
+
 onMounted(() => {
     
     listarTodo();
     listarEmpleados()
     listarCultivos()
+
 });
 // Funciones no tan importantes ======================================
 </script>
@@ -413,4 +438,7 @@ onMounted(() => {
     color: #333;
     min-width: 200px;
 }
+
+
 </style>
+
