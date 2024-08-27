@@ -20,7 +20,7 @@
                         class="q-my-md q-mx-md" @filter="filterFnCultivo" hide-bottom-space />
                     <q-select outlined v-model="idempleado" label="Seleccione un empleado" :optionsEmpleado="optionsEmpleado"
                         class="q-my-md q-mx-md" @filter="filterFnEmpleado" hide-bottom-space />
-                    <q-input outlined v-model="tipo" label="Tipo" class="q-my-md q-mx-md" type="number" />
+                    <q-input outlined v-model="tipo" label="Tipo" class="q-my-md q-mx-md" type="text" />
                     <q-input outlined v-model="descripcion" label="Descripcion" class="q-my-md q-mx-md" type="text" />
                     <q-input outlined v-model="fechainicio" label="Fecha Inicial" type="date" class="q-my-md q-mx-md" />
                     <q-input outlined v-model="fechafinal" label="Fecha Final" type="date" class="q-my-md q-mx-md" />
@@ -82,6 +82,7 @@ import { useCultivoStore } from '../store/cultivos.js';
 const useCultivo = useCultivoStore();
 import { useEmpleadoStore } from '../store/empleados.js';
 const useEmpledo =useEmpleadoStore()
+import { format } from 'date-fns';
 
 const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 let rows = ref([]);
@@ -130,7 +131,11 @@ async function crear() {
         cerrar();
     }
 }
-
+const formatDates = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toISOString().substr(0,10);
+};
 
 function traerDatos(proceso) {
     alert.value = true;
@@ -146,8 +151,8 @@ function traerDatos(proceso) {
     };
     tipo.value = proceso.tipo;
     descripcion.value = proceso.descripcion;
-    fechainicio.value = proceso.fechainicio;
-    fechafinal.value = proceso.fechafinal;
+    fechainicio.value = formatDates(proceso.fechainicio);
+    fechafinal.value = formatDates(proceso.fechafinal);
 }
 
 
@@ -220,28 +225,28 @@ async function listarInactivos() {
     console.log(r.data.procesoDesactivado);
     rows.value = r.data.procesoDesactivado;
 }
-// async function listarCultivos() {
-//     const data = await useCultivo.getCultivosActivos()
-//     data.data.cultivosActivos.forEach(item => {
-//         datosCultivo = {
-//             label: item.nombre,
-//             value: item._id
-//         }
-//         cultivos.push(datosCultivo)
-//     })
-//     console.log(cultivos);
-// }
-// +async function listarEmpleados() {
-//     const data = await useEmpledo.getEmpleadosActivos()
-//     data.data.empleadosActivos.forEach(item => {
-//         datosEmpleado = {
-//             label: item.nombre,
-//             value: item._id
-//         }
-//         empleados.push(datosEmpleado)
-//     })
-//     console.log(empleados);
-// }
+async function listarCultivos() {
+    const data = await useCultivo.getCultivosActivos()
+    data.data.cultivosActivos.forEach(item => {
+        datosCultivo = {
+            label: item.nombre,
+            value: item._id
+        }
+        cultivos.push(datosCultivo)
+    })
+    console.log(cultivos);
+}
++async function listarEmpleados() {
+    const data = await useEmpledo.getEmpleadosActivos()
+    data.data.empleadosActivos.forEach(item => {
+        datosEmpleado = {
+            label: item.nombre,
+            value: item._id
+        }
+        empleados.push(datosEmpleado)
+    })
+    console.log(empleados);
+}
 
 function filterFnEmpleado(val, update, abort) {
     update(() => {
@@ -255,7 +260,7 @@ function filterFnCultivo(val, update, abort) {
         options.value = cultivos.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
     })
 }
-// el r.data.{empleados}, empleado varia segun el rjson de la funcion get en el backend
+
 
 async function desactivar(procesos) {
     const r = await useProceso.putProcesosDesactivar(procesos._id)
@@ -326,7 +331,7 @@ const columns = ref([
         required: true,
         label: 'Fecha Inicial',
         align: 'center',
-        field: 'fechaInicio',
+        field: (row)=>format(new Date(row.fechaInicio),'dd/MM/yyyy'),
         sortable: true
     },
     {
@@ -334,10 +339,11 @@ const columns = ref([
         required: true,
         label: 'Fecha Final',
         align: 'center',
-        field: 'fechaFinal',
+        field: (row)=>format(new Date(row.fechaFinal),'dd/MM/yyyy'),
         sortable: true
     },
     {
+
         name: 'estado',
         required: true,
         label: 'Estado',
@@ -392,8 +398,8 @@ function validarCampos() {
 onMounted(() => {
     
     listarTodo();
-    // listarEmpleados()
-    // listarCultivos()
+    listarEmpleados()
+    listarCultivos()
 });
 // Funciones no tan importantes ======================================
 </script>

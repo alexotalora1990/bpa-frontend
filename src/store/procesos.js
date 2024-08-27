@@ -6,7 +6,7 @@ import { useAdministradorStore} from "./administrador"
 
 
 
-export const useProcesoStore = defineStore("store", () =>{
+export const useProcesoStore = defineStore("proceso", () =>{
     let loading = ref(false)
     let procesos= ref([]);
     
