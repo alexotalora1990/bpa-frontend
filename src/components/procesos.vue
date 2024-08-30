@@ -19,9 +19,9 @@
                         <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                     </q-card-section>
       
-                    <q-select outlined v-model="idcultivo" label="Seleccione un cultivo" :optionsCultivo="optionsCultivo"
+                    <q-select outlined v-model="idcultivo" label="Seleccione un cultivo" :options="optionsCultivo"
                         class="q-my-md q-mx-md" @filter="filterFnCultivo" hide-bottom-space />
-                    <q-select outlined v-model="idempleado" label="Seleccione un empleado" :optionsEmpleado="optionsEmpleado"
+                    <q-select outlined v-model="idempleado" label="Seleccione un empleado" :options="optionsEmpleado"
                         class="q-my-md q-mx-md" @filter="filterFnEmpleado" hide-bottom-space />
                     <q-input outlined v-model="tipo" label="Tipo" class="q-my-md q-mx-md" type="text" />
                     <q-input outlined v-model="descripcion" label="Descripcion" class="q-my-md q-mx-md" type="text" />
@@ -243,37 +243,36 @@ async function listarInactivos() {
 }
 async function listarCultivos() {
     const data = await useCultivo.getCultivosActivos()
-    data.data.cultivosActivos.forEach(item => {
-        datosCultivo = {
+    cultivos.value=data.data.cultivosActivos.map(item => ({
+       
             label: item.nombre,
             value: item._id
-        }
-        cultivos.push(datosCultivo)
-    })
-    console.log(cultivos);
+                   }));
+    optionsCultivo.value=cultivos.value
+    console.log('Cultivos', cultivos.value);
+    
 }
-+async function listarEmpleados() {
-    const data = await useEmpledo.getEmpleadosActivos()
-    data.data.empleadosActivos.forEach(item => {
-        datosEmpleado = {
-            label: item.nombre,
-            value: item._id
-        }
-        empleados.push(datosEmpleado)
-    })
-    console.log(empleados);
-}
+const listarEmpleados = async () => {
+    const data = await useEmpledo.getEmpleadosActivos();
+    empleados.value = data.data.empleados.map(item => ({
+        label: item.nombre,
+        value: item._id
+    }));
+    optionsEmpleado.value = empleados.value;
+    console.log('Empleados:', empleados.value);
+};
+
 
 function filterFnEmpleado(val, update, abort) {
     update(() => {
         const needle = val.toLowerCase();
-        options.value = empleados.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+        optionsEmpleado.value = empleados.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
     })
 }
 function filterFnCultivo(val, update, abort) {
     update(() => {
         const needle = val.toLowerCase();
-        options.value = cultivos.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+        optionsCultivo.value = cultivos.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
     })
 }
 
