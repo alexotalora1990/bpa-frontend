@@ -20,9 +20,9 @@
                     </q-card-section>
       
                     <q-select outlined v-model="idcultivo" label="Seleccione un cultivo" :options="optionsCultivo"
-                        class="q-my-md q-mx-md" @filter="filterFnCultivo" hide-bottom-space />
+                        class="q-my-md q-mx-md" @filter="filterCultivo" hide-bottom-space />
                     <q-select outlined v-model="idempleado" label="Seleccione un empleado" :options="optionsEmpleado"
-                        class="q-my-md q-mx-md" @filter="filterFnEmpleado" hide-bottom-space />
+                        class="q-my-md q-mx-md" @filter="filterEmpleado" hide-bottom-space />
                     <q-input outlined v-model="tipo" label="Tipo" class="q-my-md q-mx-md" type="text" />
                     <q-input outlined v-model="descripcion" label="Descripcion" class="q-my-md q-mx-md" type="text" />
                     <q-input outlined v-model="fechainicio" label="Fecha Inicial" type="date" class="q-my-md q-mx-md" />
@@ -163,7 +163,7 @@ function traerDatos(proceso) {
     };
     tipo.value = proceso.tipo;
     descripcion.value = proceso.descripcion;
-    fechainicio.value = formatDates(proceso.fechainicio);
+    fechainicio.value = proceso.fechainicio.split('T')[0];
     fechafinal.value = formatDates(proceso.fechafinal);
 
 }
@@ -263,16 +263,16 @@ const listarEmpleados = async () => {
 };
 
 
-function filterFnEmpleado(val, update, abort) {
+function filterEmpleado(val, update, abort) {
     update(() => {
         const needle = val.toLowerCase();
-        optionsEmpleado.value = empleados.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+        optionsEmpleado.value = empleados.value.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
     })
 }
-function filterFnCultivo(val, update, abort) {
+function filterCultivo(val, update, abort) {
     update(() => {
         const needle = val.toLowerCase();
-        optionsCultivo.value = cultivos.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+        optionsCultivo.value = cultivos.value.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
     })
 }
 
