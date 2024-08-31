@@ -12,9 +12,10 @@ import Insumos from '../components/insumos.vue'
 import Maquinaria from "../components/maquinaria.vue"
 import Semillas from "../components/semillas.vue"
 import Proceso from "../components/procesos.vue"
+import Produccion from "../components/produccion.vue"
 import Nomina from "../components/nomina.vue"
 import Riego from "../components/riego.vue"
-
+import Comprador from "../components/comprador.vue"
 
 
 const routes = [
@@ -36,7 +37,9 @@ const routes = [
             {path:"/maquinaria",component:Maquinaria},
             {path:"/semilla",component:Semillas},             
             {path:"/procesos",component:Proceso},
-            {path:"/riegos",component:Riego}
+            {path:"/produccion",component:Produccion},
+            {path:"/riegos",component:Riego},
+            {path:"/comprador",component:Comprador},
 
 
         ]

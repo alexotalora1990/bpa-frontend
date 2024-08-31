@@ -257,7 +257,9 @@ const columns = ref([
         required: true,
         label: 'Empleado',
         align: 'center',
-        field: (row) => row.idempleado.nombre,
+
+        field: (row) => row?.idempleado?.nombre || "-----", //colocar esto para los datos que traigo externos,
+
         sortable: true
     },
     {
