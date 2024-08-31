@@ -293,7 +293,10 @@ const columns = ref([
         label: 'Fecha del Clima',
         align: 'center',
         field: 'createAt',
-        sortable: true
+        sortable: true,
+        format: (val) => {
+        return val.split('T')[0].split('-').reverse().join('/');
+        }
     },
     {
         name: 'opciones',
