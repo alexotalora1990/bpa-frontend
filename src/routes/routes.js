@@ -38,9 +38,6 @@ const routes = [
             {path:"/procesos",component:Proceso},
             {path:"/riegos",component:Riego}
 
-  
-
-
 
         ]
     }
