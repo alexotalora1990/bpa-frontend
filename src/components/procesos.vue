@@ -14,15 +14,17 @@
                         <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                     </q-card-section>
 
-                    <q-select outlined v-model="idfincas" label="Seleccione una Finca" :options="options"  @filter="filter1" class="q-my-md q-mx-md" />
-                    <q-select outlined v-model="idempleado" label="Seleccione un Empleado" :options="opciones" @filter="filter2" class="q-my-md q-mx-md" />
-                    <q-input outlined v-model="tipo" label="Tipo de Clima" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="horaInicio" label="Hora de Inicio" class="q-my-md q-mx-md" type="time" />
-                    <q-input outlined v-model="horaFinal" label="Hora Final" class="q-my-md q-mx-md" type="time" />
-                    <q-input outlined v-model="tempMin" label="Temperatura Mínima" class="q-my-md q-mx-md" type="number" />
-                    <q-input outlined v-model="tempMax" label="Temperatura Máxima" class="q-my-md q-mx-md" type="number" />
+      
+                    <q-select outlined v-model="idcultivo" label="Seleccione un cultivo" :options="optionsCultivo"
+                        class="q-my-md q-mx-md" @filter="filterCultivo" hide-bottom-space />
+                    <q-select outlined v-model="idempleado" label="Seleccione un empleado" :options="optionsEmpleado"
+                        class="q-my-md q-mx-md" @filter="filterEmpleado" hide-bottom-space />
+                    <q-input outlined v-model="tipo" label="Tipo" class="q-my-md q-mx-md" type="text" />
+                    <q-input outlined v-model="descripcion" label="Descripcion" class="q-my-md q-mx-md" type="text" />
+                    <q-input outlined v-model="fechainicio" label="Fecha Inicial" type="date" class="q-my-md q-mx-md" />
+                    <q-input outlined v-model="fechafinal" label="Fecha Final" type="date" class="q-my-md q-mx-md" />
+                                     <q-card-actions align="right">
 
-                    <q-card-actions align="right">
                         <q-btn @click="modify()" color="green" class="text-white">
                             {{ accion == 1 ? "Agregar" : "Editar" }}
                         </q-btn>
@@ -129,14 +131,16 @@ function traerDatos(clima) {
     value: clima.idfincas._id
     }
     idempleado.value = {
-    label: clima.idempleado.nombre,
-    value: clima.idempleado._id
-    }
-    tipo.value = clima.tipo;
-    horaInicio.value = clima.horaInicio;
-    horaFinal.value = clima.horaFinal;
-    tempMin.value = clima.tempMin;
-    tempMax.value = clima.tempMax;
+
+    label: proceso.idempleado.nombre,
+    value: proceso.idempleado._id
+    };
+    tipo.value = proceso.tipo;
+    descripcion.value = proceso.descripcion;
+    fechainicio.value = proceso.fechainicio.split('T')[0];
+    fechafinal.value = formatDates(proceso.fechafinal);
+
+
 }
 
 
@@ -224,9 +228,20 @@ const listarEmpleados = async () => {
 };
 
 
-// el r.data.{empleados}, empleado varia segun el rjson de la funcion get en el backend
 
-//APARTADO DE TRAER LOS DATOS =============================
+function filterEmpleado(val, update, abort) {
+    update(() => {
+        const needle = val.toLowerCase();
+        optionsEmpleado.value = empleados.value.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+    })
+}
+function filterCultivo(val, update, abort) {
+    update(() => {
+        const needle = val.toLowerCase();
+        optionsCultivo.value = cultivos.value.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+    })
+}
+
 
 
 
