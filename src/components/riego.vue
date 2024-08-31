@@ -18,7 +18,7 @@
                     <q-select outlined v-model="idempleado" label="Seleccione un Empleado" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md" />
                     <q-input outlined v-model="fechaRiego" label="Fecha de Riego" class="q-my-md q-mx-md" type="date" />
                     <q-input outlined v-model="diasTransplante" label="Dias Transplante" class="q-my-md q-mx-md" type="number" />
-                    <q-input outlined v-model="estadoFenologico" label="Estado Fenologico" class="q-my-md q-mx-md" type="string" />
+                    <q-input outlined v-model="fenologico" label="Estado Fenologico" class="q-my-md q-mx-md" type="string" />
                     <q-input outlined v-model="horaInicio" label="Hora Inicio" class="q-my-md q-mx-md" type="time" />
                     <q-input outlined v-model="horaFin" label="Hora Final" class="q-my-md q-mx-md" type="time" />
                     <q-input outlined v-model="dosis" label="Dosis" class="q-my-md q-mx-md" type="string" />
@@ -98,7 +98,7 @@ let horaFin = ref("");
 let diasTransplante = ref("");
 let dosis= ref("");
 let cantidadAgua= ref("");
-let estadoFenologico=ref("")
+let fenologico=ref("")
 
 
 async function crear() {
@@ -113,7 +113,7 @@ async function crear() {
             diasTransplante: diasTransplante.value,
             dosis: dosis.value,
             cantidadAgua:cantidadAgua.value,
-            estadoFenologico:estadoFenologico.value
+            fenologico:fenologico.value
         });
     } catch (error) {
         Notify.create({
@@ -145,7 +145,7 @@ function traerDatos(riego) {
     diasTransplante.value = riego.diasTransplante;
     dosis.value = riego.dosis;
     cantidadAgua.value=riego.cantidadAgua;
-    estadoFenologico.value=riego.estadoFenologico
+    fenologico.value=riego.fenologico
 }
 
 
@@ -163,7 +163,7 @@ async function editar() {
             diasTransplante: diasTransplante.value,
             dosis: dosis.value,
             cantidadAgua: cantidadAgua.value,
-            estadoFenologico:estadoFenologico.value
+            fenologico:fenologico.value
         });
 
         Notify.create({
@@ -213,7 +213,9 @@ function filterEmpleado(val, update, abort) {
 
 async function listarTodo() {
     const r = await useRiego.listarRiegos();
-    rows.value = r.data.riego;
+    rows.value = r.data.riegos;
+    console.log(r.data.riegos);
+    
 }
 const listarCultivos = async () => {
     const data = await useCultivo.getCultivosActivos();
@@ -255,7 +257,7 @@ const columns = ref([
         required: true,
         label: 'Empleado',
         align: 'center',
-        field: (row) => row.idempleado.nombre,
+        field: '(row) => row.idempleado.nombre',
         sortable: true
     },
     {
@@ -307,11 +309,19 @@ const columns = ref([
         sortable: true
     },
     {
-        name: 'estadoFenologico',
+        name: 'fenologico',
         required: true,
         label: 'Fenologico',
         align: 'center',
-        field: 'estadoFenologico',
+        field: 'fenologico',
+        sortable: true
+    },
+    {
+        name: 'opciones',
+        required: true,
+        label: 'Opciones',
+        align: 'center',
+        field: 'opciones',
         sortable: true
     }
 ]);
@@ -333,7 +343,7 @@ function limpiarCampos() {
     fechaRiego.value = '';
     horaInicio.value = '';
     horaFin.value = '';
-    estadoFenologico.value = '';
+    fenologico.value = '';
     diasTransplante.value = '';
     cantidadAgua.value='';
     dosis.value='';
@@ -341,7 +351,7 @@ function limpiarCampos() {
 
 function validarCampos() {
     if (!idcultivo.value || !idempleado.value || !dosis.value || !horaInicio.value || 
-        !horaFin.value || !estadoFenologico.value || !cantidadAgua.value ||  fechaRiego.value || diasTransplante.value) {
+        !horaFin.value || !fenologico.value || !cantidadAgua.value ||  fechaRiego.value || diasTransplante.value) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
             color: 'negative',

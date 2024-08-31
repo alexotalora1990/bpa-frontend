@@ -13,7 +13,7 @@ export const useRiegoStore = defineStore("riego", () =>{
     const listarRiegos = async () => {
         try {
             loading.value = true;
-            const response = await axios.get("riego/buscar",{
+            const response = await axios.get("riego",{
             // headers:{
             //     token:useAdministrador.token
             // }

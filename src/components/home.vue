@@ -180,7 +180,7 @@ const agroItems = [
   { label: 'Preparacion Suelo', to: '/preparacionsuelo', icon: 'eco' },
   { label: 'Procesos', to: '/procesos', icon: 'eco' },
   { label: 'Produccion', to: '/produccion', icon: 'eco' },
-  { label: 'Riego', to: '/riego', icon: 'eco' },
+  { label: 'Riego', to: '/riegos', icon: 'eco' },
   { label: 'Siembra', to: '/Siembra', icon: 'eco' }
 ]
 
