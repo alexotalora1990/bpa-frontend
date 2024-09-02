@@ -62,6 +62,8 @@ export const useProcesoStore = defineStore("proceso", () =>{
         }
     }
     const postProcesos = async(data)=>{
+        console.log(data);
+        
         try {
             loading.value=true
             const r = await axios.post("procesos/agregar", data, {

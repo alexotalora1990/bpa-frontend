@@ -15,14 +15,14 @@
                         <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                     </q-card-section>
 
-                    <q-select outlined v-model="idproceso" label="Seleccione un Proceso" :options="optionsProceso"  @filter="filterProceso" class="q-my-md q-mx-md" />
-                    <q-select outlined v-model="idempleado" label="Seleccione Responsable" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md" />
-                    <q-select outlined v-model="idempleado" label="Seleccione operario" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md" />
+                    <q-select outlined v-model="idcultivo" label="Seleccione un Cultivo" :options="optionsCultivo"  @filter="filterCultivo" class="q-my-md q-mx-md" />
+                    <q-select outlined v-model="idempleadooperario" label="Seleccione Responsable" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md" />
+                    <q-select outlined v-model="idempleadoresponsable" label="Seleccione operario" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md" />
                     <q-input outlined v-model="fecha" label="Fecha de Elaboración" class="q-my-md q-mx-md" type="date" />
                     <q-input outlined v-model="productocomercial" label="Producto Comercial" class="q-my-md q-mx-md" type="string" />
                     <q-input outlined v-model="ingredienteActivo" label="Ingrediente Activo" class="q-my-md q-mx-md" type="string" />
                     <q-input outlined v-model="dosisUtilizada" label="Dosis Utilizada" class="q-my-md q-mx-md" type="string" />
-                    <q-input outlined v-model="metodoAplicaion" label="Metodo de Aplicación" class="q-my-md q-mx-md" type="string" />
+                    <q-input outlined v-model="metodoAplicacion" label="Metodo de Aplicación" class="q-my-md q-mx-md" type="string" />
                    
 
                     <q-card-actions align="right">
@@ -37,7 +37,7 @@
         <div style="display: flex; justify-content: center">
             <q-table title="Elaboración de Sustrato" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
                 :rows="rows" :filter="filter" :columns="columns" row-key="name" style="width: 90%; margin-bottom: 6%;"
-                :loading="useRiego.loading">
+                :loading="useElaboracion.loading">
                 <template v-slot:top-right>
                     <q-input color="black" v-model="filter" placeholder="Buscar">
                         <template v-slot:append>
@@ -77,8 +77,7 @@ const useElaboracion =useElaboracionStore()
 import { useEmpleadoStore } from "../store/empleados.js";
 const useEmpleado = useEmpleadoStore();
 import {useCultivoStore} from "../store/cultivos.js"
-const useCultivo=useCultivoStore();
-
+const useCultivo =useCultivoStore()
 
 const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 let rows = ref([]);
@@ -92,34 +91,32 @@ let optionsEmpleado = ref(empleados)
 
 
 let id = ref("")
-let idcultivo = ref('');
-let idempleado = ref("");
-let fechaRiego = ref("");
-let horaInicio = ref("");
-let horaFin = ref("");
-let diasTransplante = ref("");
-let dosis= ref("");
-let cantidadAgua= ref("");
-let fenologico=ref("")
+let idcultivo= ref('');
+let fecha = ref("");
+let productocomercial = ref("");
+let ingredienteActivo = ref("");
+let dosisUtilizada = ref("");
+let metodoAplicacion= ref("");
+let idempleadooperario= ref("");
+let idempleadoresponsable=ref("")
 
 
 async function crear() {
     if (!validarCampos()) {return;}
     try {
-        await useRiego.postRiegos({
+        await useElaboracion.postElaboracion({
             idcultivo: idcultivo.value.value,
-            idempleado: idempleado.value.value,
-            fechaRiego: fechaRiego.value,
-            horaInicio: horaInicio.value,
-            horaFin: horaFin.value,
-            diasTransplante: diasTransplante.value,
-            dosis: dosis.value,
-            cantidadAgua:cantidadAgua.value,
-            fenologico:fenologico.value
+            idempleadooperario: idempleadooperario.value.value,
+            idempleadoresponsable:idempleadoresponsable.value.value,
+            fecha: fecha.value,
+            productocomercial: productocomercial.value,
+            ingredienteActivo: ingredienteActivo.value,
+            dosisUtilizada: dosisUtilizada.value,
+            metodoAplicacion: metodoAplicacion.value
         });
     } catch (error) {
         Notify.create({
-            message: '¡Ocurrió un error al crear el riego!',
+            message: '¡Ocurrió un error al crear elaboración de Sustrato!',
             position: 'center',
             color: 'red'
         });
@@ -129,25 +126,28 @@ async function crear() {
         cerrar();
     }
 }
-function traerDatos(riego) {
+function traerDatos(elaboracion) {
     alert.value = true;
     accion.value = 2;
-    id.value = riego._id;
+    id.value = elaboracion._id;
     idcultivo.value = {
-    label: riego.idcultivo.nombre,
-    value: riego.idcultivo._id
+    label: elaboracion.idcultivo.nombre,
+    value: elaboracion.idcultivo._id
     }
-    idempleado.value = {
-    label: clima.idempleado.nombre,
-    value: clima.idempleado._id
+    idempleadooperario.value = {
+    label: elaboracion.idempleadooperario.nombre,
+    value: elaboracion.idempleadooperario._id
     }
-    fechaRiego.value = riego.fechaRiego;
-    horaInicio.value = clima.horaInicio;
-    horaFin.value = riego.horaFin;
-    diasTransplante.value = riego.diasTransplante;
-    dosis.value = riego.dosis;
-    cantidadAgua.value=riego.cantidadAgua;
-    fenologico.value=riego.fenologico
+    idempleadoresponsable.value = {
+    label: elaboracion.idempleadoresponsable.nombre,
+    value: elaboracion.idempleadoresponsable._id
+    }
+    fecha.value = elaboracion.fecha.split('T')[0];    
+    productocomercial.value = elaboracion.productocomercial;
+    ingredienteActivo.value = elaboracion.ingredienteActivo;
+    dosisUtilizada.value = elaboracion.dosisUtilizada;
+    metodoAplicacion.value=elaboracion.metodoAplicacion
+    
 }
 
 
@@ -156,29 +156,28 @@ async function editar() {
 
     try {
 
-        await useRiego.putRiegos(id.value, {
+        await useElaboracion.putElaboracion(id.value, {
             idcultivo: idcultivo.value.value,
-            idempleado: idempleado.value.value,
-            fechaRiego: fechaRiego.value,
-            horaInicio: horaInicio.value,
-            horaFin: horaFin.value,
-            diasTransplante: diasTransplante.value,
-            dosis: dosis.value,
-            cantidadAgua: cantidadAgua.value,
-            fenologico:fenologico.value
+            idempleadooperario: idempleadooperario.value.value,
+            idempleadoresponsable:idempleadoresponsable.value.value,
+            fecha: fecha.value,
+            productocomercial: productocomercial.value,
+            ingredienteActivo: ingredienteActivo.value,
+            dosisUtilizada: dosisUtilizada.value,
+            metodoAplicacion: metodoAplicacion.value
         });
 
         Notify.create({
-            message: 'Riego actualizado correctamente!',
+            message: 'Elaboración de Sustrato actualizado correctamente!',
             position: "center",
             color: "green"
         });
     } catch (error) {
         Notify.create({
             type: 'negative',
-            message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar el Riego',
+            message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar la Elaboración',
         });
-        console.error('Error al modificar el riego', error);
+        console.error('Error al modificar la elaboración de Sustrato', error);
     }
     listarTodo();
     limpiarCampos();
@@ -214,9 +213,9 @@ function filterEmpleado(val, update, abort) {
 
 
 async function listarTodo() {
-    const r = await useRiego.listarRiegos();
-    rows.value = r.data.riegos;
-    console.log(r.data.riegos);
+    const r = await useElaboracion.listarElaboracion();
+    rows.value = r.data.elaboraciones;
+    console.log('Elaboracion:',r.data);
     
 }
 const listarCultivos = async () => {
@@ -239,7 +238,7 @@ const listarEmpleados = async () => {
 };
 
 
-// el r.data.{empleados}, empleado varia segun el rjson de la funcion get en el backend
+
 
 //APARTADO DE TRAER LOS DATOS =============================
 
@@ -255,69 +254,65 @@ const columns = ref([
         sortable: true
     },
     {
-        name: 'idempleado',
+        name: 'idempleadooperario',
         required: true,
-        label: 'Empleado',
+        label: 'Operario',
         align: 'center',
-        field: (row) => row.idempleado.nombre,
+        field: (row) => row.idempleadooperario.nombre,
         sortable: true
     },
     {
-        name: 'fechaRiego',
+        name: 'idempleadoresponsable',
         required: true,
-        label: 'Fecha Riego',
+        label: 'Responsable',
         align: 'center',
-        field: 'fechaRiego',
+        field: (row) => row.idempleadoresponsable.nombre,
         sortable: true
     },
     {
-        name: 'horaInicio',
+        name: 'fecha',
         required: true,
-        label: 'Inicio',
+        label: 'Fecha',
         align: 'center',
-        field: 'horaInicio',
+        field: 'fecha',
+        sortable: true,
+        format: (val) => {
+        return val.split('T')[0].split('-').reverse().join('/');
+        }
+    },
+    {
+        name: 'productocomercial',
+        required: true,
+        label: 'Producto Comercial',
+        align: 'center',
+        field: 'productocomercial',
         sortable: true
     },
     {
-        name: 'horaFin',
+        name: 'ingredienteActivo',
         required: true,
-        label: 'Termino',
+        label: 'Ingrediente Activo',
         align: 'center',
-        field: 'horaFin',
+        field: 'ingredienteActivo',
         sortable: true
     },
     {
-        name: 'dosis',
+        name: 'dosisUtilizada',
         required: true,
         label: 'Dosis',
         align: 'center',
-        field: 'dosis',
+        field: 'dosisUtilizada',
         sortable: true
     },
     {
-        name: 'cantidadAgua',
+        name: 'metodoAplicacion',
         required: true,
-        label: 'Cantidad Agua',
+        label: 'Aplicación',
         align: 'center',
-        field: 'cantidadAgua',
+        field: 'metodoAplicacion',
         sortable: true
     },
-    {
-        name: 'diasTranplante',
-        required: true,
-        label: 'Dias Transplante',
-        align: 'center',
-        field: 'diasTransplante',
-        sortable: true
-    },
-    {
-        name: 'fenologico',
-        required: true,
-        label: 'Fenologico',
-        align: 'center',
-        field: 'fenologico',
-        sortable: true
-    },
+   
     {
         name: 'opciones',
         required: true,
@@ -341,24 +336,24 @@ function cerrar() {
 
 function limpiarCampos() {
     idcultivo.value = '';
-    idempleado.value = '';
-    fechaRiego.value = '';
-    horaInicio.value = '';
-    horaFin.value = '';
-    fenologico.value = '';
-    diasTransplante.value = '';
-    cantidadAgua.value='';
-    dosis.value='';
+    idempleadooperario.value = '';
+    idempleadoresponsable.value='';
+    fecha.value = '';
+    productocomercial.value = '';
+    ingredienteActivo.value = '';
+    dosisUtilizada.value = '';
+    metodoAplicacion.value = '';
 }
 
 function validarCampos() {
-    if (!idcultivo.value || !idempleado.value || !dosis.value || !horaInicio.value || 
-        !horaFin.value || !fenologico.value || !cantidadAgua.value ||  fechaRiego.value || diasTransplante.value) {
+    if (!idcultivo.value || !idempleadooperario.value || !idempleadoresponsable.value || !productocomercial.value || 
+        !ingredienteActivo.value || !dosisUtilizada.value || !metodoAplicacion.value ||  fecha.value ) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
             color: 'negative',
             position: 'top',
         });
+
         return false;
     }
     return true;
