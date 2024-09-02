@@ -13,7 +13,7 @@ export const useElaboracionStore = defineStore("elaboracionSustrato", () =>{
     const listarElaboracion = async () => {
         try {
             loading.value = true;
-            const response = await axios.get("elaboracionSustrato/buscar",{
+            const response = await axios.get("elaboracionSustrato",{
             // headers:{
             //     token:useAdministrador.token
             // }
