@@ -30,8 +30,8 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const useAdmin = useAdministradorStore();
-let correo = ref("");
-let contrasena = ref("");
+let correo = ref("chechoc749@gmail.com");
+let contrasena = ref("12345");
 
 async function login() {
   try {
