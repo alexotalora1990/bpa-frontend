@@ -28,9 +28,12 @@ export const useElaboracionStore = defineStore("elaboracionSustrato", () =>{
         }
     };
     const postElaboracion = async(data)=>{
+        console.log(data);
         try {
             loading.value=true
             const r = await axios.post("elaboracionSustrato/agregar", data, {
+            
+            
                 // headers:{
                 //     token:useAdministrador.token
                 // }
