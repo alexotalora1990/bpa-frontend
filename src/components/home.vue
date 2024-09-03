@@ -171,16 +171,14 @@ const agroItems = [
   { label: 'Clima', to: '/clima', icon: 'eco' },
   { label: 'Control Plagas', to: '/controlplaga', icon: 'eco' },
   { label: 'Cultivos', to: '/cultivo', icon: 'eco' },
-  { label: 'Elaboracion Sustrato', to: '/elaboracionsustrato', icon: 'eco' },
+  { label: 'Elaboracion Sustrato', to: '/elaboracionSustrato', icon: 'eco' },
   { label: 'Fertilizacion', to: '/fertilizacion', icon: 'eco' },
-
   { label: 'Fincas', to: '/Finca', icon: 'eco' },
-
   { label: 'Parcelas', to: '/parcela', icon: 'eco' },
   { label: 'Preparacion Suelo', to: '/preparacionsuelo', icon: 'eco' },
   { label: 'Procesos', to: '/procesos', icon: 'eco' },
   { label: 'Produccion', to: '/produccion', icon: 'eco' },
-  { label: 'Riego', to: '/riego', icon: 'eco' },
+  { label: 'Riego', to: '/riegos', icon: 'eco' },
   { label: 'Siembra', to: '/Siembra', icon: 'eco' }
 ]
 

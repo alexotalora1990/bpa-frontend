@@ -4,7 +4,7 @@
   <div style="height: 100vh; overflow-y: auto;">
 
     <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
-      <q-btn color="red" class="q-my-md q-ml-md" @click="abrir()">Crear Admin</q-btn>
+      <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Admin</q-btn>
       <q-select outlined v-model="listar" label="Seleccione" :options="listados"
         class="q-my-md q-mx-md custom-select" />
       <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
