@@ -8,7 +8,7 @@
         align-items: center;
       "
     >
-      <q-btn color="red" class="q-my-md q-ml-md" @click="abrir()"
+      <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()"
         >Crear Maquinaria</q-btn
       >
       <q-select
@@ -26,11 +26,12 @@
       <q-dialog v-model="alert" persistent>
         <q-card class="" style="width: 700px">
           <q-card-section
-            style="background-color: #a1312d; margin-bottom: 20px"
+            style="background-color: #008000; margin-bottom: 20px" class="row items-center"
           >
             <div class="text-h6 text-white">
               {{ accion == 1 ? "Crear Maquinaria" : "Editar Maquinaria" }}
             </div>
+            <q-space/>
             <q-btn
               flat
               dense
@@ -54,8 +55,8 @@
             label="Nombre de la Maquinaria"
             class="q-my-md q-mx-md"
             type="text"
-            :rules="nombreRules"
-            hide-bottom-space
+            :rules="[(val) => !!val.trim() || 'Nombre no puede estar vacio']"
+            hide-bottom-space @input="removeSpaces('nombre')"
           />
           <q-input
             outlined
@@ -63,8 +64,9 @@
             label="Tipo de Maquinaria"
             class="q-my-md q-mx-md"
             type="text"
-            :rules="tipoRules"
+            :rules="[(val) => !!val.trim() || 'Tipo de maquinaria no puede estar vacio']"
             hide-bottom-space
+            @input="removeSpaces('tipo')"
           />
           <q-input
             outlined
@@ -72,7 +74,7 @@
             label="Observaciones"
             class="q-my-md q-mx-md"
             type="text"
-            hide-bottom-space
+            hide-bottom-space 
           />
           <q-input
             outlined
@@ -80,8 +82,9 @@
             label="Cantidad"
             class="q-my-md q-mx-md"
             type="number"
-            :rules="cantidadRules"
+            :rules="[(val) => !!val.trim() || 'Cantidad no puede estar vacio']"
             hide-bottom-space
+            @input="removeSpaces('cantidad')"
           />
           <q-input
             outlined
@@ -89,8 +92,9 @@
             label="Total"
             class="q-my-md q-mx-md"
             type="number"
-            :rules="totalRules"
+            :rules="[(val) => !!val.trim() || 'Total no puede estar vacio']"
             hide-bottom-space
+            @input="removeSpaces('total')"
           />
           <q-input
             outlined
@@ -98,15 +102,15 @@
             label="Fecha de Compra"
             class="q-my-md q-mx-md"
             type="date"
-            :rules="fechaCompraRules"
+            :rules="[(val) => !!val.trim() || 'Fecha no puede estar vacio']"
             hide-bottom-space
           />
 
           <q-card-actions align="right">
-            <q-btn @click="modify()" color="red" class="text-white">
-              {{ accion == 1 ? "Agregar" : "Editar" }}
-            </q-btn>
             <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+            <q-btn :loading="isLoading" @click="modify()" color="green" class="text-white">
+      {{ accion == 1 ? "Agregar" : "Editar" }}
+    </q-btn>
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -172,41 +176,41 @@ const useMaquinaria = useMaquinariaStore();
 
 const filter = ref(""); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 
-
+const isLoading = ref(false); // Estado de carga
 
 let rows = ref([]);
-let idproveedores = ref("");
-let nombre = ref("");
-let tipo = ref("");
-let observaciones = ref("");
-let cantidad = ref("");
-let Total = ref(0);
-let fechaCompra = ref("");
+const idproveedores = ref("");
+const nombre = ref("");
+const tipo = ref("");
+const observaciones = ref("");
+const cantidad = ref("");
+const Total = ref(0);
+const fechaCompra = ref("");
 let id = ref("");
 
 let alert = ref(false);
 let accion = ref(1);
 
 // REGLAS PARA LOS INPUTS =========================================================================================================
-const isRequired = (msg) => (val) => !!val.trim().length || msg;
-const minLength = (min, msg) => (val) => val.trim().length >= min || msg;
-const nombreRules = [
-  isRequired("El nombre es requerido"),
-  minLength(3, "El nombre debe tener al menos 3 caracteres"),
-];
-const tipoRules = [
-  isRequired("El tipo es requerido"),
-  minLength(3, "El tipo debe tener al menos 3 caracteres"),
-];
-const cantidadRules = [
-  isRequired("La cantidad es requerida"),
-  (val) => val > 0 || "La cantidad debe ser mayor a 0",
-];
-const totalRules = [
-  isRequired("El total es requerido"),
-  (val) => val > 0 || "El total debe ser mayor a 0",
-];
-const fechaCompraRules = [isRequired("La fecha de compra es requerida")];
+// const isRequired = (msg) => (val) => !!val.trim().length || msg;
+// const minLength = (min, msg) => (val) => val.trim().length >= min || msg;
+// const nombreRules = [
+//   isRequired("El nombre es requerido"),
+//   minLength(3, "El nombre debe tener al menos 3 caracteres"),
+// ];
+// const tipoRules = [
+//   isRequired("El tipo es requerido"),
+//   minLength(3, "El tipo debe tener al menos 3 caracteres"),
+// ];
+// const cantidadRules = [
+//   isRequired("La cantidad es requerida"),
+//   (val) => val > 0 || "La cantidad debe ser mayor a 0",
+// ];
+// const totalRules = [
+//   isRequired("El total es requerido"),
+//   (val) => val > 0 || "El total debe ser mayor a 0",
+// ];
+// const fechaCompraRules = [isRequired("La fecha de compra es requerida")];
 
 // REGLAS PARA LOS INPUTS =========================================================================================================
 
@@ -220,6 +224,7 @@ async function crear() {
     return;
   }
   try {
+    isLoading.value = true;
     const r = await useMaquinaria.postMaquinarias({
       idproveedores: idproveedores.value.value,
       nombre: nombre.value,
@@ -240,10 +245,13 @@ async function crear() {
       position: "center",
       color: "red",
     });
-  }
-  listarMaquinaria();
+  }finally{
+    isLoading.value = false;
+    listarMaquinaria();
   limpiarCampos();
   cerrar();
+  }
+
 }
 
 function traerDatos(maquinaria) {
@@ -259,11 +267,12 @@ function traerDatos(maquinaria) {
   observaciones.value = maquinaria.observaciones;
   cantidad.value = maquinaria.cantidad;
   Total.value = maquinaria.Total;
-  fechaCompra.value = maquinaria.fechaCompra;
+  fechaCompra.value = maquinaria.fechaCompra.split('T')[0];
 }
 
 async function editar() {
   try {
+    isLoading.value = true;
     await useMaquinaria.putMaquinarias(id.value, {
       idproveedores: idproveedores.value.value,
       nombre: nombre.value,
@@ -286,11 +295,12 @@ async function editar() {
         "Error al modificar la maquinaria",
     });
     console.log("Error al modificar la maquinaria", error);
-  }
-
-  listarMaquinaria();
+  }finally{
+    isLoading.value = false;
+    listarMaquinaria();
   limpiarCampos();
   cerrar();
+  }
 }
 
 function modify() {
@@ -434,6 +444,9 @@ const columns = ref([
     align: "center",
     field: "fechaCompra",
     sortable: true,
+    format: (val) => {
+        return val.split('T')[0].split('-').reverse().join('/');
+        }
   },
   {
     name: "estado",
@@ -475,14 +488,27 @@ function limpiarCampos() {
   fechaCompra.value = "";
 }
 
+const removeSpaces = (campo) => {
+    if (campo === 'nombre') {
+        nombre.value = nombre.value.replace(/\s/g, '');
+    } else if (campo === 'correo') {
+        correo.value = correo.value.replace(/\s/g, '');
+    } else if (campo === 'direccion') {
+        direccion.value = direccion.value.replace(/\s/g, '');
+    } else if (campo === 'telefono') {
+        telefono.value = telefono.value.replace(/\s/g, '');
+    }
+};
+
+
 function validarCampos() {
   if (
-    !idproveedores.value ||
-    !nombre.value ||
-    !tipo.value ||
-    !cantidad.value ||
-    !Total.value ||
-    !fechaCompra.value
+    !idproveedores.value.trim() ||
+    !nombre.value.trim() ||
+    !tipo.value.trim() ||
+    !cantidad.value.trim() ||
+    !Total.value.trim() ||
+    !fechaCompra.value.trim()
   ) {
     Notify.create({
       message: "Por favor, completa todos los campos requeridos.",

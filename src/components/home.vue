@@ -190,14 +190,14 @@ const gestionItems = [
   { label: 'Gastos', to: '/gastos', icon: 'business' },
   { label: 'Mantenimientos', to: '/mantenimiento', icon: 'business' },
   { label: 'Nomina', to: '/nomina', icon: 'business' },
-  { label: 'Proveedores', to: '/proveedor', icon: 'business' }
+  { label: 'Proveedores', to: '/proveedores', icon: 'business' }
 ]
 
 const inventarioItems = [
   { label: 'Principal', to: '/inventario1', icon: 'inventory' },
   { label: 'Semillas', to: '/semilla', icon: 'inventory' },
   { label: 'Insumos', to: '/insumo', icon: 'inventory' },
-  { label: 'Maquinaria & Herramientas', to: '/maquinariaherramientas', icon: 'inventory' },
+  { label: 'Maquinaria & Herramientas', to: '/maquinaria', icon: 'inventory' },
 ]
 
 </script>

@@ -17,15 +17,15 @@
                         <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                     </q-card-section>
                     <q-input outlined v-model="nombre" label="Nombre del Proveedor" class="q-my-md q-mx-md"
-                        type="text" />
-                    <q-input outlined v-model="correo" label="Correo" class="q-my-md q-mx-md" type="email" />
-                    <q-input outlined v-model="direccion" label="Dirección" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="telefono" label="Teléfono" class="q-my-md q-mx-md" type="text" />
+                        type="text" :rules="nombreRules" hide-bottom-space @input="removeSpaces('nombre')"/>
+                    <q-input outlined v-model="correo" label="Correo" class="q-my-md q-mx-md" type="email" :rules="correoRules" hide-bottom-space @input="removeSpaces('correo')"/>
+                    <q-input outlined v-model="direccion" label="Dirección" class="q-my-md q-mx-md" type="text" :rules="direccionRules" hide-bottom-space @input="removeSpaces('direccion')"/>
+                    <q-input outlined v-model="telefono" label="Teléfono" class="q-my-md q-mx-md" type="text" :rules="telefonoRules" hide-bottom-space @input="removeSpaces('telefono')"/>
                     <q-card-actions align="right">
-                        <q-btn @click="modify()" color="green" class="text-white">
-                            {{ accion == 1 ? "Agregar" : "Editar" }}
-                        </q-btn>
                         <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+                        <q-btn :loading="isLoading" @click="modify()" color="green" class="text-white">
+      {{ accion == 1 ? "Agregar" : "Editar" }}
+    </q-btn>
                     </q-card-actions>
                 </q-card>
             </q-dialog>
@@ -78,17 +78,39 @@ const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 let rows = ref([]);
 let alert = ref(false);
 let accion = ref(1);
-
+const isLoading = ref(false); // Estado de carga
 let id = ref("")
 const nombre = ref("");
 const correo = ref("");
 const direccion = ref("");
 const telefono = ref("");
 
+const removeSpaces = (campo) => {
+    if (campo === 'nombre') {
+        nombre.value = nombre.value.replace(/\s/g, '');
+    } else if (campo === 'correo') {
+        correo.value = correo.value.replace(/\s/g, '');
+    } else if (campo === 'direccion') {
+        direccion.value = direccion.value.replace(/\s/g, '');
+    } else if (campo === 'telefono') {
+        telefono.value = telefono.value.replace(/\s/g, '');
+    }
+};
+
+
+const isRequired = msg => val => !!val.trim().length || msg;
+const minLength = (min, msg) => val => val.trim().length >= min || msg;
+
+const nombreRules=[isRequired('El nombre es requerido'),minLength(3,'El nombre debe tener al menos 3 caracteres')];
+const correoRules=[isRequired('El correo es requerido')];
+const direccionRules=[isRequired('La direccion es requerido'),minLength(3,'La direccion debe tener al menos 3 caracteres')];
+const telefonoRules=[isRequired('El telefono es requerido'),minLength(8,'El telefono debe tener al menos 8 caracteres')]
+
 async function crear() {
     if (!validarCampos()) return;
 
     try {
+        isLoading.value = true; 
         const proveedorData = {
             nombre: nombre.value,
             correo: correo.value,
@@ -103,7 +125,9 @@ async function crear() {
             position: "center",
             color: "red"
         });
+        
     } finally {
+        isLoading.value = false; 
         listarTodo();
         limpiarCampos();
         cerrar();
@@ -123,6 +147,7 @@ function traerDatos(proveedores) {
 async function editar() {
     if (!validarCampos()) return;
     try {
+        isLoading.value = true; // Activa el estado de carga
         await useProveedor.putProveedor(id.value, {
             nombre: nombre.value,
             correo: correo.value,
@@ -141,10 +166,12 @@ async function editar() {
             message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar el proveedor',
         });
         console.error('Error al modificar el proveedor', error);
-    }
-    listarTodo();
+    } finally{
+        isLoading.value = false; // Desactiva el estado de carga
+        listarTodo();
     limpiarCampos();
     cerrar();
+    }
 }
 
 function modify() {
@@ -290,7 +317,7 @@ function limpiarCampos() {
 }
 
 function validarCampos() {
-    if (!nombre.value || !correo.value || !direccion.value || !telefono.value) {
+    if (!nombre.value.trim() || !correo.value.trim() || !direccion.value.trim() || !telefono.value.trim()) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
             color: 'negative',
