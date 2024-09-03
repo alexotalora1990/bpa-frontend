@@ -1,4 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
+import { useAdministradorStore } from '../store/administrador';
+
+
 import Login from "../components/login.vue"
 import Home from "../components/home.vue"
 import Administrador from "../components/administrador.vue"
@@ -18,12 +21,36 @@ import Riego from "../components/riego.vue"
 import Comprador from "../components/comprador.vue"
 import Sustrato from '../components/elaboracionSustrato.vue';
 
-
+const auth = (to, from, next) => {
+    if (checkAuth()) {
+      const userAdmin = useAdministradorStore();
+      const rol = userAdmin.Administrador.rol;
+      if (!to.meta.rol.includes(rol)) {
+        return next({ name: 'login' });
+      }
+      next();
+    } else {
+      return next({ name: 'login' });
+    }
+  };
+  
+  const checkAuth = () => {
+    const userAdmin = useAdministradorStore();
+    const token = userAdmin.token;
+    if (!token) return false;
+    return true;
+  };
+  
 const routes = [
-    { path: "/", component: Login },
+     { path: '/', name: 'login', component: Login },
+
+    //  children: [
+        // { path: '/productos', name: 'productos', component: Productos, beforeEnter: auth, meta: { rol: ['Administrador', 'Recepcion'] } },
+ 
     {
-        path: "/home", component: Home, children: [
-            { path: "/administrador", component: Administrador },
+        path: "/home", component: Home,
+         children: [
+            { path: "/administrador", name:'administrador', component: Administrador },
             { path: "/finca", component: Finca },
             { path: "/cultivo", component: Cultivo},
             { path: "/parcela", component: Parcela},

@@ -16,11 +16,13 @@
     <div>
       <q-dialog v-model="alert" persistent>
         <q-card class="" style="width: 700px">
-          <q-card-section style="background-color: #a1312d; margin-bottom: 20px">
-            <div class="text-h6 text-white">
-              {{ accion == 1 ? "Crear Admin" : "Editar Admin" }}
-            </div>
-          </q-card-section>
+          <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
+                        <div class="text-h6 text-white">
+                            {{ accion == 1 ? "Crear Administrador" : "Editar Administrador" }}
+                        </div>
+                        <q-space />
+                        <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
+                    </q-card-section>
           <q-input outlined v-model="nombre" label="Nombre" class="q-my-md q-mx-md" :rules="[
             (val) => !!val.trim() || 'Nombre no puede estar vacio']" hide-bottom-space />
 
@@ -50,10 +52,11 @@
 
 
           <q-card-actions align="right">
-            <q-btn @click=modify() color="red" class="text-white">
+            <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+            <q-btn @click=modify() color="green" class="text-white">
               {{ accion == 1 ? "Agregar" : "Editar" }}
             </q-btn>
-            <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+           
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -215,54 +218,54 @@ async function listarAdminInactivos() {
 
 
 // AGREGAR EDITAR 
-
-async function crear() {
-  // Validación de campos
-  if (!nombre.value || !direccion.value || !correo.value || !contrasena.value || !telefono.value || !municipio.value || !rol.value) {
-    Notify.create({
-      type: "negative",
-      message: "Todos los campos son obligatorios",
-      icon: "error",
+// function validarCampos(){
+//   if (!nombre.value || !direccion.value || !correo.value || !contrasena.value || !telefono.value || !municipio.value || !rol.value) {
+//     Notify.create({
+//       type: "negative",
+//       message: "Todos los campos son obligatorios",
+//       icon: "error",
       
-    });
-    return; // No proceder si los campos están vacíos
-  }
+//     });
+//     return; 
+//   }
+// }
+// async function crear() {
+//   validarCampos()
+//   try {
+//     accion.value = 1;
+//     const r = await useAdmin.postAdmin({
+//       nombre: nombre.value,
+//       direccion: direccion.value,
+//       correo: correo.value,
+//       contrasena: contrasena.value,
+//       telefono: telefono.value,
+//       municipio: municipio.value,
+//       rol: rol.value
+//     });
 
-  try {
-    accion.value = 1;
-    const r = await useAdmin.postAdmin({
-      nombre: nombre.value,
-      direccion: direccion.value,
-      correo: correo.value,
-      contrasena: contrasena.value,
-      telefono: telefono.value,
-      municipio: municipio.value,
-      rol: rol.value
-    });
+//     // Notificación de éxito
+//     Notify.create({
+//       type: "positive",
+//       message: "Administrador creado exitosamente",
+//       icon: "check_circle",
+//       position:"top",
+//     });
 
-    // Notificación de éxito
-    Notify.create({
-      type: "positive",
-      message: "Administrador creado exitosamente",
-      icon: "check_circle",
-      position:"top",
-    });
+//     // Limpia el formulario y cierra el modal
+//     listarAdmin();
+//     limpiarCampos();
+//     cerrar();
 
-    // Limpia el formulario y cierra el modal
-    listarAdmin();
-    limpiarCampos();
-    cerrar();
-
-    return r; // Retorna la respuesta si es necesario
-  } catch (error) {
-    console.error("Error al agregar administrador:", error);
-    Notify.create({
-      type: "negative",
-      message: "Error al agregar administrador",
-      icon: "error",
-    });
-  }
-}
+//     return r; // Retorna la respuesta si es necesario
+//   } catch (error) {
+//     console.error("Error al agregar administrador:", error);
+//     Notify.create({
+//       type: "negative",
+//       message: "Error al agregar administrador",
+//       icon: "error",
+//     });
+//   }
+// }
 
 
 
@@ -281,7 +284,88 @@ id.value=admin._id;
        console.log("Admin ID:", admin._id);
    
 }
+// async function editar() {
+//   validarCampos()
+//   try {
+//     const r = await useAdmin.putAdmin(id.value, {
+//       nombre: nombre.value,
+//       direccion: direccion.value,
+//       correo: correo.value,
+//       contrasena: contrasena.value,
+//       telefono: telefono.value,
+//       municipio: municipio.value,
+//       rol: rol.value
+//     });
+
+//     console.log("Administrador editado con éxito:", r);
+//     listarAdmin();  // Refresca la lista de administradores
+//     limpiarCampos(); // Limpia el formulario
+//     cerrar(); // Cierra el modal/formulario
+//   } catch (error) {
+//     console.error("Error al editar administrador:", error);
+//   }
+// }
+// async function modify() {
+//   if (accion.value === 1) {
+//     await crear();
+//   } else {
+//     await editar();
+//   }
+// }
+
+
+function validarCampos() {
+  if (!nombre.value || !direccion.value || !correo.value || !contrasena.value || !telefono.value || !municipio.value || !rol.value) {
+    Notify.create({
+      type: "negative",
+      message: "Todos los campos son obligatorios",
+      icon: "error",
+    });
+    return false; // Retorna false si hay campos vacíos
+  }
+  return true; // Retorna true si todos los campos están llenos
+}
+
+async function crear() {
+  if (!validarCampos()) return; // Si la validación falla, no continúa
+
+  try {
+    accion.value = 1;
+    const r = await useAdmin.postAdmin({
+      nombre: nombre.value,
+      direccion: direccion.value,
+      correo: correo.value,
+      contrasena: contrasena.value,
+      telefono: telefono.value,
+      municipio: municipio.value,
+      rol: rol.value
+    });
+
+    Notify.create({
+      type: "positive",
+      message: "Administrador creado exitosamente",
+      icon: "check_circle",
+      position: "top",
+    });
+
+    listarAdmin();
+    limpiarCampos();
+    cerrar();
+
+    return r;
+  } catch (error) {
+    console.error("Error al agregar administrador:", error);
+    Notify.create({
+      type: "negative",
+      message: "Error al agregar administrador",
+      icon: "error",
+    });
+  }
+}
+
 async function editar() {
+  if (!validarCampos()) return; // Si la validación falla, no continúa
+
   try {
     const r = await useAdmin.putAdmin(id.value, {
       nombre: nombre.value,
@@ -294,13 +378,14 @@ async function editar() {
     });
 
     console.log("Administrador editado con éxito:", r);
-    listarAdmin();  // Refresca la lista de administradores
-    limpiarCampos(); // Limpia el formulario
-    cerrar(); // Cierra el modal/formulario
+    listarAdmin(); 
+    limpiarCampos(); 
+    cerrar(); 
   } catch (error) {
     console.error("Error al editar administrador:", error);
   }
 }
+
 async function modify() {
   if (accion.value === 1) {
     await crear();
@@ -308,9 +393,6 @@ async function modify() {
     await editar();
   }
 }
-
-
-
 // FUNCIONES ACTIVAR-DESACTIVAR
 
 async function activar(id) {
@@ -390,10 +472,10 @@ function limpiarCampos() {
 <style>
 .custom-select {
   font-size: 14px;
-  border-radius: 4px;
-  padding: 8px 12px;
-  background-color: white;
-  color: #333;
-  min-width: 200px;
+    border-radius: 4px;
+    padding: 8px 12px;
+    background-color: white;
+    color: #333;
+    min-width: 200px;
 }
 </style>

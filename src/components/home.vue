@@ -9,7 +9,9 @@
           </q-avatar>
           BUENAS PRACTICAS AGRICOLAS
         </q-toolbar-title>
+        <q-btn dense flat round icon="logout" @click="logout" />
       </q-toolbar>
+
     </q-header>
 
     <q-drawer show-if v-model="leftDrawerOpen" side="left" bordered>
@@ -143,6 +145,13 @@
 </template>
 <script setup>
 import { ref } from 'vue'
+import { useAdministradorStore } from '../store/administrador';
+import { routes } from "../routes/routes.js";
+import { useRouter } from 'vue-router';
+const useAdmin=useAdministradorStore()
+const router = useRouter();
+
+
 
 const leftDrawerOpen = ref(false)
 const submenu = ref({
@@ -160,6 +169,11 @@ const toggleLeftDrawer = () => {
 const toggleSubmenu = (menu) => {
   submenu.value[menu] = !submenu.value[menu]
 }
+const logout = () => {
+  useAdmin.logout();
+  localStorage.removeItem('selectedRoute'); 
+  router.push('/');
+};
 
 const usuariosItems = [
   { label: 'Administrador', to: '/administrador', icon: 'location_city' },
