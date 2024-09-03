@@ -347,7 +347,7 @@ function limpiarCampos() {
 
 function validarCampos() {
     if (!idcultivo.value || !idempleadooperario.value || !idempleadoresponsable.value || !productocomercial.value || 
-        !ingredienteActivo.value || !dosisUtilizada.value || !metodoAplicacion.value ||  fecha.value ) {
+        !ingredienteActivo.value || !dosisUtilizada.value || !metodoAplicacion.value ||  !fecha.value ) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
             color: 'negative',
