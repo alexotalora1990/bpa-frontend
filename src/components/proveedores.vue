@@ -1,4 +1,4 @@
-<template>
+git<template>
     <div style="height: 100vh; overflow-y: auto;">
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Proveedor</q-btn>
