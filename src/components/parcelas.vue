@@ -251,7 +251,7 @@ async function desactivar(parcelas) {
             Notify.create({
                 message: 'Parcela Desactivada correctamente!',
                 position: "center",
-                color: "green"
+                color: "orange"
             });
             listarTodo()
         })
