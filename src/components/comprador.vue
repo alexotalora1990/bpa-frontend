@@ -1,7 +1,7 @@
 <template>
     <div style="height: 100vh; overflow-y: auto;">
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
-            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Parcela</q-btn>
+            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Comprador</q-btn>
             <q-select outlined v-model="listar" label="Seleccione" :options="listados"
                 class="q-my-md q-mx-md custom-select" />
             <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
@@ -11,22 +11,19 @@
                 <q-card style="width: 700px">
                     <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
                         <div class="text-h6 text-white">
-                            {{ accion == 1 ? "Crear Parcela" : "Editar Parcela" }}
+                            {{ accion == 1 ? "Crear Compra" : "Editar Compra" }}
                         </div>
                         <q-space />
                         <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                     </q-card-section>
-                    <q-select outlined v-model="idfincas" label="Seleccione una Finca" :options="options"
+                    <q-select outlined v-model="idfincas" label="Seleccione una Producción" :options="options"
                         class="q-my-md q-mx-md" @filter="filterFn" hide-bottom-space />
-                    <q-input outlined v-model="numero" label="Número de Parcela" class="q-my-md q-mx-md" type="number" />
-                    <q-input outlined v-model="ubicacion.latitud" label="Latitud" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="ubicacion.longitud" label="Longitud" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="cultivoAnterior" label="Cultivo Anterior" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="cultivoActual" label="Cultivo Actual" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="descripcion" label="Descripción" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="area" label="Área" class="q-my-md q-mx-md" type="number" />
-                    <q-input outlined v-model="asistenteTecnico" label="Asistente Técnico" class="q-my-md q-mx-md" type="text" />
-
+                    <q-input outlined v-model="nombre" label="Nombre del Comprador" class="q-my-md q-mx-md" type="text" />
+                    <q-input outlined v-model="telefono" label="Telefono" class="q-my-md q-mx-md" type="text" />
+                    <q-input outlined v-model="cantidad" label="Cantidad" class="q-my-md q-mx-md" type="number" />
+                    <q-input outlined v-model="numguiaTransporte" label="#guiaTransporte" class="q-my-md q-mx-md" type="text" />
+                    <q-input outlined v-model="numloteComercial" label="#loteComercial" class="q-my-md q-mx-md" type="text" />
+                    <q-input outlined v-model="valor" label="valor" class="q-my-md q-mx-md" type="number" />
                     <q-card-actions align="right">
                         <q-btn @click="modify()" color="green" class="text-white">
                             {{ accion == 1 ? "Agregar" : "Editar" }}
@@ -37,9 +34,9 @@
             </q-dialog>
         </div>
         <div style="display: flex; justify-content: center">
-            <q-table title="CHECHO ACUERDESE ESTO NECESITA PRODUCCION" title-class="text-green text-weight-bolder text-h5"
+            <q-table title="Producción" title-class="text-green text-weight-bolder text-h5"
                 table-header-class="text-black" :rows="rows" :filter="filter" :columns="columns" row-key="name"
-                style="width: 90%; margin-bottom: 6%;" :loading="useParcela.loading">
+                style="width: 90%; margin-bottom: 6%;" :loading="useComprador.loading">
                 <template v-slot:top-right>
                     <q-input color="black" v-model="filter" placeholder="Buscar">
                         <template v-slot:append>
@@ -63,9 +60,9 @@
                     <q-td :props="props">
                         <q-btn @click="traerDatos(props.row)">
                             <q-tooltip>Editar</q-tooltip>✏️</q-btn>
-                        <q-btn @click="desactivar(props.row)" v-if="props.row.estado == 1">
+                        <q-btn @click="desactivar(props.row)" v-if="props.row.estado == 1" :loading="useComprador.loading">
                             <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
-                        <q-btn @click="activar(props.row)" v-else>
+                        <q-btn @click="activar(props.row)" v-else :loading="useComprador.loading">
                             <q-tooltip>Activar</q-tooltip>✅</q-btn>
                     </q-td>
                 </template>
@@ -77,19 +74,19 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { Notify } from "quasar"
-import { useParcelaStore } from "../store/parcelas.js";
-const useParcela = useParcelaStore();
-import { useFincaStore } from "../store/fincas.js";
-const useFinca = useFincaStore();
+import { useCompradorStore } from "../store/comprador.js";
+const useComprador = useCompradorStore();
+import { useProduccionStore } from "../store/produccion.js";
+const useProduccion = useProduccionStore();
 
 const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 let rows = ref([]);
 let alert = ref(false);
 let accion = ref(1);
 
-let fincas = []
+let producciones = []
 let datos = {}
-let options = ref(fincas)
+let options = ref(producciones)
 
 let id = ref("")
 let idfincas = ref('');
@@ -212,46 +209,46 @@ function filtrar() {
 }
 
 async function listarTodo() {
-    const r = await useParcela.listarParcelas();
-    rows.value = r.data.parcelas;
+    const r = await useComprador.listarCompradores();
+    rows.value = r.data.compradores;
 }
 async function listarActivos() {
-    const r = await useParcela.getParcelasActivos();
-    console.log(r.data.parcelaActiva);
-    rows.value = r.data.parcelaActiva;
+    const r = await useComprador.getCompradoresActivos();
+    console.log(r.data.compradores);
+    rows.value = r.data.compradores;
 }
 async function listarInactivos() {
-    const r = await useParcela.getParcelasInactivos();
-    console.log(r.data.parcelaDesactivada);
-    rows.value = r.data.parcelaDesactivada;
+    const r = await useComprador.getCompradoresInactivos();
+    console.log(r.data.compradores);
+    rows.value = r.data.compradores;
 }
-async function listarFincas() {
-    const data = await useFinca.getFincasActivos()
-    data.data.fincaActiva.forEach(item => {
+async function listarProducciones() {
+    const data = await useProduccion.getProduccionesActivos()
+    data.data.produccionActiva.forEach(item => {
         datos = {
-            label: item.nombre,
+            label: item.especie,
             value: item._id
         }
-        fincas.push(datos)
+        producciones.push(datos)
     })
-    console.log(fincas);
+    console.log(producciones);
 }
 
 function filterFn(val, update, abort) {
     update(() => {
         const needle = val.toLowerCase();
-        options.value = fincas.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+        options.value = producciones.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
     })
 }
 // el r.data.{empleados}, empleado varia segun el rjson de la funcion get en el backend
 
-async function desactivar(parcelas) {
-    const r = await useParcela.putParcelasDesactivar(parcelas._id)
+async function desactivar(producciones) {
+    const r = await useComprador.putCompradoresDesactivar(producciones._id)
         .then((response) => {
             Notify.create({
-                message: 'Parcela Desactivada correctamente!',
+                message: 'Producción Desactivada correctamente!',
                 position: "center",
-                color: "green"
+                color: "orange"
             });
             listarTodo()
         })
@@ -260,10 +257,10 @@ async function desactivar(parcelas) {
         })
 }
 async function activar(parcelas) {
-    const r = await useParcela.putParcelasActivar(parcelas._id)
+    const r = await useComprador.putCompradoresActivar(parcelas._id)
         .then((response) => {
             Notify.create({
-                message: 'Parcela activada correctamente!',
+                message: 'Producción activada correctamente!',
                 position: "center",
                 color: "green"
             });
@@ -277,75 +274,59 @@ async function activar(parcelas) {
 
 const columns = ref([
     {
-        name: 'idfincas',
+        name: 'idproduccion',
         required: true,
-        label: 'Finca',
+        label: 'Especie',
         align: 'center',
-        field: (row) => row.idfincas.nombre,
+        field: (row) => row.idproduccion.especie,
         sortable: true
     },
     {
-        name: 'Numero',
+        name: 'Nombre',
         required: true,
-        label: 'Numero',
+        label: 'Comprador',
         align: 'center',
-        field: 'numero',
+        field: 'nombre',
         sortable: true
     },
     {
-        name: 'latitud',
+        name: 'Telefono',
         required: true,
-        label: 'Latitud',
+        label: 'Telefono',
         align: 'center',
-        field: (row) => row.ubicacion?.latitud || '',
+        field: 'telefono',
         sortable: true
     },
     {
-        name: 'longitud',
+        name: 'Cantidad',
         required: true,
-        label: 'Longitud',
+        label: 'Cantidad',
         align: 'center',
-        field: (row) => row.ubicacion?.longitud || '',
+        field: 'cantidad',
         sortable: true
     },
     {
-        name: 'cultivoAnterior',
+        name: 'numguiaTransporte',
         required: true,
-        label: 'Cultivo Anterior',
+        label: '# Guia transporte',
         align: 'center',
-        field: 'cultivoAnterior',
+        field: 'numguiaTransporte',
         sortable: true
     },
     {
-        name: 'cultivoActual',
+        name: 'Lote Comercial',
         required: true,
-        label: 'Cultivo Actual',
+        label: 'Lote Comercial',
         align: 'center',
-        field: 'cultivoActual',
+        field: 'numloteComercial',
         sortable: true
     },
     {
-        name: 'descripcion',
+        name: 'Valor',
         required: true,
-        label: 'Descripcion',
+        label: 'Valor',
         align: 'center',
-        field: 'descripcion',
-        sortable: true
-    },
-    {
-        name: 'area',
-        required: true,
-        label: 'Area de la Parcela',
-        align: 'center',
-        field: 'area',
-        sortable: true
-    },
-    {
-        name: 'asistenteTecnico',
-        required: true,
-        label: 'Asistente Tecnico',
-        align: 'center',
-        field: 'asistenteTecnico',
+        field: 'valor',
         sortable: true
     },
     {
@@ -408,7 +389,7 @@ function validarCampos() {
 
 
 onMounted(() => {
-    listarFincas()
+    listarProducciones()
     listarTodo();
 });
 // Funciones no tan importantes ======================================
