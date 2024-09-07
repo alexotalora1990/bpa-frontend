@@ -155,7 +155,6 @@ async function editar() {
             position: "center",
             color: "green"
         });
-        console.log(id.data);
         
     } catch (error) {
         Notify.create({
