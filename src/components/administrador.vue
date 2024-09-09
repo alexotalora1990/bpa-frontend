@@ -7,7 +7,7 @@
       <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Admin</q-btn>
       <q-select outlined v-model="listar" label="Seleccione" :options="listados"
         class="q-my-md q-mx-md custom-select" />
-      <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
+      <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()" :loading="useAdmin.loading">Filtrar</q-btn>
 
     </div>
 
@@ -66,7 +66,7 @@
 
             <q-card-actions align="right">
               <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
-              <q-btn :label="accion === 1 ? 'Agregar' : 'Editar'" type="submit" color="green" class="text-white" @click="modify" />
+              <q-btn :label="accion === 1 ? 'Agregar' : 'Editar'" type="submit" color="green" class="text-white" @click="modify" :loading="useAdmin.loading" />
 
 
             </q-card-actions>
@@ -108,9 +108,9 @@
           <q-td :props="props">
             <q-btn @click="traerDatos(props.row)">
               <q-tooltip>Editar</q-tooltip>✏️</q-btn>
-            <q-btn @click="desactivar(props.row._id)" v-if="props.row.estado == 1">
+            <q-btn @click="desactivar(props.row._id)" v-if="props.row.estado == 1" :loading="useAdmin.loading" >
               <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
-            <q-btn @click="activar(props.row._id)" v-else>
+            <q-btn @click="activar(props.row._id)" v-else  :loading="useAdmin.loading">
               <q-tooltip>Activar</q-tooltip>✅</q-btn>
           </q-td>
         </template>
