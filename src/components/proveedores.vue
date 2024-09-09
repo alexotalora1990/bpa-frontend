@@ -1,10 +1,11 @@
-git<template>
+<template>
     <div style="height: 100vh; overflow-y: auto;">
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Proveedor</q-btn>
             <q-select outlined v-model="listar" label="Seleccione" :options="listados"
                 class="q-my-md q-mx-md custom-select" />
             <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
+            <q-btn class="q-my-md q-ml-md" @click="excell()">📶</q-btn>
         </div>
         <div>
             <q-dialog v-model="alert" persistent>
@@ -71,6 +72,7 @@ git<template>
 <script setup>
 import { onMounted, ref } from 'vue';
 import { Notify } from "quasar"
+import * as XLSX from 'xlsx';
 import { useProveedoresStore } from "../store/proveedores.js";
 const useProveedor = useProveedoresStore();
 
@@ -210,9 +212,6 @@ async function listarInactivos() {
     const r = await useProveedor.getProveedoresInactivos();
     rows.value = r.data.proveedores;
 }
-// el r.data.{empleados}, empleado varia segun el rjson de la funcion get en el backend
-
-//APARTADO DE TRAER LOS DATOS =============================
 
 
 //ACTIVAR Y DESACTIVAR EN LA TABLA =========================
@@ -328,6 +327,30 @@ function validarCampos() {
     return true;
 }
 
+function excell() {
+    try {
+        // Paso 1: Obtener los datos actuales de la tabla
+        const datos = rows.value.map(proveedor => ({
+            Nombre: proveedor.nombre,
+            Correo: proveedor.correo,
+            Dirección: proveedor.direccion,
+            Teléfono: proveedor.telefono,
+            Estado: proveedor.estado === 1 ? 'Activo' : 'Inactivo',
+        }));
+
+        // Paso 2: Crear una hoja de cálculo (worksheet)
+        const hoja = XLSX.utils.json_to_sheet(datos);
+
+        // Paso 3: Crear un libro de trabajo (workbook) y agregar la hoja de cálculo
+        const libro = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(libro, hoja, 'Proveedores');
+
+        // Paso 4: Exportar el libro como archivo Excel
+        XLSX.writeFile(libro, 'Proveedores.xlsx');
+    } catch (error) {
+        console.error('Error al generar el archivo Excel:', error);
+    }
+}
 
 onMounted(() => {
     listarTodo();
