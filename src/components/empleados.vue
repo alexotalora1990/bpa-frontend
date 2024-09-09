@@ -1,5 +1,4 @@
 <template>
-
     <div style="height: 100vh; overflow-y: auto;">
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Empleado</q-btn>
@@ -8,33 +7,71 @@
             <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
         </div>
         <div>
-            <q-dialog v-model="alert" persistent>
-                <q-card style="width: 700px">
-                    <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
-                        <div class="text-h6 text-white">
-                            {{ accion == 1 ? "Crear Empleado" : "Editar Empleado" }}
-                        </div>
-                        <q-space />
-                        <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
-                    </q-card-section>
-                    <q-input outlined v-model="nombre" label="Nombre del Empleado" class="q-my-md q-mx-md"
-                        type="text" />
-                    <q-input outlined v-model="numdocumento" label="Numero de Documento" class="q-my-md q-mx-md"
-                        type="text" />
-                    <q-input outlined v-model="correo" label="Correo" class="q-my-md q-mx-md" type="email" />
-                    <q-input outlined v-model="contrasena" label="Contraseña" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="direccion" label="Direccion" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="telefono" label="Telefono" class="q-my-md q-mx-md" type="number" />
-                    <q-input outlined v-model="estudios" label="Estudios" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="descripcion" label="Descripción" class="q-my-md q-mx-md" type="text" />
-                    <q-card-actions align="right">
-                        <q-btn @click="modify()" color="green" class="text-white">
-                            {{ accion == 1 ? "Agregar" : "Editar" }}
-                        </q-btn>
-                        <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
-                    </q-card-actions>
-                </q-card>
-            </q-dialog>
+            <q-form ref="formulario" @submit.prevent="modify">
+                <q-dialog v-model="alert" persistent>
+                    <q-card style="width: 700px">
+                        <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
+                            <div class="text-h6 text-white">
+                                {{ accion == 1 ? "Crear Empleado" : "Editar Empleado" }}
+                            </div>
+                            <q-space />
+                            <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
+                        </q-card-section>
+                        <q-input outlined v-model="nombre" label="Nombre del Empleado" class="q-my-md q-mx-md"
+                            type="text" :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                                (val) => val.length >= 3 || 'Debe tener al menos 8 caracteres'
+                            ]" hide-bottom-space />
+                        <q-input outlined v-model="numdocumento" label="Numero de Documento" class="q-my-md q-mx-md"
+                            type="text" :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                                (val) => val.length >= 8 || 'Debe tener al menos 3 caracteres',
+                                (val) => /^[0-9]*$/.test(val) || 'Solo se permiten numeros'
+                            ]" hide-bottom-space />
+                        <q-input outlined v-model="correo" label="Correo" class="q-my-md q-mx-md" type="email" :rules="[
+                            (val) => !!val || 'Este campo es requerido',
+                            (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                            (val) => /.+@.+\..+/.test(val) || 'Formato de correo no válido'
+                        ]" hide-bottom-space />
+
+                        <q-input outlined v-model="direccion" label="Dirección" class="q-my-md q-mx-md" type="text"
+                            :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                                (val) => val.length >= 5 || 'Debe tener al menos 5 caracteres'
+                            ]" hide-bottom-space />
+
+                        <q-input outlined v-model="telefono" label="Teléfono" class="q-my-md q-mx-md" type="number"
+                            :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                                (val) => val.length === 10 || 'El número debe tener exactamente 10 caracteres',
+                                (val) => /^[0-9]*$/.test(val) || 'Solo se permiten números'
+                            ]" hide-bottom-space />
+
+                        <q-input outlined v-model="estudios" label="Estudios" class="q-my-md q-mx-md" type="text"
+                            :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío'
+                            ]" hide-bottom-space />
+
+                        <q-input outlined v-model="descripcion" label="Descripción" class="q-my-md q-mx-md" type="text"
+                            :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                                (val) => val.length >= 10 || 'Debe tener al menos 10 caracteres'
+                            ]" hide-bottom-space />
+                        <q-card-actions align="right">
+                            <q-btn @click="modify()" color="green" class="text-white">
+                                {{ accion == 1 ? "Agregar" : "Editar" }}
+                            </q-btn>
+                            <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+                        </q-card-actions>
+                    </q-card>
+                </q-dialog>
+            </q-form>
         </div>
         <div style="display: flex; justify-content: center">
             <q-table title="Empleados" title-class="text-green text-weight-bolder text-h5"
@@ -85,12 +122,12 @@ const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 let rows = ref([]);
 let alert = ref(false);
 let accion = ref(1);
+const formulario = ref(null);
 
 let id = ref("")
 const nombre = ref("");
 const numdocumento = ref("");
 const correo = ref("");
-const contrasena = ref("");
 const direccion = ref("");
 const telefono = ref("");
 const estudios = ref("");
@@ -99,13 +136,11 @@ const descripcion = ref("");
 
 async function crear() {
     if (!validarCampos()) return;
-
     try {
         const empleadoData = {
             nombre: nombre.value,
             numdocumento: numdocumento.value,
             correo: correo.value,
-            contrasena: contrasena.value,
             direccion: direccion.value,
             telefono: telefono.value,
             estudios: estudios.value,
@@ -120,6 +155,11 @@ async function crear() {
             color: "red"
         });
     } finally {
+        Notify.create({
+            message: '¡Empleado creado existosamente!',
+            position: "center",
+            color: "green"
+        });
         listarTodo();
         limpiarCampos();
         cerrar();
@@ -132,7 +172,6 @@ function traerDatos(empleados) {
     nombre.value = empleados.nombre;
     numdocumento.value = empleados.numdocumento;
     correo.value = empleados.correo;
-    contrasena.value = empleados.contrasena;
     direccion.value = empleados.direccion;
     telefono.value = empleados.telefono;
     estudios.value = empleados.estudios;
@@ -146,7 +185,6 @@ async function editar() {
             nombre: nombre.value,
             numdocumento: numdocumento.value,
             correo: correo.value,
-            contrasena: contrasena.value,
             direccion: direccion.value,
             telefono: telefono.value,
             estudios: estudios.value,
@@ -171,14 +209,31 @@ async function editar() {
 }
 
 
-function modify() {
-    if (accion.value === 1) {
-        crear()
-    } else {
-        editar()
+async function modify() {
+    try {
+        const valid = await formulario.value.validate();
+        if (!valid) {
+            Notify.create({
+                type: "negative",
+                message: "Por favor, complete correctamente todos los campos Correctamente",
+                icon: "error",
+            });
+            return;
+        }
+        if (accion.value === 1) {
+            await crear();
+        } else {
+            await editar();
+        }
+    } catch (error) {
+        Notify.create({
+            type: "negative",
+            message: "Error en la operación",
+            icon: "error",
+        });
+        console.error("Error en modify:", error);
     }
 }
-
 
 
 //APARTADO DE TRAER LOS DATOS =============================
@@ -224,7 +279,7 @@ async function desactivar(empleados) {
             Notify.create({
                 message: 'Empleado Desactivado correctamente!',
                 position: "center",
-                color: "green"
+                color: "orange"
             });
             listarTodo()
         })
@@ -338,11 +393,9 @@ function cerrar() {
 }
 
 function limpiarCampos() {
-
     nombre.value = '';
     numdocumento.value = '';
     correo.value = '';
-    contrasena.value = '';
     direccion.value = '';
     telefono.value = '';
     estudios.value = '';
@@ -350,7 +403,7 @@ function limpiarCampos() {
 }
 
 function validarCampos() {
-    if (!nombre.value || !numdocumento.value || !correo.value || !contrasena.value ||
+    if (!nombre.value || !numdocumento.value || !correo.value ||
         !direccion.value || !telefono.value || !estudios.value || !descripcion.value) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
