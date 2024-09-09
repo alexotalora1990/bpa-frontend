@@ -315,7 +315,7 @@ async function editar() {
 
 async function modify() {
   try {
-    const valid = await formulario.value.validate(); // Accede directamente a la referencia
+    const valid = await formulario.value.validate(); 
 
     if (!valid) {
       Notify.create({
@@ -347,6 +347,7 @@ async function modify() {
     console.error("Error en modify:", error);
   }
 }
+
 async function activar(id) {
   try {
     await useAdmin.putAdminActivar(id);
