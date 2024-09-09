@@ -1,7 +1,7 @@
 <template>
     <div style="height: 100vh; overflow-y: auto;">
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
-            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Parcela</q-btn>
+            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Producción</q-btn>
             <q-select outlined v-model="listar" label="Seleccione" :options="listados"
                 class="q-my-md q-mx-md custom-select" />
             <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
@@ -11,22 +11,20 @@
                 <q-card style="width: 700px">
                     <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
                         <div class="text-h6 text-white">
-                            {{ accion == 1 ? "Crear Parcela" : "Editar Parcela" }}
+                            {{ accion == 1 ? "Crear Producción" : "Editar Producción" }}
                         </div>
                         <q-space />
                         <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                     </q-card-section>
-                    <q-select outlined v-model="idfincas" label="Seleccione una Finca" :options="options"
+                    <q-select outlined v-model="idcultivo" label="Seleccione un Cultivo" :options="options"
                         class="q-my-md q-mx-md" @filter="filterFn" hide-bottom-space />
-                    <q-input outlined v-model="numero" label="Número de Parcela" class="q-my-md q-mx-md" type="number" />
-                    <q-input outlined v-model="ubicacion.latitud" label="Latitud" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="ubicacion.longitud" label="Longitud" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="cultivoAnterior" label="Cultivo Anterior" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="cultivoActual" label="Cultivo Actual" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="descripcion" label="Descripción" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="area" label="Área" class="q-my-md q-mx-md" type="number" />
-                    <q-input outlined v-model="asistenteTecnico" label="Asistente Técnico" class="q-my-md q-mx-md" type="text" />
-
+                    <q-input outlined v-model="Numlote" label="Número del Lote" class="q-my-md q-mx-md" type="number" />
+                    <q-input outlined v-model="especie" label="Especie" class="q-my-md q-mx-md" />
+                    <q-input outlined v-model="observaciones" label="Observaciones" class="q-my-md q-mx-md"
+                        type="textarea" />
+                    <q-input outlined v-model="cantidad" label="Cantidad" class="q-my-md q-mx-md" type="number" />
+                    <q-input outlined v-model="cantidadTrabajadores" label="Cantidad de Trabajadores"
+                        class="q-my-md q-mx-md" type="number" />
                     <q-card-actions align="right">
                         <q-btn @click="modify()" color="green" class="text-white">
                             {{ accion == 1 ? "Agregar" : "Editar" }}
@@ -37,9 +35,9 @@
             </q-dialog>
         </div>
         <div style="display: flex; justify-content: center">
-            <q-table title="CHECHO ESTO ES PRODUCCION CTM" title-class="text-green text-weight-bolder text-h5"
+            <q-table title="Producción" title-class="text-green text-weight-bolder text-h5"
                 table-header-class="text-black" :rows="rows" :filter="filter" :columns="columns" row-key="name"
-                style="width: 90%; margin-bottom: 6%;" :loading="useParcela.loading">
+                style="width: 90%; margin-bottom: 6%;" :loading="useProduccion.loading">
                 <template v-slot:top-right>
                     <q-input color="black" v-model="filter" placeholder="Buscar">
                         <template v-slot:append>
@@ -77,52 +75,42 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { Notify } from "quasar"
-import { useParcelaStore } from "../store/parcelas.js";
-const useParcela = useParcelaStore();
-import { useFincaStore } from "../store/fincas.js";
-const useFinca = useFincaStore();
+import { useProduccionStore } from "../store/produccion.js";
+const useProduccion = useProduccionStore();
+import { useCultivoStore } from "../store/cultivos.js";
+const useCultivo = useCultivoStore();
 
 const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 let rows = ref([]);
 let alert = ref(false);
 let accion = ref(1);
 
-let fincas = []
+let cultivos = []
 let datos = {}
-let options = ref(fincas)
+let options = ref(cultivos)
 
 let id = ref("")
-let idfincas = ref('');
-let numero = ref('');
-let ubicacion = ref({
-    latitud:"",
-    longitud:""
-});
-let cultivoAnterior = ref('');
-let cultivoActual = ref('');
-let descripcion = ref('');
-let area = ref('');
-let asistenteTecnico = ref('');
+let idcultivo = ref('');
+let Numlote = ref('');
+let especie = ref('');
+let observaciones = ref('');
+let cantidad = ref('');
+let cantidadTrabajadores = ref('');
 
 async function crear() {
-    if (!validarCampos()) {return;}
+    if (!validarCampos()) { return; }
     try {
-        await useParcela.postParcelas({
-            idfincas: idfincas.value.value,
-            numero: numero.value,
-            ubicacion:{
-                latitud: ubicacion.value.latitud,
-                longitud: ubicacion.value.longitud,
-            },
-            cultivoAnterior: cultivoAnterior.value,
-            cultivoActual: cultivoActual.value,
-            descripcion: descripcion.value,
-            area: area.value,
-            asistenteTecnico: asistenteTecnico.value
+        await useProduccion.postProducciones({
+            idcultivo: idcultivo.value.value,
+            Numlote: Numlote.value,
+            especie: especie.value,
+            observaciones: observaciones.value,
+            cantidad: cantidad.value,
+            cantidadTrabajadores: cantidadTrabajadores.value
         });
     } catch (error) {
         Notify.create({
-            message: '¡Ocurrió un error al crear la parcela!',
+            message: '¡Ocurrió un error al crear la producción!',
             position: 'center',
             color: 'red'
         });
@@ -133,59 +121,53 @@ async function crear() {
     }
 }
 
-
-function traerDatos(parcela) {
+function traerDatos(produccion) {
     alert.value = true;
     accion.value = 2;
-    id.value = parcela._id;
-    idfincas.value = {
-    label: parcela.idfincas.nombre,
-    value: parcela.idfincas._id
+    id.value = produccion._id;
+    idcultivo.value = {
+        label: produccion.idcultivo.nombre,
+        value: produccion.idcultivo._id
     }
-    numero.value = parcela.numero;
-    ubicacion.value.latitud=parcela.ubicacion?.latitud;
-    ubicacion.value.longitud=parcela.ubicacion?.longitud;
-    cultivoAnterior.value = parcela.cultivoAnterior;
-    cultivoActual.value = parcela.cultivoActual;
-    descripcion.value = parcela.descripcion;
-    area.value = parcela.area;
-    asistenteTecnico.value = parcela.asistenteTecnico;
+    Numlote.value = produccion.Numlote;
+    especie.value = produccion.especie;
+    observaciones.value = produccion.observaciones;
+    cantidad.value = produccion.cantidad;
+    cantidadTrabajadores.value = produccion.cantidadTrabajadores;
 }
+
 
 
 async function editar() {
     if (!validarCampos()) return;
     try {
-        await useParcela.putParcelas(id.value, {
-            idfincas: idfincas.value.value,
-            numero: numero.value,
-            ubicacion: {
-                latitud: ubicacion.value.latitud,
-                longitud: ubicacion.value.longitud
-            },
-            cultivoAnterior: cultivoAnterior.value,
-            cultivoActual: cultivoActual.value,
-            descripcion: descripcion.value,
-            area: area.value,
-            asistenteTecnico: asistenteTecnico.value
+        await useProduccion.putProducciones(id.value, {
+            idcultivo: idcultivo.value.value,
+            Numlote: Numlote.value,
+            especie: especie.value,
+            observaciones: observaciones.value,
+            cantidad: cantidad.value,
+            cantidadTrabajadores: cantidadTrabajadores.value
         });
 
         Notify.create({
-            message: 'Parcela actualizada correctamente!',
+            message: 'Producción actualizada correctamente!',
             position: "center",
             color: "green"
         });
+        
     } catch (error) {
         Notify.create({
             type: 'negative',
-            message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar la parcela',
+            message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar la producción',
         });
-        console.error('Error al modificar la parcela', error);
+        console.error('Error al modificar la producción', error);
     }
     listarTodo();
     limpiarCampos();
     cerrar();
 }
+
 
 
 
@@ -212,46 +194,46 @@ function filtrar() {
 }
 
 async function listarTodo() {
-    const r = await useParcela.listarParcelas();
-    rows.value = r.data.parcelas;
+    const r = await useProduccion.listarProducciones();
+    rows.value = r.data.produccion;
 }
 async function listarActivos() {
-    const r = await useParcela.getParcelasActivos();
-    console.log(r.data.parcelaActiva);
-    rows.value = r.data.parcelaActiva;
+    const r = await useProduccion.getProduccionesActivos();
+    console.log(r.data.produccionActiva);
+    rows.value = r.data.produccionActiva;
 }
 async function listarInactivos() {
-    const r = await useParcela.getParcelasInactivos();
-    console.log(r.data.parcelaDesactivada);
-    rows.value = r.data.parcelaDesactivada;
+    const r = await useProduccion.getProduccionesInactivos();
+    console.log(r.data.produccionDesactivada);
+    rows.value = r.data.produccionDesactivada;
 }
-async function listarFincas() {
-    const data = await useFinca.getFincasActivos()
-    data.data.fincaActiva.forEach(item => {
+async function listarCultivos() {
+    const data = await useCultivo.getCultivosActivos()
+    data.data.cultivosActivos.forEach(item => {
         datos = {
             label: item.nombre,
             value: item._id
         }
-        fincas.push(datos)
+        cultivos.push(datos)
     })
-    console.log(fincas);
+    console.log(cultivos);
 }
 
 function filterFn(val, update, abort) {
     update(() => {
         const needle = val.toLowerCase();
-        options.value = fincas.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+        options.value = cultivos.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
     })
 }
 // el r.data.{empleados}, empleado varia segun el rjson de la funcion get en el backend
 
-async function desactivar(parcelas) {
-    const r = await useParcela.putParcelasDesactivar(parcelas._id)
+async function desactivar(producciones) {
+    const r = await useProduccion.putProduccionesDesactivar(producciones._id)
         .then((response) => {
             Notify.create({
-                message: 'Parcela Desactivada correctamente!',
+                message: 'Producción Desactivada correctamente!',
                 position: "center",
-                color: "green"
+                color: "orange"
             });
             listarTodo()
         })
@@ -259,11 +241,11 @@ async function desactivar(parcelas) {
             console.log('Error de sede:', error);
         })
 }
-async function activar(parcelas) {
-    const r = await useParcela.putParcelasActivar(parcelas._id)
+async function activar(producciones) {
+    const r = await useProduccion.putProduccionesActivar(producciones._id)
         .then((response) => {
             Notify.create({
-                message: 'Parcela activada correctamente!',
+                message: 'Producción activada correctamente!',
                 position: "center",
                 color: "green"
             });
@@ -277,76 +259,63 @@ async function activar(parcelas) {
 
 const columns = ref([
     {
-        name: 'idfincas',
+        name: 'idcultivo',
         required: true,
-        label: 'Finca',
+        label: 'Cultivo',
         align: 'center',
-        field: (row) => row.idfincas.nombre,
+        field: (row) => row.idcultivo.nombre,
         sortable: true
     },
     {
-        name: 'Numero',
+        name: 'Numlote',
         required: true,
-        label: 'Numero',
+        label: 'Numero del Lote',
         align: 'center',
-        field: 'numero',
+        field: 'Numlote',
         sortable: true
     },
     {
-        name: 'latitud',
+        name: 'especie',
         required: true,
-        label: 'Latitud',
+        label: 'Especie',
         align: 'center',
-        field: (row) => row.ubicacion?.latitud || '',
+        field: 'especie',
         sortable: true
     },
     {
-        name: 'longitud',
+        name: 'cantidad',
         required: true,
-        label: 'Longitud',
+        label: 'Cantidad',
         align: 'center',
-        field: (row) => row.ubicacion?.longitud || '',
+        field: 'cantidad',
         sortable: true
     },
     {
-        name: 'cultivoAnterior',
+        name: 'cantidadTrabajadores',
         required: true,
-        label: 'Cultivo Anterior',
+        label: '# Trabajadores',
         align: 'center',
-        field: 'cultivoAnterior',
+        field: 'cantidadTrabajadores',
         sortable: true
     },
     {
-        name: 'cultivoActual',
+        name: 'observaciones',
         required: true,
-        label: 'Cultivo Actual',
+        label: 'Observaciones',
         align: 'center',
-        field: 'cultivoActual',
+        field: 'observaciones',
         sortable: true
     },
     {
-        name: 'descripcion',
+        name: 'fecha',
         required: true,
-        label: 'Descripcion',
+        label: 'Fecha',
         align: 'center',
-        field: 'descripcion',
-        sortable: true
-    },
-    {
-        name: 'area',
-        required: true,
-        label: 'Area de la Parcela',
-        align: 'center',
-        field: 'area',
-        sortable: true
-    },
-    {
-        name: 'asistenteTecnico',
-        required: true,
-        label: 'Asistente Tecnico',
-        align: 'center',
-        field: 'asistenteTecnico',
-        sortable: true
+        field: 'fecha',
+        sortable: true,
+        format: (val) => {
+            return val.split('T')[0].split('-').reverse().join('/');
+        }
     },
     {
         name: 'estado',
@@ -378,24 +347,17 @@ function cerrar() {
 }
 
 function limpiarCampos() {
-    idfincas.value = '';
-    numero.value = '';
-    ubicacion.value = {
-        latitud:"",
-        longitud:""
-    }
-    cultivoAnterior.value = '';
-    cultivoActual.value = '';
-    descripcion.value = '';
-    area.value = '';
-    asistenteTecnico.value = '';
+    Numlote.value = '';
+    especie.value = '';
+    observaciones.value = '';
+    cantidad.value = '';
+    cantidadTrabajadores.value = '';
 }
 
 
 function validarCampos() {
-    if (!idfincas.value || !numero.value || !ubicacion.value.latitud || !ubicacion.value.longitud ||
-        !cultivoAnterior.value || !cultivoActual.value || !descripcion.value || !area.value ||
-        !asistenteTecnico.value) {
+    if (!Numlote.value || !especie.value.trim() || !observaciones.value.trim() ||
+        !cantidad.value || !cantidadTrabajadores.value) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
             color: 'negative',
@@ -403,12 +365,28 @@ function validarCampos() {
         });
         return false;
     }
+
+    // Verificar que los campos numéricos sean números positivos
+    if (isNaN(Number(Numlote.value)) || Number(Numlote.value) <= 0 ||
+        isNaN(Number(cantidad.value)) || Number(cantidad.value) <= 0 ||
+        isNaN(Number(cantidadTrabajadores.value)) || Number(cantidadTrabajadores.value) <= 0) {
+        Notify.create({
+            message: 'Los campos Numlote, Cantidad y Cantidad de Trabajadores deben ser números positivos.',
+            color: 'negative',
+            position: 'top',
+        });
+        return false;
+    }
+
     return true;
 }
 
 
+
+
+
 onMounted(() => {
-    listarFincas()
+    listarCultivos()
     listarTodo();
 });
 // Funciones no tan importantes ======================================

@@ -41,9 +41,11 @@ export const useAdministradorStore = defineStore('administrador', () => {
         }
     };
     const postAdmin = async (admin) => {
+        console.log(admin);
+        
         try {
             loading.value = true;
-            const r = await axios.post('administrador', admin)
+            const r = await axios.post('administrador/agregar', admin)
             return r
         } catch (error) {
             return error
@@ -55,7 +57,7 @@ export const useAdministradorStore = defineStore('administrador', () => {
     const putAdmin = async (id, admin) => {
         try {
             loading.value = true;
-            const r = await axios.put(`administrador/${id}`, admin)
+            const r = await axios.put(`administrador/actualizar/${id}`, admin)
             return r
         } catch (error) {
             return error
@@ -100,13 +102,13 @@ export const useAdministradorStore = defineStore('administrador', () => {
         }
     };
 
-    // const logout = () => {
-    //     token.value = '';
-    //     user.value = {};
-    // };
+    const logout = () => {
+        token.value = '';
+        admin.value = {};
+    };
 
 
-    return { getAdmin, login, getAdminActivos, getAdminDesactivados, postAdmin, putAdmin, putAdminActivar, putAdminDesactivar, loading };
+    return { getAdmin, login, getAdminActivos, getAdminDesactivados, postAdmin, putAdmin, putAdminActivar, putAdminDesactivar, loading,logout };
 }, {
     persist: true
 });

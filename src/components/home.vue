@@ -9,7 +9,9 @@
           </q-avatar>
           BUENAS PRACTICAS AGRICOLAS
         </q-toolbar-title>
+        <q-btn dense flat round icon="logout" @click="logout" />
       </q-toolbar>
+
     </q-header>
 
     <q-drawer show-if v-model="leftDrawerOpen" side="left" bordered>
@@ -143,6 +145,13 @@
 </template>
 <script setup>
 import { ref } from 'vue'
+import { useAdministradorStore } from '../store/administrador';
+import { routes } from "../routes/routes.js";
+import { useRouter } from 'vue-router';
+const useAdmin=useAdministradorStore()
+const router = useRouter();
+
+
 
 const leftDrawerOpen = ref(false)
 const submenu = ref({
@@ -160,6 +169,11 @@ const toggleLeftDrawer = () => {
 const toggleSubmenu = (menu) => {
   submenu.value[menu] = !submenu.value[menu]
 }
+const logout = () => {
+  useAdmin.logout();
+  localStorage.removeItem('selectedRoute'); 
+  router.push('/');
+};
 
 const usuariosItems = [
   { label: 'Administrador', to: '/administrador', icon: 'location_city' },
@@ -188,14 +202,14 @@ const gestionItems = [
   { label: 'Gastos', to: '/gastos', icon: 'business' },
   { label: 'Mantenimientos', to: '/mantenimiento', icon: 'business' },
   { label: 'Nomina', to: '/nomina', icon: 'business' },
-  { label: 'Proveedores', to: '/proveedor', icon: 'business' }
+  { label: 'Proveedores', to: '/proveedores', icon: 'business' }
 ]
 
 const inventarioItems = [
   { label: 'Principal', to: '/inventario1', icon: 'inventory' },
   { label: 'Semillas', to: '/semilla', icon: 'inventory' },
   { label: 'Insumos', to: '/insumo', icon: 'inventory' },
-  { label: 'Maquinaria & Herramientas', to: '/maquinariaherramientas', icon: 'inventory' },
+  { label: 'Maquinaria & Herramientas', to: '/maquinaria', icon: 'inventory' },
 ]
 
 </script>
