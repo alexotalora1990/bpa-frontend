@@ -21,13 +21,13 @@
                             type="text" :rules="[
                                 (val) => !!val || 'Este campo es requerido',
                                 (val) => !!val.trim() || 'Este campo no puede estar vacío',
-                                (val) => val.length >= 3 || 'Debe tener al menos 8 caracteres'
+                                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
                             ]" hide-bottom-space />
                         <q-input outlined v-model="numdocumento" label="Numero de Documento" class="q-my-md q-mx-md"
                             type="text" :rules="[
                                 (val) => !!val || 'Este campo es requerido',
                                 (val) => !!val.trim() || 'Este campo no puede estar vacío',
-                                (val) => val.length >= 8 || 'Debe tener al menos 3 caracteres',
+                                (val) => val.length >= 8 || 'Debe tener al menos 8 caracteres',
                                 (val) => /^[0-9]*$/.test(val) || 'Solo se permiten numeros'
                             ]" hide-bottom-space />
                         <q-input outlined v-model="correo" label="Correo" class="q-my-md q-mx-md" type="email" :rules="[
