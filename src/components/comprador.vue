@@ -70,7 +70,7 @@
             </q-form>
         </div>
         <div style="display: flex; justify-content: center">
-            <q-table title="Producción" title-class="text-green text-weight-bolder text-h5"
+            <q-table title="Compradores" title-class="text-green text-weight-bolder text-h5"
                 table-header-class="text-black" :rows="rows" :filter="filter" :columns="columns" row-key="name"
                 style="width: 90%; margin-bottom: 6%;" :loading="useComprador.loading">
                 <template v-slot:top-right>
@@ -187,8 +187,7 @@ function traerDatos(comprador) {
 
 async function editar() {
     if (!validarCampos()) return;
-    try {
-        await useComprador.putCompradores(id.value, {
+    const res = await useComprador.putCompradores(id.value, {
             idproduccion: idproduccion.value.value,
             nombre: nombre.value,
             telefono: telefono.value,
@@ -197,22 +196,16 @@ async function editar() {
             numloteComercial: numloteComercial.value,
             valor: valor.value
         });
-
-        Notify.create({
-            message: 'Comprador actualizado correctamente!',
-            position: "center",
-            color: "green"
-        });
-    } catch (error) {
-        Notify.create({
-            type: 'negative',
-            message: error.response.data.errors[0]?.msg
-        });
-        console.error('Error al modificar la parcela', error);
-    }
-    listarTodo();
-    limpiarCampos();
-    cerrar();
+        if(res==true){
+            Notify.create({
+                message: 'Comprador actualizado correctamente!',
+                position: "center",
+                color: "green"
+            });
+            listarTodo();
+            limpiarCampos();
+            cerrar();
+        }
 }
 
 
