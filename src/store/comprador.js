@@ -84,10 +84,16 @@ export const useCompradorStore = defineStore("store", () =>{
                 //     token:useAdministrador.token
                 // }
             })
+            console.log(r);
+            
             return r
         } catch (error) {
             loading.value=true
-            console.log(error);
+            Notify.create({
+                type: 'negative',
+                message: error.response.data.errors[0]?.msg
+            });
+            return error
         }finally{
             loading.value=false
         }
