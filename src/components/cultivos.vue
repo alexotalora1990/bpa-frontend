@@ -1,12 +1,20 @@
+
+
+
 <template>
     <div style="height: 100vh; overflow-y: auto;">
+     
+        <div v-if="useCultivo.loading" class="overlay">
+            <q-spinner size="80px" color="grey" />
+        </div>
+
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Cultivo</q-btn>
             <q-select outlined v-model="listar" label="Seleccione" :options="listados"
                 class="q-my-md q-mx-md custom-select" />
-            <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()"
-                :loading="useCultivo.loading">Filtrar</q-btn>
+            <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
         </div>
+        
         <div>
             <q-form ref="formulario" @submit.prevent="modify">
                 <q-dialog v-model="alert" persistent>
@@ -45,17 +53,18 @@
                             ]" hide-bottom-space />
 
                         <q-card-actions align="right">
-                            <q-btn :label="accion === 1 ? 'Agregar' : 'Editar'" type="submit" color="green" class="text-white" @click="modify" :loading="useCultivo.loading" />
-
+                            <q-btn :label="accion === 1 ? 'Agregar' : 'Editar'" type="submit" color="green" class="text-white" @click="modify" />
                         </q-card-actions>
                     </q-card>
                 </q-dialog>
             </q-form>
         </div>
+        
         <div style="display: flex; justify-content: center">
             <q-table title="Cultivos" title-class="text-green text-weight-bolder text-h5"
                 table-header-class="text-black" :rows="rows" :filter="filter" :columns="columns" row-key="name"
                 style="width: 90%; margin-bottom: 6%;" :loading="useCultivo.loading">
+                
                 <template v-slot:top-right>
                     <q-input color="black" v-model="filter" placeholder="Buscar">
                         <template v-slot:append>
@@ -63,29 +72,29 @@
                         </template>
                     </q-input>
                 </template>
+
                 <template v-slot:body-cell-fechas="props">
                     <q-td :props="props"></q-td>
                 </template>
+
                 <template v-slot:body-cell-estado="props">
                     <q-td :props="props">
-                        <template v-slot:loading>
-                            <q-spinner color="primary" size="100px" style="align-self: center; margin-bottom: 10px;" />
-                        </template>
                         <p style="color: green;" v-if="props.row.estado == 1">Activo</p>
                         <p style="color: red;" v-else>Inactivo</p>
                     </q-td>
                 </template>
+
                 <template v-slot:body-cell-opciones="props">
                     <q-td :props="props">
                         <q-btn @click="traerDatos(props.row)">
                             <q-tooltip>Editar</q-tooltip>✏️</q-btn>
-                        <q-btn @click="desactivar(props.row)" v-if="props.row.estado == 1"
-                            :loading="useCultivo.loading">
+                        <q-btn @click="desactivar(props.row)" v-if="props.row.estado == 1">
                             <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
-                        <q-btn @click="activar(props.row)" v-else :loading="useCultivo.loading">
+                        <q-btn @click="activar(props.row)" v-else>
                             <q-tooltip>Activar</q-tooltip>✅</q-btn>
                     </q-td>
                 </template>
+                
             </q-table>
         </div>
     </div>
@@ -103,7 +112,7 @@ const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 
 
 let rows = ref([]);
-
+const loadingRows = ref({});
 let idparcela = ref('');
 let id = ref("")
 let nombre = ref('');
@@ -322,20 +331,49 @@ async function desactivar(cultivos) {
             console.log('Error de sede:', error);
         })
 }
-async function activar(cultivos) {
-    const r = await useCultivo.putCultivosActivar(cultivos._id)
-        .then((response) => {
-            Notify.create({
-                message: 'cultivo activado correctamente!',
-                position: "center",
-                color: "green"
-            });
-            listarTodo()
-        })
-        .catch((error) => {
-            console.log('Error de cultivo:', error);
-        })
+// async function activar(cultivos) {
+    
+//     const r = await useCultivo.putCultivosActivar(cultivos._id)
+//         .then((response) => {
+//             Notify.create({
+//                 message: 'cultivo activado correctamente!',
+//                 position: "center",
+//                 color: "green"
+//             });
+//             listarTodo()
+//         })
+//         .catch((error) => {
+//             console.log('Error de cultivo:', error);
+//         })
+// }
+async function activar(cultivo) {
+  // Marcar como cargando solo la fila correspondiente
+  loadingRows.value[cultivo._id] = true;
+
+  try {
+    const response = await useCultivo.putCultivosActivar(cultivo._id);
+    // Mostrar notificación de éxito
+    Notify.create({
+      message: 'Cultivo activado correctamente!',
+      position: "center",
+      color: "green"
+    });
+    // Volver a listar todos los cultivos actualizados
+    listarTodo();
+  } catch (error) {
+    console.error('Error al activar el cultivo:', error);
+    // Notificar del error
+    Notify.create({
+      message: 'Error al activar el cultivo',
+      position: 'center',
+      color: 'red'
+    });
+  } finally {
+    // Desactivar el estado de carga para la fila
+    loadingRows.value[cultivo._id] = false;
+  }
 }
+
 
 //ACTIVAR Y DESACTIVAR EN LA TABLA =========================
 
@@ -421,4 +459,18 @@ onMounted(() => {
     color: #333;
     min-width: 200px;
 }
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Asegura que esté por encima de otros elementos */
+}
+
 </style>
