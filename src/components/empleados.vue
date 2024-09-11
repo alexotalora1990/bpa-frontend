@@ -135,28 +135,19 @@ const descripcion = ref("");
 
 
 async function crear() {
-    if (!validarCampos()) return;
-    try {
-        const empleadoData = {
-            nombre: nombre.value,
-            numdocumento: numdocumento.value,
-            correo: correo.value,
-            direccion: direccion.value,
-            telefono: telefono.value,
-            estudios: estudios.value,
-            descripcion: descripcion.value
-        };
-
-        await useEmpleado.postEmpleado(empleadoData);
-    } catch (error) {
+    if (!validarCampos()) { return; }
+    const res = await useEmpleado.postEmpleado({
+        nombre: nombre.value,
+        numdocumento: numdocumento.value,
+        correo: correo.value,
+        direccion: direccion.value,
+        telefono: telefono.value,
+        estudios: estudios.value,
+        descripcion: descripcion.value
+    });
+    if (res == true) {
         Notify.create({
-            message: '¡Ocurrió un error al crear el empleado!',
-            position: "center",
-            color: "red"
-        });
-    } finally {
-        Notify.create({
-            message: '¡Empleado creado existosamente!',
+            message: 'Empleado creado exitosamente!',
             position: "center",
             color: "green"
         });
@@ -165,6 +156,7 @@ async function crear() {
         cerrar();
     }
 }
+
 function traerDatos(empleados) {
     alert.value = true;
     accion.value = 2;
@@ -180,34 +172,26 @@ function traerDatos(empleados) {
 
 async function editar() {
     if (!validarCampos()) return;
-    try {
-        await useEmpleado.putEmpleado(id.value, {
-            nombre: nombre.value,
-            numdocumento: numdocumento.value,
-            correo: correo.value,
-            direccion: direccion.value,
-            telefono: telefono.value,
-            estudios: estudios.value,
-            descripcion: descripcion.value
-        });
-
+    const res = await useEmpleado.putEmpleado(id.value, {
+        nombre: nombre.value,
+        numdocumento: numdocumento.value,
+        correo: correo.value,
+        direccion: direccion.value,
+        telefono: telefono.value,
+        estudios: estudios.value,
+        descripcion: descripcion.value
+    });
+    if (res == true) {
         Notify.create({
             message: 'Empleado actualizado correctamente!',
             position: "center",
             color: "green"
         });
-    } catch (error) {
-        Notify.create({
-            type: 'negative',
-            message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar el empleado',
-        });
-        console.error('Error al modificar el empleado', error);
+        listarTodo();
+        limpiarCampos();
+        cerrar();
     }
-    listarTodo();
-    limpiarCampos();
-    cerrar();
 }
-
 
 async function modify() {
     try {
