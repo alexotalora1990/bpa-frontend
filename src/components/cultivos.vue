@@ -133,6 +133,11 @@ async function crear() {
             tipo: tipo.value,
 
         });
+        Notify.create({
+            message: 'Cultivo agregado correctamente!',
+            position: "center",
+            color: "green"
+        });
     } catch (error) {
         Notify.create({
             message: '¡Ocurrió un error al crear el cultivo!',
@@ -205,11 +210,7 @@ async function modify() {
       await editar();
     }
 
-    Notify.create({
-      type: "positive",
-      message: "Operación realizada con éxito",
-      icon: "check",
-    });
+   
 
   } catch (error) {
     Notify.create({
