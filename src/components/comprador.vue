@@ -137,36 +137,26 @@ let valor = ref('');
 
 async function crear() {
     if (!validarCampos()) { return; }
-    try {
-        await useComprador.postCompradores({
-            idproduccion: idproduccion.value.value,
-            nombre: nombre.value,
-            telefono: telefono.value,
-            cantidad: cantidad.value,
-            numguiaTransporte: numguiaTransporte.value,
-            numloteComercial: numloteComercial.value,
-            valor: valor.value,
-        });
-    } catch (error) {
+    const res = await useComprador.postCompradores({
+        idproduccion: idproduccion.value.value,
+        nombre: nombre.value,
+        telefono: telefono.value,
+        cantidad: cantidad.value,
+        numguiaTransporte: numguiaTransporte.value,
+        numloteComercial: numloteComercial.value,
+        valor: valor.value,
+    });
+    if (res == true) {
         Notify.create({
-            message: '¡Ocurrió un error al crear la parcela!',
-            position: 'center',
-            color: 'red'
-        });
-        console.log(error);
-
-    } finally {
-        Notify.create({
-            message: '¡Comprador agregado corrrectamente!',
-            position: 'center',
-            color: 'green'
+            message: 'Comprador creado exitosamente!',
+            position: "center",
+            color: "green"
         });
         listarTodo();
         limpiarCampos();
         cerrar();
     }
 }
-
 
 function traerDatos(comprador) {
     alert.value = true;
@@ -184,28 +174,27 @@ function traerDatos(comprador) {
     valor.value = comprador.valor;
 }
 
-
 async function editar() {
     if (!validarCampos()) return;
     const res = await useComprador.putCompradores(id.value, {
-            idproduccion: idproduccion.value.value,
-            nombre: nombre.value,
-            telefono: telefono.value,
-            cantidad: cantidad.value,
-            numguiaTransporte: numguiaTransporte.value,
-            numloteComercial: numloteComercial.value,
-            valor: valor.value
+        idproduccion: idproduccion.value.value,
+        nombre: nombre.value,
+        telefono: telefono.value,
+        cantidad: cantidad.value,
+        numguiaTransporte: numguiaTransporte.value,
+        numloteComercial: numloteComercial.value,
+        valor: valor.value
+    });
+    if (res == true) {
+        Notify.create({
+            message: 'Comprador actualizado correctamente!',
+            position: "center",
+            color: "green"
         });
-        if(res==true){
-            Notify.create({
-                message: 'Comprador actualizado correctamente!',
-                position: "center",
-                color: "green"
-            });
-            listarTodo();
-            limpiarCampos();
-            cerrar();
-        }
+        listarTodo();
+        limpiarCampos();
+        cerrar();
+    }
 }
 
 
@@ -287,7 +276,7 @@ async function desactivar(producciones) {
     const r = await useComprador.putCompradoresDesactivar(producciones._id)
         .then((response) => {
             Notify.create({
-                message: 'Producción Desactivada correctamente!',
+                message: 'Comprador Desactivado correctamente!',
                 position: "center",
                 color: "orange"
             });
@@ -297,11 +286,11 @@ async function desactivar(producciones) {
             console.log('Error de sede:', error);
         })
 }
-async function activar(parcelas) {
-    const r = await useComprador.putCompradoresActivar(parcelas._id)
+async function activar(producciones) {
+    const r = await useComprador.putCompradoresActivar(producciones._id)
         .then((response) => {
             Notify.create({
-                message: 'Producción activada correctamente!',
+                message: 'Comprador activado correctamente!',
                 position: "center",
                 color: "green"
             });
@@ -408,8 +397,6 @@ function limpiarCampos() {
     numloteComercial.value = '';
     valor.value = '';
 }
-
-
 
 function validarCampos() {
     if (!idproduccion.value || !nombre.value || !telefono.value || !cantidad.value ||

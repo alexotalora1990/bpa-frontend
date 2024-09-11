@@ -54,10 +54,14 @@ export const useEmpleadoStore = defineStore("empleado", () =>{
             loading.value=true
             const r = await axios.post("empleado/agregar", data, {
             })
-            return r
+            return true
         } catch (error) {
             loading.value=true
-            console.log(error);
+            Notify.create({
+                type: 'negative',
+                message: error.response.data.errors[0]?.msg
+            });
+            return false
         }finally{
             loading.value=false
         }
@@ -67,10 +71,14 @@ export const useEmpleadoStore = defineStore("empleado", () =>{
             loading.value=true
             const r = await axios.put(`empleado/actualizar/${id}`, data,{
             })
-            return r
+            return true
         } catch (error) {
             loading.value=true
-            console.log(error);
+            Notify.create({
+                type: 'negative',
+                message: error.response.data.errors[0]?.msg
+            });
+            return false
         }finally{
             loading.value=false
         }
