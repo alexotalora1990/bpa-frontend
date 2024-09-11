@@ -7,34 +7,70 @@
             <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
         </div>
         <div>
-            <q-dialog v-model="alert" persistent>
-                <q-card style="width: 700px">
-                    <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
-                        <div class="text-h6 text-white">
-                            {{ accion == 1 ? "Crear Compra" : "Editar Compra" }}
-                        </div>
-                        <q-space />
-                        <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
-                    </q-card-section>
-                    <q-select outlined v-model="idfincas" label="Seleccione una Producción" :options="options"
-                        class="q-my-md q-mx-md" @filter="filterFn" hide-bottom-space />
-                    <q-input outlined v-model="nombre" label="Nombre del Comprador" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="telefono" label="Telefono" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="cantidad" label="Cantidad" class="q-my-md q-mx-md" type="number" />
-                    <q-input outlined v-model="numguiaTransporte" label="#guiaTransporte" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="numloteComercial" label="#loteComercial" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="valor" label="valor" class="q-my-md q-mx-md" type="number" />
-                    <q-card-actions align="right">
-                        <q-btn @click="modify()" color="green" class="text-white">
-                            {{ accion == 1 ? "Agregar" : "Editar" }}
-                        </q-btn>
-                        <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
-                    </q-card-actions>
-                </q-card>
-            </q-dialog>
+            <q-form ref="formulario" @submit.prevent="modify">
+                <q-dialog v-model="alert" persistent>
+                    <q-card style="width: 700px">
+                        <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
+                            <div class="text-h6 text-white">
+                                {{ accion == 1 ? "Crear Compra" : "Editar Compra" }}
+                            </div>
+                            <q-space />
+                            <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
+                        </q-card-section>
+                        <q-select outlined v-model="idproduccion" label="Seleccione una Producción" :options="options"
+                            class="q-my-md q-mx-md" @filter="filterFn" hide-bottom-space
+                            :rules="[(val) => !!val || 'Este campo es requerido']" />
+
+                        <q-input outlined v-model="nombre" label="Nombre del Comprador" class="q-my-md q-mx-md"
+                            type="text" :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+                            ]" hide-bottom-space />
+
+                        <q-input outlined v-model="telefono" label="Teléfono" class="q-my-md q-mx-md" type="text"
+                            :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                                (val) => /^[0-9]+$/.test(val) || 'Solo se permiten números',
+                                (val) => val.length === 10 || 'Debe tener exactamente 10 dígitos'
+                            ]" hide-bottom-space />
+
+                        <q-input outlined v-model="cantidad" label="Cantidad" class="q-my-md q-mx-md" type="number"
+                            :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => val >= 0 || 'La cantidad no puede ser negativa'
+                            ]" hide-bottom-space />
+
+                        <q-input outlined v-model="numguiaTransporte" label="#Guía de Transporte"
+                            class="q-my-md q-mx-md" type="text" :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío'
+                            ]" hide-bottom-space />
+
+                        <q-input outlined v-model="numloteComercial" label="#Lote Comercial" class="q-my-md q-mx-md"
+                            type="text" :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío'
+                            ]" hide-bottom-space />
+
+                        <q-input outlined v-model="valor" label="Valor" class="q-my-md q-mx-md" type="number" :rules="[
+                            (val) => !!val || 'Este campo es requerido',
+                            (val) => val > 0 || 'Debe ser un valor positivo'
+                        ]" hide-bottom-space />
+
+                        <q-card-actions align="right">
+                            <q-btn @click="modify()" color="green" class="text-white">
+                                {{ accion == 1 ? "Agregar" : "Editar" }}
+                            </q-btn>
+                            <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+                        </q-card-actions>
+                    </q-card>
+                </q-dialog>
+            </q-form>
         </div>
         <div style="display: flex; justify-content: center">
-            <q-table title="Producción" title-class="text-green text-weight-bolder text-h5"
+            <q-table title="Compradores" title-class="text-green text-weight-bolder text-h5"
                 table-header-class="text-black" :rows="rows" :filter="filter" :columns="columns" row-key="name"
                 style="width: 90%; margin-bottom: 6%;" :loading="useComprador.loading">
                 <template v-slot:top-right>
@@ -60,7 +96,8 @@
                     <q-td :props="props">
                         <q-btn @click="traerDatos(props.row)">
                             <q-tooltip>Editar</q-tooltip>✏️</q-btn>
-                        <q-btn @click="desactivar(props.row)" v-if="props.row.estado == 1" :loading="useComprador.loading">
+                        <q-btn @click="desactivar(props.row)" v-if="props.row.estado == 1"
+                            :loading="useComprador.loading">
                             <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
                         <q-btn @click="activar(props.row)" v-else :loading="useComprador.loading">
                             <q-tooltip>Activar</q-tooltip>✅</q-btn>
@@ -83,47 +120,77 @@ const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 let rows = ref([]);
 let alert = ref(false);
 let accion = ref(1);
+const formulario = ref(null);
 
 let producciones = []
 let datos = {}
 let options = ref(producciones)
 
 let id = ref("")
-let idfincas = ref('');
-let numero = ref('');
-let ubicacion = ref({
-    latitud:"",
-    longitud:""
-});
-let cultivoAnterior = ref('');
-let cultivoActual = ref('');
-let descripcion = ref('');
-let area = ref('');
-let asistenteTecnico = ref('');
+let idproduccion = ref('');
+let nombre = ref('');
+let telefono = ref('');
+let cantidad = ref('');
+let numguiaTransporte = ref('');
+let numloteComercial = ref('');
+let valor = ref('');
 
 async function crear() {
-    if (!validarCampos()) {return;}
-    try {
-        await useParcela.postParcelas({
-            idfincas: idfincas.value.value,
-            numero: numero.value,
-            ubicacion:{
-                latitud: ubicacion.value.latitud,
-                longitud: ubicacion.value.longitud,
-            },
-            cultivoAnterior: cultivoAnterior.value,
-            cultivoActual: cultivoActual.value,
-            descripcion: descripcion.value,
-            area: area.value,
-            asistenteTecnico: asistenteTecnico.value
-        });
-    } catch (error) {
+    if (!validarCampos()) { return; }
+    const res = await useComprador.postCompradores({
+        idproduccion: idproduccion.value.value,
+        nombre: nombre.value,
+        telefono: telefono.value,
+        cantidad: cantidad.value,
+        numguiaTransporte: numguiaTransporte.value,
+        numloteComercial: numloteComercial.value,
+        valor: valor.value,
+    });
+    if (res == true) {
         Notify.create({
-            message: '¡Ocurrió un error al crear la parcela!',
-            position: 'center',
-            color: 'red'
+            message: 'Comprador creado exitosamente!',
+            position: "center",
+            color: "green"
         });
-    } finally {
+        listarTodo();
+        limpiarCampos();
+        cerrar();
+    }
+}
+
+function traerDatos(comprador) {
+    alert.value = true;
+    accion.value = 2;
+    id.value = comprador._id;
+    idproduccion.value = {
+        label: comprador.idproduccion.especie,
+        value: comprador.idproduccion._id
+    }
+    nombre.value = comprador.nombre;
+    telefono.value = comprador.telefono;
+    cantidad.value = comprador.cantidad;
+    numguiaTransporte.value = comprador.numguiaTransporte;
+    numloteComercial.value = comprador.numloteComercial;
+    valor.value = comprador.valor;
+}
+
+async function editar() {
+    if (!validarCampos()) return;
+    const res = await useComprador.putCompradores(id.value, {
+        idproduccion: idproduccion.value.value,
+        nombre: nombre.value,
+        telefono: telefono.value,
+        cantidad: cantidad.value,
+        numguiaTransporte: numguiaTransporte.value,
+        numloteComercial: numloteComercial.value,
+        valor: valor.value
+    });
+    if (res == true) {
+        Notify.create({
+            message: 'Comprador actualizado correctamente!',
+            position: "center",
+            color: "green"
+        });
         listarTodo();
         limpiarCampos();
         cerrar();
@@ -131,69 +198,32 @@ async function crear() {
 }
 
 
-function traerDatos(parcela) {
-    alert.value = true;
-    accion.value = 2;
-    id.value = parcela._id;
-    idfincas.value = {
-    label: parcela.idfincas.nombre,
-    value: parcela.idfincas._id
-    }
-    numero.value = parcela.numero;
-    ubicacion.value.latitud=parcela.ubicacion?.latitud;
-    ubicacion.value.longitud=parcela.ubicacion?.longitud;
-    cultivoAnterior.value = parcela.cultivoAnterior;
-    cultivoActual.value = parcela.cultivoActual;
-    descripcion.value = parcela.descripcion;
-    area.value = parcela.area;
-    asistenteTecnico.value = parcela.asistenteTecnico;
-}
 
-
-async function editar() {
-    if (!validarCampos()) return;
+async function modify() {
     try {
-        await useParcela.putParcelas(id.value, {
-            idfincas: idfincas.value.value,
-            numero: numero.value,
-            ubicacion: {
-                latitud: ubicacion.value.latitud,
-                longitud: ubicacion.value.longitud
-            },
-            cultivoAnterior: cultivoAnterior.value,
-            cultivoActual: cultivoActual.value,
-            descripcion: descripcion.value,
-            area: area.value,
-            asistenteTecnico: asistenteTecnico.value
-        });
-
-        Notify.create({
-            message: 'Parcela actualizada correctamente!',
-            position: "center",
-            color: "green"
-        });
+        const valid = await formulario.value.validate();
+        if (!valid) {
+            Notify.create({
+                type: "negative",
+                message: "Por favor, complete correctamente todos los campos Correctamente",
+                icon: "error",
+            });
+            return;
+        }
+        if (accion.value === 1) {
+            await crear();
+        } else {
+            await editar();
+        }
     } catch (error) {
         Notify.create({
-            type: 'negative',
-            message: error.response?.data?.errors?.[0]?.msg || 'Error al modificar la parcela',
+            type: "negative",
+            message: "Error en la operación",
+            icon: "error",
         });
-        console.error('Error al modificar la parcela', error);
-    }
-    listarTodo();
-    limpiarCampos();
-    cerrar();
-}
-
-
-
-function modify() {
-    if (accion.value === 1) {
-        crear()
-    } else {
-        editar()
+        console.error("Error en modify:", error);
     }
 }
-
 
 const listar = ref('');
 const listados = ['Listar todos', 'Activos', 'Inactivos'];
@@ -246,7 +276,7 @@ async function desactivar(producciones) {
     const r = await useComprador.putCompradoresDesactivar(producciones._id)
         .then((response) => {
             Notify.create({
-                message: 'Producción Desactivada correctamente!',
+                message: 'Comprador Desactivado correctamente!',
                 position: "center",
                 color: "orange"
             });
@@ -256,11 +286,11 @@ async function desactivar(producciones) {
             console.log('Error de sede:', error);
         })
 }
-async function activar(parcelas) {
-    const r = await useComprador.putCompradoresActivar(parcelas._id)
+async function activar(producciones) {
+    const r = await useComprador.putCompradoresActivar(producciones._id)
         .then((response) => {
             Notify.create({
-                message: 'Producción activada correctamente!',
+                message: 'Comprador activado correctamente!',
                 position: "center",
                 color: "green"
             });
@@ -359,24 +389,18 @@ function cerrar() {
 }
 
 function limpiarCampos() {
-    idfincas.value = '';
-    numero.value = '';
-    ubicacion.value = {
-        latitud:"",
-        longitud:""
-    }
-    cultivoAnterior.value = '';
-    cultivoActual.value = '';
-    descripcion.value = '';
-    area.value = '';
-    asistenteTecnico.value = '';
+    idproduccion.value = '';
+    nombre.value = '';
+    telefono.value = '';
+    cantidad.value = '';
+    numguiaTransporte.value = '';
+    numloteComercial.value = '';
+    valor.value = '';
 }
 
-
 function validarCampos() {
-    if (!idfincas.value || !numero.value || !ubicacion.value.latitud || !ubicacion.value.longitud ||
-        !cultivoAnterior.value || !cultivoActual.value || !descripcion.value || !area.value ||
-        !asistenteTecnico.value) {
+    if (!idproduccion.value || !nombre.value || !telefono.value || !cantidad.value ||
+        !numguiaTransporte.value || !numloteComercial.value || !valor.value) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
             color: 'negative',
