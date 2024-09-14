@@ -1,6 +1,9 @@
 
 <template>
     <div style="height: 100vh; overflow-y: auto;">
+        <div v-if="useElaboracion.loading" class="overlay">
+            <q-spinner size="80px" color="grey" />
+        </div>
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Sustrato</q-btn>
         </div>
@@ -377,5 +380,17 @@ onMounted(() => {
     background-color: white;
     color: #333;
     min-width: 200px;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; 
 }
 </style>
