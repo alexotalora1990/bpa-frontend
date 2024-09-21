@@ -8,7 +8,7 @@
           align-items: center;
         "
       >
-        <q-btn color="red" class="q-my-md q-ml-md" @click="abrir()"
+        <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()"
           >Crear Semilla</q-btn
         >
         <q-select
@@ -26,11 +26,12 @@
         <q-dialog v-model="alert" persistent>
           <q-card class="" style="width: 700px">
             <q-card-section
-              style="background-color: #a1312d; margin-bottom: 20px"
+              style="background-color: #008000; margin-bottom: 20px" class="row items-center"
             >
               <div class="text-h6 text-white">
                 {{ accion == 1 ? "Crear Semilla" : "Editar Semilla" }}
               </div>
+              <q-space/>
               <q-btn
                 flat
                 dense
@@ -131,10 +132,11 @@
             />
   
             <q-card-actions align="right">
-              <q-btn @click="modify()" color="red" class="text-white">
+              <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+              <q-btn @click="modify()" color="green
+              " class="text-white">
                 {{ accion == 1 ? "Agregar" : "Editar" }}
               </q-btn>
-              <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -291,9 +293,9 @@ function traerDatos(semilla) {
   alert.value = true;
   accion.value = 2;
   idproveedores.value = {
-    label: semilla.idproveedores.nombre,
-    value: semilla.idproveedores._id,
-  };
+  label: semilla.idproveedores.nombre,
+  value: semilla.idproveedores._id,
+};
   numFactura.value = semilla.numFactura;
   fechaCompra.value = semilla.fechaCompra;
   fechaVencimiento.value = semilla.fechaVencimiento;
@@ -349,14 +351,14 @@ function modify() {
   }
 }
 
-let proveed = [];
+let proveedores = [];
 let datos = {};
-let options = ref(proveed);
+let options = ref(proveedores);
 
 function filterFn(val, update, abort) {
   update(() => {
     const needle = val.toLowerCase();
-    options.value = proveed.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+    options.value = proveedores.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
   })
 }
 
@@ -368,9 +370,9 @@ async function listarProveedores() {
       label: item.nombre,
       value: item._id,
     };
-    proveed.push(datos);
+    proveedores.push(datos);
   });
-  console.log(proveed);
+  console.log(proveedores);
 }
 
 
@@ -390,6 +392,7 @@ function filtrar() {
 async function listarSemillas() {
   const r = await useSemilla.listarSemillas()
   rows.value = r.data.semilla;
+  console.log(rows.value)
 }
 
 async function listarSemillasActivas() {
@@ -432,14 +435,14 @@ async function activar(semilla) {
 }
 
 const columns = ref([
-  {
-    name: "Proveedor",
-    required: true,
-    label: "Proveedor",
-    align: "center",
-    field: (row) => row.idproveedores.nombre,
-    sortable: true,
-  },
+ {
+  name: "idproveedores",
+  required: true,
+  label: "Proveedor",
+  align: "center",
+  field: (row) => row.idproveedores.nombre,
+  sortable: true,
+},
   {
     name: "numFactura",
     required: true,
@@ -579,8 +582,8 @@ function validarCampos() {
 }
 
 onMounted(async () => {
-  listarSemillas();
   listarProveedores();
+  listarSemillas();
 });
 
 </script>

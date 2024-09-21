@@ -17,7 +17,7 @@ import Nomina from "../components/nomina.vue"
 import Riego from "../components/riego.vue"
 import Comprador from "../components/comprador.vue"
 import Sustrato from '../components/elaboracionSustrato.vue';
-
+import Semilla from '../components/semillas.vue'
 
 const routes = [
     { path: "/", component: Login },
@@ -41,7 +41,8 @@ const routes = [
             {path:"/produccion",component:Produccion},
             {path:"/riegos",component:Riego},
             {path:"/comprador",component:Comprador},
-            {path: "/elaboracionSustrato",component:Sustrato}
+            {path: "/elaboracionSustrato",component:Sustrato},
+            {path: "/semilla",component:Semilla}
 
 
 
