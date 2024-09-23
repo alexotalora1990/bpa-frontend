@@ -17,6 +17,9 @@
                             <q-space />
                             <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                         </q-card-section>
+                        <q-select outlined v-model="idfinca" label="Seleccione una Finca" :options="options"
+                            class="q-my-md q-mx-md" @filter="filterFn" hide-bottom-space
+                            :rules="[(val) => !!val || 'Este campo es requerido']" />
                         <q-input outlined v-model="nombre" label="Nombre del Empleado" class="q-my-md q-mx-md"
                             type="text" :rules="[
                                 (val) => !!val || 'Este campo es requerido',
@@ -117,14 +120,22 @@ import { onMounted, ref } from 'vue';
 import { Notify } from "quasar"
 import { useEmpleadoStore } from "../store/empleados.js";
 const useEmpleado = useEmpleadoStore();
+import { useFincaStore } from "../store/fincas.js";
+const useFinca = useFincaStore();
+
 
 const filter = ref(''); // ESTO ES PARA EL BUSCADOR DE LA TABLA
 let rows = ref([]);
 let alert = ref(false);
 let accion = ref(1);
+
 const formulario = ref(null);
+let fincas = []
+let datos = {}
+let options = ref(fincas)
 
 let id = ref("")
+let idfinca = ref('');
 const nombre = ref("");
 const numdocumento = ref("");
 const correo = ref("");
@@ -134,9 +145,11 @@ const estudios = ref("");
 const descripcion = ref("");
 
 
+
 async function crear() {
     if (!validarCampos()) { return; }
     const res = await useEmpleado.postEmpleado({
+        idfinca: idfinca.value.value,
         nombre: nombre.value,
         numdocumento: numdocumento.value,
         correo: correo.value,
@@ -161,6 +174,10 @@ function traerDatos(empleados) {
     alert.value = true;
     accion.value = 2;
     id.value = empleados._id;
+    idfinca.value = {
+        label: empleados.idfinca.nombre,
+        value: empleados.idfinca._id
+    }
     nombre.value = empleados.nombre;
     numdocumento.value = empleados.numdocumento;
     correo.value = empleados.correo;
@@ -173,6 +190,7 @@ function traerDatos(empleados) {
 async function editar() {
     if (!validarCampos()) return;
     const res = await useEmpleado.putEmpleado(id.value, {
+        idfinca: idfinca.value.value,
         nombre: nombre.value,
         numdocumento: numdocumento.value,
         correo: correo.value,
@@ -250,6 +268,23 @@ async function listarInactivos() {
     rows.value = r.data.empleados;
 
 }
+async function listarFincas() {
+    const data = await useFinca.getFincasActivos()
+    data.data.fincaActiva.forEach(item => {
+        datos = {
+            label: item.nombre,
+            value: item._id
+        }
+        fincas.push(datos)
+    })
+    console.log(fincas);
+}
+function filterFn(val, update, abort) {
+    update(() => {
+        const needle = val.toLowerCase();
+        options.value = fincas.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
+    })
+}
 // el r.data.{empleados}, empleado varia segun el rjson de la funcion get en el backend
 
 //APARTADO DE TRAER LOS DATOS =============================
@@ -289,7 +324,22 @@ async function activar(empleados) {
 //ACTIVAR Y DESACTIVAR EN LA TABLA =========================
 
 const columns = ref([
-
+    {
+        name: 'nombre',
+        required: true,
+        label: 'Finca',
+        align: 'center',
+        field: (row) => row.idfinca.nombre,
+        sortable: true
+    },
+    {
+        name: 'nombre',
+        required: true,
+        label: 'Nombre',
+        align: 'center',
+        field: 'nombre',
+        sortable: true
+    },
     {
         name: 'nombre',
         required: true,
@@ -377,6 +427,7 @@ function cerrar() {
 }
 
 function limpiarCampos() {
+    idfinca.value = "";
     nombre.value = '';
     numdocumento.value = '';
     correo.value = '';
@@ -387,7 +438,7 @@ function limpiarCampos() {
 }
 
 function validarCampos() {
-    if (!nombre.value || !numdocumento.value || !correo.value ||
+    if (!idfinca.value || !nombre.value || !numdocumento.value || !correo.value ||
         !direccion.value || !telefono.value || !estudios.value || !descripcion.value) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
@@ -401,8 +452,8 @@ function validarCampos() {
 
 
 onMounted(() => {
+    listarFincas()
     listarTodo();
-
 });
 // Funciones no tan importantes ======================================
 </script>
