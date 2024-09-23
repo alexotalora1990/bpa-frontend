@@ -3,13 +3,20 @@ import axios from 'axios';
 import { TrackOpTypes, ref } from 'vue';
 
 export const useAdministradorStore = defineStore('administrador', () => {
-    const token = ref('');
+    const token = ref(null);
     const admin = ref({});
     let loading = ref(false);
     const getAdmin = async () => {
         try {
             loading.value = true;
-            const r = await axios.get("administrador");
+            const r = await axios.get("administrador",{
+                headers:{
+                token:token.value
+            }
+            });
+            console.log(token)
+            console.log(admin);
+            
             return r;
         } catch (error) {
             return error;
@@ -41,9 +48,11 @@ export const useAdministradorStore = defineStore('administrador', () => {
         }
     };
     const postAdmin = async (admin) => {
+        console.log(admin);
+        
         try {
             loading.value = true;
-            const r = await axios.post('administrador', admin)
+            const r = await axios.post('administrador/agregar', admin)
             return r
         } catch (error) {
             return error
@@ -55,7 +64,7 @@ export const useAdministradorStore = defineStore('administrador', () => {
     const putAdmin = async (id, admin) => {
         try {
             loading.value = true;
-            const r = await axios.put(`administrador/${id}`, admin)
+            const r = await axios.put(`administrador/actualizar/${id}`, admin)
             return r
         } catch (error) {
             return error
@@ -91,7 +100,9 @@ export const useAdministradorStore = defineStore('administrador', () => {
             loading.value = true;
             const r = await axios.post("administrador/login/", { correo, contrasena });
             token.value = r.data.token;
-            admin.value = r.data.administrador;
+            console.log(token);
+            admin.value = r.data.admin;
+            console.log(admin.value);
             return r;
         } catch (error) {
             throw new Error('Error en el inicio de sesión');
@@ -100,13 +111,13 @@ export const useAdministradorStore = defineStore('administrador', () => {
         }
     };
 
-    // const logout = () => {
-    //     token.value = '';
-    //     user.value = {};
-    // };
+    const logout = () => {
+        token.value = '';
+        admin.value = {};
+    };
 
 
-    return { getAdmin, login, getAdminActivos, getAdminDesactivados, postAdmin, putAdmin, putAdminActivar, putAdminDesactivar, loading };
+    return { getAdmin, login, getAdminActivos, getAdminDesactivados, postAdmin, putAdmin, putAdminActivar, putAdminDesactivar, loading,logout, token, admin };
 }, {
     persist: true
 });

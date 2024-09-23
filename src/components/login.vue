@@ -6,17 +6,21 @@
           <h3>Iniciar Sesión</h3>
         </div>
         
-          <q-input type="email" v-model="correo" label="Correo electrónico" lazy-rules
-            :rules="[val => val && val.length > 0 || 'Email no puede estar vacío, debe ser un email válido']">
-          </q-input>
+        <q-input type="email" v-model="correo" label="Correo electrónico" lazy-rules
+          :rules="[val => val && val.length > 0 || 'Email no puede estar vacío, debe ser un email válido']">
+        </q-input>
 
-          <q-input v-model="contrasena" label="Contraseña" type="password" lazy-rules
-            :rules="[val => val && val.length > 0 || 'Contraseña no puede estar vacía']">
-          </q-input>
-          <q-btn class="submit" @click="login()" color="primary">Ingresar</q-btn>
-          <div class="forgot-password">
-            <router-link to="/recuperar-password">¿Olvidaste tu contraseña?</router-link>
-          </div>
+        <q-input v-model="contrasena" :type="passwordFieldType" label="Contraseña" lazy-rules
+          :rules="[val => val && val.length > 0 || 'Contraseña no puede estar vacía']">
+          <template v-slot:append>
+            <q-icon :name="showPassword ? 'visibility_off' : 'visibility'" @click="togglePasswordVisibility" />
+          </template>
+        </q-input>
+
+        <q-btn class="submit" @click="login()" color="primary">Ingresar</q-btn>
+        <div class="forgot-password">
+          <router-link to="/recuperar-password">¿Olvidaste tu contraseña?</router-link>
+        </div>
         
       </div>
     </div>
@@ -24,25 +28,47 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useAdministradorStore } from '../store/administrador.js';
 import { useRouter } from 'vue-router';
+import { useQuasar, Notify } from 'quasar';
 
 const router = useRouter();
 const useAdmin = useAdministradorStore();
 let correo = ref("chechoc749@gmail.com");
 let contrasena = ref("12345");
+const showPassword = ref(false);
+
+const passwordFieldType = computed(() => (showPassword.value ? 'text' : 'password'));
+
+function togglePasswordVisibility() {
+  showPassword.value = !showPassword.value;
+}
 
 async function login() {
   try {
     const response = await useAdmin.login(correo.value, contrasena.value);
-    console.log(response);
     router.push("/home");
-    console.log(useAdmin.token);
+   console.log(response)
+    Notify.create({
+      type: 'positive',
+      message: 'Ingreso exitoso',
+      icon: 'check_circle',
+      position: 'center',
+      timeout: 3000,
+    });
   } catch (error) {
-    console.log('Error de inicio de sesión:', error);
+    Notify.create({
+      type: 'negative',
+      message: 'Usuario o Contraseña invalidos',
+      icon: 'error',
+      position: 'center',
+      timeout: 3000,
+    });
   }
 }
+
+
 </script>
 
 <style>

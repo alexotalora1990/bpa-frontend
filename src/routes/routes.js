@@ -1,4 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
+import { useAdministradorStore } from '../store/administrador';
+
+
 import Login from "../components/login.vue"
 import Home from "../components/home.vue"
 import Administrador from "../components/administrador.vue"
@@ -17,6 +20,7 @@ import Nomina from "../components/nomina.vue"
 import Riego from "../components/riego.vue"
 import Comprador from "../components/comprador.vue"
 import Sustrato from '../components/elaboracionSustrato.vue';
+
 import Semilla from '../components/semillas.vue'
 
 const routes = [
@@ -45,6 +49,53 @@ const routes = [
             {path: "/semilla",component:Semilla}
 
 
+  const auth = (to, from, next) => {
+    if (checkAuth()) {
+        const userAdmin = useAdministradorStore();
+        const rol = userAdmin.admin.rol;
+        console.log(to.meta);
+        if (to.meta && to.meta.rol && !to.meta.rol.includes(rol)) {
+            return next({ name: 'login' });
+        }
+        next();
+    } else {
+        return next({ name: 'login' });
+    }
+};
+
+const checkAuth = () => {
+    const userAdmin = useAdministradorStore();
+    const token = userAdmin.token;
+    console.log(token);
+    if (!token) return false;
+    return true;
+};
+
+
+  
+const routes = [
+     { path: '/', name: 'login', component: Login },
+
+   
+    {
+        path: "/home", component: Home,
+         children: [
+            { path: "/administrador", component: Administrador , beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            { path: "/finca", component: Finca, beforeEnter: auth, meta: { rol: ['Administrador'] } },
+            { path: "/cultivo", component: Cultivo,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            { path: "/parcela", component: Parcela,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            { path: "/empleados", component: Empleado,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            { path: "/clima", component: Clima,beforeEnter: auth, meta: { rol: ['Administrador'] }},     
+            { path: "/nomina", component: Nomina,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            {path:"/proveedores",component:Proveedores,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            {path:"/insumo",component:Insumos,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            {path:"/maquinaria",component:Maquinaria,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            {path:"/semilla",component:Semillas,beforeEnter: auth, meta: { rol: ['Administrador'] }},             
+            {path:"/procesos",component:Proceso,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            {path:"/produccion",component:Produccion,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            {path:"/riegos",component:Riego,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            {path:"/comprador",component:Comprador,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            {path: "/elaboracionSustrato",component:Sustrato,beforeEnter: auth, meta: { rol: ['Administrador'] }}
 
         ]
     }

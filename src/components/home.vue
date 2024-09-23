@@ -1,4 +1,6 @@
+
 <template>
+
   <div>
     <q-layout view="hHh lpR fFf">
       <q-header elevated class="bg-primary text-white" height-hint="98">
@@ -44,6 +46,7 @@
                   </q-item-section>
                 </q-item>
               </router-link>
+
             </q-item>
           </div>
 
@@ -166,11 +169,21 @@
 </template>
 
 <script setup>
+
 import { ref, onMounted } from "vue";
 import { useFincaStore } from "../store/fincas";
 
 const fincasStore = useFincaStore();
 let fincas = ref([]);
+
+import { ref } from 'vue'
+import { useAdministradorStore } from '../store/administrador';
+import { routes } from "../routes/routes.js";
+import { useRouter } from 'vue-router';
+const useAdmin=useAdministradorStore()
+const router = useRouter();
+
+
 
 
 onMounted(async () => {
@@ -197,7 +210,14 @@ const toggleLeftDrawer = () => {
 };
 
 const toggleSubmenu = (menu) => {
-  submenu.value[menu] = !submenu.value[menu];
+
+  submenu.value[menu] = !submenu.value[menu]
+}
+const logout = () => {
+  useAdmin.logout();
+  localStorage.removeItem('selectedRoute'); 
+  router.push('/');
+
 };
 
 const usuariosItems = [

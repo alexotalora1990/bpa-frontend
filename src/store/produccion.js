@@ -6,64 +6,64 @@ import { useAdministradorStore} from "./administrador"
 
 
 
-export const useParcelaStore = defineStore("store", () =>{
+export const useProduccionStore = defineStore("produccion", () =>{
     let loading = ref(false)
-    let parcelas = ref([]);
+    let producciones = ref([]);
     
 
-    const listarParcelas = async () => {
+    const listarProducciones = async () => {
         try {
             loading.value = true;
-            const response = await axios.get("parcela",{
+            const response = await axios.get("produccion/",{
             // headers:{
             //     token:useAdministrador.token
             // }
         });
-        parcelas.value = response.data; 
+        producciones.value = response.data; 
         return response;
         } catch (error) {
-          console.error("Error al obtener la lista de parcelas:", error);
+          console.error("Error al obtener la lista de producciones KKKK:", error);
           throw error;
         } finally {
           loading.value = false;
         }
     };
-    const getParcelasActivos = async () => {
+    const getProduccionesActivos = async () => {
         try {
             loading.value = true;
-            const response = await axios.get(`parcela/obt/activos`, {
+            const response = await axios.get(`produccion/obtener/activos`, {
             // headers: {
             //   token:useAdministrador.token,
             // },
         });
-          parcelas.value = response.data;
+          producciones.value = response.data;
           return response;
         } catch (error) {
-          console.error("Error al obtener la lista de parcelas activas:", error);
+          console.error("Error al obtener la lista de producciones activas:", error);
         } finally {
           loading.value = false;
         }
     }
-    const getParcelasInactivos = async () => {
+    const getProduccionesInactivos = async () => {
         try {
             loading.value = true; 
-            const response = await axios.get(`parcela/obt/desactivados`, {
+            const response = await axios.get(`produccion/obtener/desactivados`, {
             // headers: {
             //   token:useAdministrador.token,
             // },
         });
-          parcelas.value = response.data;
+          producciones.value = response.data;
           return response;
         } catch (error) {
-          console.error("Error al obtener la lista de parcelas Inactivas:", error);
+          console.error("Error al obtener la lista de producciones Inactivas:", error);
         } finally {
           loading.value = false;
         }
     }
-    const postParcelas = async(data)=>{
+    const postProducciones = async(data)=>{
         try {
             loading.value=true
-            const r = await axios.post("parcela/agregar", data, {
+            const r = await axios.post("produccion/agregar", data, {
                 // headers:{
                 //     token:useAdministrador.token
                 // }
@@ -76,10 +76,10 @@ export const useParcelaStore = defineStore("store", () =>{
             loading.value=false
         }
     }
-    const putParcelas = async(id, data)=>{
+    const putProducciones = async(id, data)=>{
         try {
             loading.value=true
-            const r = await axios.put(`parcela/actualizar/${id}`, data,{
+            const r = await axios.put(`produccion/actualizar/${id}`, data,{
                 // headers:{
                 //     token:useAdministrador.token
                 // }
@@ -92,10 +92,10 @@ export const useParcelaStore = defineStore("store", () =>{
             loading.value=false
         }
     }
-    const putParcelasActivar = async(id)=>{
+    const putProduccionesActivar = async(id)=>{
         try {
             loading.value=true
-            const r = await axios.put(`parcela/activar/${id}`,{},{
+            const r = await axios.put(`produccion/activar/${id}`,{},{
                 // headers:{
                 //     token:useAdministrador.token
                 // }
@@ -108,10 +108,10 @@ export const useParcelaStore = defineStore("store", () =>{
             loading.value=false
         }
     }
-    const putParcelasDesactivar = async(id)=>{
+    const putProduccionesDesactivar = async(id)=>{
         try {
             loading.value=true
-            const r = await axios.put(`parcela/desactivar/${id}`,{},{
+            const r = await axios.put(`produccion/desactivar/${id}`,{},{
                 // headers:{
                 //     token:useAdministrador.token
                 // }
@@ -125,6 +125,6 @@ export const useParcelaStore = defineStore("store", () =>{
         }
     }
 
-    return {listarParcelas,getParcelasActivos,getParcelasInactivos,parcelas,postParcelas, putParcelas, putParcelasActivar, putParcelasDesactivar, loading}
+    return {listarProducciones,getProduccionesActivos,getProduccionesInactivos,producciones,postProducciones, putProducciones, putProduccionesActivar, putProduccionesDesactivar, loading}
     
 },{persist:true})

@@ -68,10 +68,14 @@ export const useCompradorStore = defineStore("store", () =>{
                 //     token:useAdministrador.token
                 // }
             })
-            return r
+            return true
         } catch (error) {
             loading.value=true
-            console.log(error);
+            Notify.create({
+                type: 'negative',
+                message: error.response.data.errors[0]?.msg
+            });
+            return false
         }finally{
             loading.value=false
         }
@@ -84,10 +88,15 @@ export const useCompradorStore = defineStore("store", () =>{
                 //     token:useAdministrador.token
                 // }
             })
-            return r
+            console.log(r);
+            return true
         } catch (error) {
             loading.value=true
-            console.log(error);
+            Notify.create({
+                type: 'negative',
+                message: error.response.data.errors[0]?.msg
+            });
+            return false
         }finally{
             loading.value=false
         }
