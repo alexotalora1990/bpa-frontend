@@ -21,6 +21,34 @@ import Riego from "../components/riego.vue"
 import Comprador from "../components/comprador.vue"
 import Sustrato from '../components/elaboracionSustrato.vue';
 
+import Semilla from '../components/semillas.vue'
+
+const routes = [
+    { path: "/", component: Login },
+    {
+        path: "/home", component: Home, children: [
+            { path: "/administrador", component: Administrador },
+            { path: "/finca", component: Finca },
+            { path: "/cultivo", component: Cultivo},
+            { path: "/parcela", component: Parcela},
+            { path: "/empleados", component: Empleado},
+            { path: "/clima", component: Clima},     
+            { path: "/nomina", component: Nomina},
+            { path:"/cultivo", component: Cultivo},
+            { path:"/parcela", component: Parcela},
+            { path:"/cultivo", component: Cultivo},
+            {path:"/proveedores",component:Proveedores},
+            {path:"/insumo",component:Insumos},
+            {path:"/maquinaria",component:Maquinaria},
+            {path:"/semilla",component:Semillas},             
+            {path:"/procesos",component:Proceso},
+            {path:"/produccion",component:Produccion},
+            {path:"/riegos",component:Riego},
+            {path:"/comprador",component:Comprador},
+            {path: "/elaboracionSustrato",component:Sustrato},
+            {path: "/semilla",component:Semilla}
+
+
   const auth = (to, from, next) => {
     if (checkAuth()) {
         const userAdmin = useAdministradorStore();
@@ -42,6 +70,7 @@ const checkAuth = () => {
     if (!token) return false;
     return true;
 };
+
 
   
 const routes = [
