@@ -172,27 +172,24 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from 'vue-router';
 import { useFincaStore } from "../store/fincas";
+import { useAdministradorStore } from '../store/administrador';
+import { routes } from "../routes/routes.js";
+const useAdmin=useAdministradorStore()
+
 const router = useRouter();
 const fincasStore = useFincaStore();
 let fincas = ref([]);
 
 
 
-import { useAdministradorStore } from '../store/administrador';
-import { routes } from "../routes/routes.js";
-import { useRouter } from 'vue-router';
-const useAdmin=useAdministradorStore()
-const router = useRouter();
 
 
 
 
-    fincasStore.seleccionarFinca(fincaId._id);
-    console.log("ID de finca seleccionada:", fincaId._id);
-  } else {
-    console.error("Error: fincaId no es válido o no contiene _id");
-  }
-}
+
+
+
+
 
 onMounted(async () => {
   await fincasStore.getFincasActivos(); 
@@ -215,6 +212,11 @@ const toggleLeftDrawer = () => {
 
 const toggleSubmenu = (menu) => {
   submenu.value[menu] = !submenu.value[menu];
+};
+const logout = () => {
+  useAdmin.logout();
+  localStorage.removeItem('selectedRoute'); 
+  router.push('/');
 };
 
 const usuariosItems = [
