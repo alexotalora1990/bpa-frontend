@@ -14,15 +14,24 @@
                         <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                     </q-card-section>
 
-                    <q-select outlined v-model="idcultivo" label="Seleccione un Cultivo" :options="optionsCultivo"  @filter="filterCultivo" class="q-my-md q-mx-md" />
-                    <q-select outlined v-model="idempleado" label="Seleccione un Empleado" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md" />
-                    <q-input outlined v-model="fechaRiego" label="Fecha de Riego" class="q-my-md q-mx-md" type="date" />
-                    <q-input outlined v-model="diasTransplante" label="Dias Transplante" class="q-my-md q-mx-md" type="number" />
-                    <q-input outlined v-model="fenologico" label="Estado Fenologico" class="q-my-md q-mx-md" type="string" />
-                    <q-input outlined v-model="horaInicio" label="Hora Inicio" class="q-my-md q-mx-md" type="time" />
-                    <q-input outlined v-model="horaFin" label="Hora Final" class="q-my-md q-mx-md" type="time" />
-                    <q-input outlined v-model="dosis" label="Dosis" class="q-my-md q-mx-md" type="string" />
-                    <q-input outlined v-model="cantidadAgua" label="Cantidad Agua Lts" class="q-my-md q-mx-md" type="string" />
+                    <q-select outlined v-model="idcultivo" label="Seleccione un Cultivo" :options="optionsCultivo"  @filter="filterCultivo" class="q-my-md q-mx-md" 
+                    :rules="[val => !!val || 'Debe seleccionar un cultivo']" hide-bottom-space />
+                    <q-select outlined v-model="idempleado" label="Seleccione un Empleado" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md"
+                    :rules="[val => !!val || 'Debe seleccionar un empleado']" hide-bottom-space  />
+                    <q-input outlined v-model="fechaRiego" label="Fecha de Riego" class="q-my-md q-mx-md" type="date" 
+                    :rules="[val => !!val || 'Debe seleccionar una fecha']" hide-bottom-space />
+                    <q-input outlined v-model="diasTransplante" label="Dias Transplante" class="q-my-md q-mx-md" type="number" 
+                    :rules="[reglas.required, reglas.notEmpty, reglas.soloNumeros]" hide-bottom-space/>
+                    <q-input outlined v-model="fenologico" label="Estado Fenologico" class="q-my-md q-mx-md" type="string" 
+                    :rules="[reglas.required, reglas.notEmpty, reglas.minLength3]" hide-bottom-space/>
+                    <q-input outlined v-model="horaInicio" label="Hora Inicio" class="q-my-md q-mx-md" type="time" 
+                    :rules="[reglas.required, reglas.notEmpty]"hide-bottom-space/>
+                    <q-input outlined v-model="horaFin" label="Hora Final" class="q-my-md q-mx-md" type="time" 
+                    :rules="[reglas.required, reglas.notEmpty]"hide-bottom-space/>
+                    <q-input outlined v-model="dosis" label="Dosis" class="q-my-md q-mx-md" type="string" 
+                    :rules="[reglas.required, reglas.notEmpty, reglas.minLength3, reglas.soloNumeros]" hide-bottom-space/>
+                    <q-input outlined v-model="cantidadAgua" label="Cantidad Agua Lts" class="q-my-md q-mx-md" type="string" 
+                    :rules="[reglas.required, reglas.notEmpty, reglas.minLength3, reglas.soloNumeros]" hide-bottom-space/>
 
                     <q-card-actions align="right">
                         <q-btn @click="modify()" color="green" class="text-white">
@@ -101,8 +110,30 @@ let cantidadAgua= ref("");
 let fenologico=ref("")
 
 
+const reglas = {
+  required: val => !!val || 'Este campo es requerido',
+  notEmpty: val => !!val.trim() || 'Este campo no puede estar vacío',
+  minLength3: val => val.length >= 3 || 'Debe tener al menos 3 caracteres',
+  caracteres: val => /^[a-zA-Z\s]*$/.test(val) || 'Solo se permiten letras',
+  email: val => /.+@.+\..+/.test(val) || 'El email debe ser válido',
+   min8max12: val => val.length >= 8 && val.length <= 12 || 'Debe tener entre 8 y 12 dígitos',
+  soloNumeros: val => /^[0-9]+$/.test(val) || 'Solo se permiten números',
+}
+function validarCampos() {
+    if (!idcultivo.value || !idempleado.value || !dosis.value || !horaInicio.value || 
+        !horaFin.value || !fenologico.value || !cantidadAgua.value ||  fechaRiego.value || diasTransplante.value) {
+        Notify.create({
+            message: 'Por favor, completa todos los campos requeridos.',
+            color: 'negative',
+            position: 'top',
+        });
+        return false;
+    }
+    return true;
+}
 async function crear() {
-    if (!validarCampos()) {return;}
+    if (!validarCampos()) return;
+   
     try {
         await useRiego.postRiegos({
             idcultivo: idcultivo.value.value,
@@ -136,11 +167,12 @@ function traerDatos(riego) {
     value: riego.idcultivo._id
     }
     idempleado.value = {
-    label: clima.idempleado.nombre,
-    value: clima.idempleado._id
+    label: riego.idempleado.nombre,
+    value: riego.idempleado._id
     }
+    
     fechaRiego.value = riego.fechaRiego;
-    horaInicio.value = clima.horaInicio;
+    horaInicio.value = riego.horaInicio;
     horaFin.value = riego.horaFin;
     diasTransplante.value = riego.diasTransplante;
     dosis.value = riego.dosis;
@@ -351,18 +383,6 @@ function limpiarCampos() {
     dosis.value='';
 }
 
-function validarCampos() {
-    if (!idcultivo.value || !idempleado.value || !dosis.value || !horaInicio.value || 
-        !horaFin.value || !fenologico.value || !cantidadAgua.value ||  fechaRiego.value || diasTransplante.value) {
-        Notify.create({
-            message: 'Por favor, completa todos los campos requeridos.',
-            color: 'negative',
-            position: 'top',
-        });
-        return false;
-    }
-    return true;
-}
 
 
 

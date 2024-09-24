@@ -2,12 +2,15 @@
 
 <template>
   <div style="height: 100vh; overflow-y: auto;">
+    <div v-if="useAdmin.loading" class="overlay">
+            <q-spinner size="80px" color="grey" />
+        </div>
 
     <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
       <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Admin</q-btn>
       <q-select outlined v-model="listar" label="Seleccione" :options="listados"
         class="q-my-md q-mx-md custom-select" />
-      <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()" :loading="useAdmin.loading">Filtrar</q-btn>
+      <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()" >Filtrar</q-btn>
 
     </div>
 
@@ -66,7 +69,7 @@
 
             <q-card-actions align="right">
               <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
-              <q-btn :label="accion === 1 ? 'Agregar' : 'Editar'" type="submit" color="green" class="text-white" @click="modify" :loading="useAdmin.loading" />
+              <q-btn :label="accion === 1 ? 'Agregar' : 'Editar'" type="submit" color="green" class="text-white" @click="modify"  />
 
 
             </q-card-actions>
@@ -108,9 +111,9 @@
           <q-td :props="props">
             <q-btn @click="traerDatos(props.row)">
               <q-tooltip>Editar</q-tooltip>✏️</q-btn>
-            <q-btn @click="desactivar(props.row._id)" v-if="props.row.estado == 1" :loading="useAdmin.loading" >
+            <q-btn @click="desactivar(props.row._id)" v-if="props.row.estado == 1" >
               <q-tooltip>Desactivar</q-tooltip>❌</q-btn>
-            <q-btn @click="activar(props.row._id)" v-else  :loading="useAdmin.loading">
+            <q-btn @click="activar(props.row._id)" v-else  >
               <q-tooltip>Activar</q-tooltip>✅</q-btn>
           </q-td>
         </template>
@@ -430,5 +433,17 @@ function limpiarCampos() {
   background-color: white;
   color: #333;
   min-width: 200px;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; 
 }
 </style>
