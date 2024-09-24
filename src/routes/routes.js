@@ -20,6 +20,7 @@ import Nomina from "../components/nomina.vue"
 import Riego from "../components/riego.vue"
 import Comprador from "../components/comprador.vue"
 import Sustrato from '../components/elaboracionSustrato.vue';
+//PRUEBA
 
   const auth = (to, from, next) => {
     if (checkAuth()) {
