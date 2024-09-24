@@ -17,7 +17,8 @@
           </template>
         </q-input>
 
-        <q-btn class="submit" @click="login()" color="primary">Ingresar</q-btn>
+        <q-btn class="submit" @click="login()" color="green">Ingresar</q-btn>
+        
         <div class="forgot-password">
           <router-link to="/recuperar-password">¿Olvidaste tu contraseña?</router-link>
         </div>
@@ -49,7 +50,6 @@ async function login() {
   try {
     const response = await useAdmin.login(correo.value, contrasena.value);
     router.push("/home");
-   console.log(response)
     Notify.create({
       type: 'positive',
       message: 'Ingreso exitoso',
@@ -67,8 +67,6 @@ async function login() {
     });
   }
 }
-
-
 </script>
 
 <style>
@@ -81,18 +79,18 @@ h3 {
 
 .back {
   height: 100vh;
-  background-image: url(../assets/fotologin.png);
+  background-image: url(../assets/bg2.png);
   background-position: center;
   background-size: cover;
 }
 
 .login-container {
   width: 400px;
-  height: 360px;
+  height: auto; /* Cambiar para ajustar al contenido */
   margin: 0 auto;
   padding: 20px;
   background-color: #ffffff;
-  border: solid black 2px;
+  border: solid rgb(255, 111, 0) 4px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -106,11 +104,13 @@ h3 {
 }
 
 .submit {
-  margin-top: 30px;
   width: 80%;
 }
 
-.q-input {
-  margin-top: 20px;
+
+
+.forgot-password {
+  margin-top: 20px; /* Añadimos un margen superior para separar del botón */
 }
+
 </style>

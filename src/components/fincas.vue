@@ -9,11 +9,13 @@
         <div>
             <q-dialog v-model="alert" persistent>
                 <q-card class="" style="width: 700px">
-                    <q-card-section style="background-color: #a1312d; margin-bottom: 20px">
-                        <div class="text-h6 text-white">
-                            {{ accion == 1 ? "Crear Finca" : "Editar Finca" }}
-                        </div>
-                    </q-card-section>
+                    <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
+                            <div class="text-h6 text-white">
+                                {{ accion == 1 ? "Crear Finca" : "Editar Finca" }}
+                            </div>
+                            <q-space />
+                            <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
+                        </q-card-section>
                     <q-select outlined v-model="idadministrador" label="Seleccione un Admin" :options="options"
                         class="q-my-md q-mx-md"  @filter="filterFn"  hide-bottom-space/>
                     <q-input outlined v-model="nombre" label="Nombre de la Finca" class="q-my-md q-mx-md" type="text"
@@ -42,7 +44,7 @@
                         :rules="limitesRules.oeste" hide-bottom-space />
 
                     <q-card-actions align="right">
-                        <q-btn @click="modify()" color="red" class="text-white">
+                        <q-btn @click="modify()" color="green" class="text-white">
                             {{ accion == 1 ? "Agregar" : "Editar" }}
                         </q-btn>
                         <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
