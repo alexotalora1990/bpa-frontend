@@ -19,13 +19,17 @@
 
       
                     <q-select outlined v-model="idcultivo" label="Seleccione un cultivo" :options="optionsCultivo"
-                        class="q-my-md q-mx-md" @filter="filterCultivo" hide-bottom-space />
+                        class="q-my-md q-mx-md" @filter="filterCultivo" :rules="[reglas.required, reglas.notEmpty]"hide-bottom-space />
                     <q-select outlined v-model="idempleado" label="Seleccione un empleado" :options="optionsEmpleado"
-                        class="q-my-md q-mx-md" @filter="filterEmpleado" hide-bottom-space />
-                    <q-input outlined v-model="tipo" label="Tipo" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="descripcion" label="Descripcion" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="fechaInicio" label="Fecha Inicial" type="date" class="q-my-md q-mx-md" />
-                    <q-input outlined v-model="fechaFinal" label="Fecha Final" type="date" class="q-my-md q-mx-md" />
+                        class="q-my-md q-mx-md" @filter="filterEmpleado" :rules="[reglas.required, reglas.notEmpty]"hide-bottom-space />
+                    <q-input outlined v-model="tipo" label="Tipo" class="q-my-md q-mx-md" type="text" 
+                    :rules="[reglas.required, reglas.notEmpty]"hide-bottom-space/>
+                    <q-input outlined v-model="descripcion" label="Descripcion" class="q-my-md q-mx-md" type="text" 
+                    :rules="[reglas.required, reglas.notEmpty]"hide-bottom-space/>
+                    <q-input outlined v-model="fechaInicio" label="Fecha Inicial" type="date" class="q-my-md q-mx-md"
+                    :rules="[reglas.required]"hide-bottom-space />
+                    <q-input outlined v-model="fechaFinal" label="Fecha Final" type="date" class="q-my-md q-mx-md" 
+                    :rules="[reglas.required]"hide-bottom-space />
                                      <q-card-actions align="right">
 
                         <q-btn @click="modify()" color="green" class="text-white">
@@ -108,7 +112,27 @@ let fechaFinal = ref("");
 const listar = ref('');
 const listados = ['Listar todos', 'Activos', 'Inactivos'];
 
-
+const reglas = {
+  required: val => !!val || 'Este campo es requerido',
+  notEmpty: val => !!val.trim() || 'Este campo no puede estar vacío',
+  minLength3: val => val.length >= 3 || 'Debe tener al menos 3 caracteres',
+  caracteres: val => /^[a-zA-Z\s]*$/.test(val) || 'Solo se permiten letras',
+  email: val => /.+@.+\..+/.test(val) || 'El email debe ser válido',
+   min8max12: val => val.length >= 8 && val.length <= 12 || 'Debe tener entre 8 y 12 dígitos',
+  soloNumeros: val => /^[0-9]+$/.test(val) || 'Solo se permiten números',
+}
+function validarCampos() {
+    if (!idcultivo.value || !idempleado.value || !tipo.value || !fechaInicio.value || 
+        !fechaFinal.value || !descripcion.value ) {
+        Notify.create({
+            message: 'Por favor, completa todos los campos requeridos.',
+            color: 'negative',
+            position: 'top',
+        });
+        return false;
+    }
+    return true;
+}
 
 async function crear() {
     if (!validarCampos()) {return;}
@@ -161,7 +185,7 @@ function traerDatos(proceso) {
 
 
 async function editar() {
-    if (!validarCampos()) return;
+    if (!validarCampos()) {return};
 
     try {
 
@@ -293,6 +317,7 @@ async function desactivar(id) {
     await useProceso.putProcesosDesactivar(id);
     listarTodo();
     Notify.create({
+        color:"orange",
       type: "positive",
       message: "Proceso desactivado exitosamente",
       icon: "check",
@@ -404,18 +429,7 @@ function limpiarCampos() {
     
 }
 
-function validarCampos() {
-    if (!idcultivo.value || !idempleado.value || !tipo.value || !fechaInicio.value || 
-        !fechaFinal.value || !descripcion.value ) {
-        Notify.create({
-            message: 'Por favor, completa todos los campos requeridos.',
-            color: 'negative',
-            position: 'top',
-        });
-        return false;
-    }
-    return true;
-}
+
 
 
 
