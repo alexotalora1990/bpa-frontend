@@ -21,7 +21,7 @@ import Riego from "../components/riego.vue"
 import Comprador from "../components/comprador.vue"
 import Sustrato from '../components/elaboracionSustrato.vue';
 
-import Semilla from '../components/semillas.vue'
+
 
   const auth = (to, from, next) => {
     if (checkAuth()) {
