@@ -1,4 +1,3 @@
-
 <template>
   <q-layout view="hHh lpR fFf">
     <q-header elevated class="bg-primary text-white" height-hint="98">
@@ -10,6 +9,7 @@
           </q-avatar>
           BUENAS PRACTICAS AGRICOLAS
         </q-toolbar-title>
+        <!-- he aqui el boton de log out -->
         <q-btn dense flat round icon="logout" @click="logout" />
       </q-toolbar>
 
