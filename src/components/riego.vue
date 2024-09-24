@@ -4,6 +4,7 @@
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Riego</q-btn>
         </div>
         <div>
+            <q-form ref="formulario" @submit.prevent="modify">
             <q-dialog v-model="alert" persistent>
                 <q-card style="width: 700px">
                     <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
@@ -18,8 +19,8 @@
                     :rules="[val => !!val || 'Debe seleccionar un cultivo']" hide-bottom-space />
                     <q-select outlined v-model="idempleado" label="Seleccione un Empleado" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md"
                     :rules="[val => !!val || 'Debe seleccionar un empleado']" hide-bottom-space  />
-                    <q-input outlined v-model="fechaRiego" label="Fecha de Riego" class="q-my-md q-mx-md" type="date" 
-                    :rules="[val => !!val || 'Debe seleccionar una fecha']" hide-bottom-space />
+                    <!-- <q-input outlined v-model="fechaRiego" label="Fecha de Riego" class="q-my-md q-mx-md" type="date" 
+                    :rules="[val => !!val || 'Debe seleccionar una fecha']" hide-bottom-space /> -->
                     <q-input outlined v-model="diasTransplante" label="Dias Transplante" class="q-my-md q-mx-md" type="number" 
                     :rules="[reglas.required, reglas.notEmpty, reglas.soloNumeros]" hide-bottom-space/>
                     <q-input outlined v-model="fenologico" label="Estado Fenologico" class="q-my-md q-mx-md" type="string" 
@@ -34,13 +35,14 @@
                     :rules="[reglas.required, reglas.notEmpty, reglas.minLength3, reglas.soloNumeros]" hide-bottom-space/>
 
                     <q-card-actions align="right">
-                        <q-btn @click="modify()" color="green" class="text-white">
-                            {{ accion == 1 ? "Agregar" : "Editar" }}
-                        </q-btn>
-                        <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
-                    </q-card-actions>
+              <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+              <q-btn :label="accion === 1 ? 'Agregar' : 'Editar'" type="submit" color="green" class="text-white" @click="modify"  />
+
+
+            </q-card-actions>
                 </q-card>
             </q-dialog>
+        </q-form>
         </div>
         <div style="display: flex; justify-content: center">
             <q-table title="Riegos" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
@@ -101,14 +103,14 @@ let optionsEmpleado = ref(empleados)
 let id = ref("")
 let idcultivo = ref('');
 let idempleado = ref("");
-let fechaRiego = ref("");
+
 let horaInicio = ref("");
 let horaFin = ref("");
 let diasTransplante = ref("");
 let dosis= ref("");
 let cantidadAgua= ref("");
 let fenologico=ref("")
-
+const formulario = ref(null);
 
 const reglas = {
   required: val => !!val || 'Este campo es requerido',
@@ -121,7 +123,7 @@ const reglas = {
 }
 function validarCampos() {
     if (!idcultivo.value || !idempleado.value || !dosis.value || !horaInicio.value || 
-        !horaFin.value || !fenologico.value || !cantidadAgua.value ||  fechaRiego.value || diasTransplante.value) {
+        !horaFin.value || !fenologico.value || !cantidadAgua.value || diasTransplante.value) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
             color: 'negative',
@@ -132,13 +134,12 @@ function validarCampos() {
     return true;
 }
 async function crear() {
-    if (!validarCampos()) return;
-   
-    try {
-        await useRiego.postRiegos({
+        try {
+            accion.value = 1;
+            const r= await useRiego.postRiegos({
             idcultivo: idcultivo.value.value,
             idempleado: idempleado.value.value,
-            fechaRiego: fechaRiego.value,
+          
             horaInicio: horaInicio.value,
             horaFin: horaFin.value,
             diasTransplante: diasTransplante.value,
@@ -146,17 +147,17 @@ async function crear() {
             cantidadAgua:cantidadAgua.value,
             fenologico:fenologico.value
         });
+        listarTodo();
+        limpiarCampos();
+        cerrar();
+        return r;
     } catch (error) {
         Notify.create({
             message: '¡Ocurrió un error al crear el riego!',
             position: 'center',
             color: 'red'
         });
-    } finally {
-        listarTodo();
-        limpiarCampos();
-        cerrar();
-    }
+    } 
 }
 function traerDatos(riego) {
     alert.value = true;
@@ -171,7 +172,7 @@ function traerDatos(riego) {
     value: riego.idempleado._id
     }
     
-    fechaRiego.value = riego.fechaRiego;
+   
     horaInicio.value = riego.horaInicio;
     horaFin.value = riego.horaFin;
     diasTransplante.value = riego.diasTransplante;
@@ -182,14 +183,14 @@ function traerDatos(riego) {
 
 
 async function editar() {
-    if (!validarCampos()) return;
+    
 
     try {
 
         await useRiego.putRiegos(id.value, {
             idcultivo: idcultivo.value.value,
             idempleado: idempleado.value.value,
-            fechaRiego: fechaRiego.value,
+           
             horaInicio: horaInicio.value,
             horaFin: horaFin.value,
             diasTransplante: diasTransplante.value,
@@ -203,6 +204,9 @@ async function editar() {
             position: "center",
             color: "green"
         });
+        listarTodo();
+    limpiarCampos();
+    cerrar();
     } catch (error) {
         Notify.create({
             type: 'negative',
@@ -210,18 +214,52 @@ async function editar() {
         });
         console.error('Error al modificar el riego', error);
     }
-    listarTodo();
-    limpiarCampos();
-    cerrar();
+    
 }
 
 
-function modify() {
-    if (accion.value === 1) {
-        crear()
-    } else {
-        editar()
+// function modify() {
+//     if (accion.value === 1) {
+//         crear()
+//     } else {
+//         editar()
+//     }
+// }
+
+async function modify() {
+  try {
+    const valid = await formulario.value.validate(); 
+console.log(error);
+
+    if (!valid) {
+      Notify.create({
+        type: "negative",
+        message: "Por favor, complete correctamente todos los campos",
+        icon: "error",
+      });
+      return;
     }
+
+    if (accion.value === 1) {
+      await crear();
+    } else {
+      await editar();
+    }
+
+    Notify.create({
+      type: "positive",
+      message: "Operación realizada con éxito",
+      icon: "check",
+    });
+
+  } catch (error) {
+    Notify.create({
+      type: "negative",
+      message: "Error en la operación",
+      icon: "error",
+    });
+    console.error("Error en modify:", error);
+  }
 }
 
 
@@ -374,7 +412,7 @@ function cerrar() {
 function limpiarCampos() {
     idcultivo.value = '';
     idempleado.value = '';
-    fechaRiego.value = '';
+    
     horaInicio.value = '';
     horaFin.value = '';
     fenologico.value = '';
