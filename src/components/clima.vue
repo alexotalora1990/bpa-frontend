@@ -4,32 +4,58 @@
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Clima</q-btn>
         </div>
         <div>
-            <q-dialog v-model="alert" persistent>
-                <q-card style="width: 700px">
-                    <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
-                        <div class="text-h6 text-white">
-                            {{ accion == 1 ? "Crear Clima" : "Editar Clima" }}
-                        </div>
-                        <q-space />
-                        <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
-                    </q-card-section>
+            <q-form ref="formulario" @submit.prevent="modify">
+                <q-dialog v-model="alert" persistent>
+                    <q-card style="width: 700px">
+                        <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
+                            <div class="text-h6 text-white">
+                                {{ accion == 1 ? "Crear Clima" : "Editar Clima" }}
+                            </div>
+                            <q-space />
+                            <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
+                        </q-card-section>
 
-                    <q-select outlined v-model="idfincas" label="Seleccione una Finca" :options="options"  @filter="filter1" class="q-my-md q-mx-md" />
-                    <q-select outlined v-model="idempleado" label="Seleccione un Empleado" :options="opciones" @filter="filter2" class="q-my-md q-mx-md" />
-                    <q-input outlined v-model="tipo" label="Tipo de Clima" class="q-my-md q-mx-md" type="text" />
-                    <q-input outlined v-model="horaInicio" label="Hora de Inicio" class="q-my-md q-mx-md" type="time" />
-                    <q-input outlined v-model="horaFinal" label="Hora Final" class="q-my-md q-mx-md" type="time" />
-                    <q-input outlined v-model="tempMin" label="Temperatura Mínima" class="q-my-md q-mx-md" type="number" />
-                    <q-input outlined v-model="tempMax" label="Temperatura Máxima" class="q-my-md q-mx-md" type="number" />
-
-                    <q-card-actions align="right">
-                        <q-btn @click="modify()" color="green" class="text-white">
-                            {{ accion == 1 ? "Agregar" : "Editar" }}
-                        </q-btn>
-                        <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
-                    </q-card-actions>
-                </q-card>
-            </q-dialog>
+                        <q-select outlined v-model="idfincas" label="Seleccione una Finca" :options="options"
+                            @filter="filter1" class="q-my-md q-mx-md" hide-bottom-space
+                            :rules="[(val) => !!val || 'Este campo es requerido']" />
+                        <q-select outlined v-model="idempleado" label="Seleccione un Empleado" :options="opciones"
+                            @filter="filter2" class="q-my-md q-mx-md" hide-bottom-space
+                            :rules="[(val) => !!val || 'Este campo es requerido']" />
+                        <q-input outlined v-model="tipo" label="Tipo de Clima" class="q-my-md q-mx-md" type="text"
+                            :rules="[
+                                (val) => !!val || 'Este campo es requerido',
+                                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+                            ]" hide-bottom-space />
+                        <q-input outlined v-model="horaInicio" label="Hora de Inicio" class="q-my-md q-mx-md"
+                            type="time" :rules="[
+                                (val) => !!val || 'La hora de inicio es requerida',
+                                (val) => /^([0-9]{2}):([0-9]{2})$/.test(val) || 'Formato de hora inválido'
+                            ]" hide-bottom-space />
+                        <q-input outlined v-model="horaFinal" label="Hora Final" class="q-my-md q-mx-md" type="time"
+                            :rules="[
+                                (val) => !!val || 'La hora final es requerida',
+                                (val) => /^([0-9]{2}):([0-9]{2})$/.test(val) || 'Formato de hora inválido'
+                            ]" hide-bottom-space />
+                        <q-input outlined v-model="tempMin" label="Temperatura Mínima" class="q-my-md q-mx-md"
+                            type="number" :rules="[
+                                (val) => !!val || 'La temperatura mínima es requerida',
+                                (val) => parseFloat(val) <= parseFloat(tempMax) || 'La temperatura mínima no puede ser mayor que la máxima'
+                            ]" hide-bottom-space />
+                        <q-input outlined v-model="tempMax" label="Temperatura Máxima" class="q-my-md q-mx-md"
+                            type="number" :rules="[
+                                (val) => !!val || 'La temperatura máxima es requerida',
+                                (val) => parseFloat(val) >= parseFloat(tempMin) || 'La temperatura máxima no puede ser menor que la mínima'
+                            ]" hide-bottom-space />
+                        <q-card-actions align="right">
+                            <q-btn @click="modify()" color="green" class="text-white">
+                                {{ accion == 1 ? "Agregar" : "Editar" }}
+                            </q-btn>
+                            <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+                        </q-card-actions>
+                    </q-card>
+                </q-dialog>
+            </q-form>
         </div>
         <div style="display: flex; justify-content: center">
             <q-table title="Climas" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
@@ -84,7 +110,7 @@ let fincas = []
 let empleados = []
 let options = ref(fincas)
 let opciones = ref(empleados)
-
+const formulario = ref(null);
 
 let id = ref("")
 let idfincas = ref('');
@@ -97,7 +123,7 @@ let tempMax = ref("");
 
 
 async function crear() {
-    if (!validarCampos()) {return;}
+    if (!validarCampos()) { return; }
     try {
         await useClima.postClimas({
             idfincas: idfincas.value.value,
@@ -125,12 +151,12 @@ function traerDatos(clima) {
     accion.value = 2;
     id.value = clima._id;
     idfincas.value = {
-    label: clima.idfincas.nombre,
-    value: clima.idfincas._id
+        label: clima.idfincas.nombre,
+        value: clima.idfincas._id
     }
     idempleado.value = {
-    label: clima.idempleado.nombre,
-    value: clima.idempleado._id
+        label: clima.idempleado.nombre,
+        value: clima.idempleado._id
     }
     tipo.value = clima.tipo;
     horaInicio.value = clima.horaInicio;
@@ -173,11 +199,29 @@ async function editar() {
 }
 
 
-function modify() {
-    if (accion.value === 1) {
-        crear()
-    } else {
-        editar()
+async function modify() {
+    try {
+        const valid = await formulario.value.validate();
+        if (!valid) {
+            Notify.create({
+                type: "negative",
+                message: "Por favor, complete correctamente todos los campos Correctamente",
+                icon: "error",
+            });
+            return;
+        }
+        if (accion.value === 1) {
+            await crear();
+        } else {
+            await editar();
+        }
+    } catch (error) {
+        Notify.create({
+            type: "negative",
+            message: "Error en la operación",
+            icon: "error",
+        });
+        console.error("Error en modify:", error);
     }
 }
 
@@ -295,7 +339,7 @@ const columns = ref([
         field: 'createAt',
         sortable: true,
         format: (val) => {
-        return val.split('T')[0].split('-').reverse().join('/');
+            return val.split('T')[0].split('-').reverse().join('/');
         }
     },
     {
@@ -330,7 +374,7 @@ function limpiarCampos() {
 }
 
 function validarCampos() {
-    if (!idfincas.value || !idempleado.value || !tipo.value || !horaInicio.value || 
+    if (!idfincas.value || !idempleado.value || !tipo.value || !horaInicio.value ||
         !horaFinal.value || !tempMin.value || !tempMax.value) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',

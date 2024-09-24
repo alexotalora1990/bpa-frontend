@@ -1,6 +1,9 @@
 
 <template>
     <div style="height: 100vh; overflow-y: auto;">
+        <div v-if="useElaboracion.loading" class="overlay">
+            <q-spinner size="80px" color="grey" />
+        </div>
         <div style="margin-left: 5%; margin-right: 5%; display: flex; align-items: center;">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Crear Sustrato</q-btn>
         </div>
@@ -15,14 +18,38 @@
                         <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                     </q-card-section>
 
-                    <q-select outlined v-model="idcultivo" label="Seleccione un Cultivo" :options="optionsCultivo"  @filter="filterCultivo" class="q-my-md q-mx-md" />
-                    <q-select outlined v-model="idempleadooperario" label="Seleccione Responsable" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md" />
-                    <q-select outlined v-model="idempleadoresponsable" label="Seleccione operario" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md" />
-                    <q-input outlined v-model="fecha" label="Fecha de Elaboración" class="q-my-md q-mx-md" type="date" />
-                    <q-input outlined v-model="productocomercial" label="Producto Comercial" class="q-my-md q-mx-md" type="string" />
-                    <q-input outlined v-model="ingredienteActivo" label="Ingrediente Activo" class="q-my-md q-mx-md" type="string" />
-                    <q-input outlined v-model="dosisUtilizada" label="Dosis Utilizada" class="q-my-md q-mx-md" type="string" />
-                    <q-input outlined v-model="metodoAplicacion" label="Metodo de Aplicación" class="q-my-md q-mx-md" type="string" />
+                    <q-select outlined v-model="idcultivo" label="Seleccione un Cultivo" :options="optionsCultivo"  @filter="filterCultivo" class="q-my-md q-mx-md" 
+                    :rules="[val => !!val || 'Debe seleccionar un cultivo']" hide-bottom-space />
+                    <q-select outlined v-model="idempleadooperario" label="Seleccione Operario" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md" 
+                    :rules="[val => !!val || 'Debe seleccionar un empleado operario']" hide-bottom-space />
+                    <q-select outlined v-model="idempleadoresponsable" label="Seleccione Responsable" :options="optionsEmpleado" @filter="filterEmpleado" class="q-my-md q-mx-md" 
+                    :rules="[val => !!val || 'Debe seleccionar un empleado responsable']" hide-bottom-space/>
+                    <q-input outlined v-model="fecha" label="Fecha de Elaboración" class="q-my-md q-mx-md" type="date" 
+                    :rules="[val => !!val || 'Debe seleccionar una fecha']" hide-bottom-space/>
+                    <q-input outlined v-model="productocomercial" label="Producto Comercial" class="q-my-md q-mx-md" type="string"
+                    :rules="[
+              (val) => !!val || 'Este campo es requerido',
+              (val) => !!val.trim() || 'Este campo no puede estar vacío',
+              (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+            ]" hide-bottom-space />
+                    <q-input outlined v-model="ingredienteActivo" label="Ingrediente Activo" class="q-my-md q-mx-md" type="string" 
+                    :rules="[
+              (val) => !!val || 'Este campo es requerido',
+              (val) => !!val.trim() || 'Este campo no puede estar vacío',
+              (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+            ]" hide-bottom-space/>
+                    <q-input outlined v-model="dosisUtilizada" label="Dosis Utilizada" class="q-my-md q-mx-md" type="string"
+                    :rules="[
+              (val) => !!val || 'Este campo es requerido',
+              (val) => !!val.trim() || 'Este campo no puede estar vacío',
+              (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+            ]" hide-bottom-space />
+                    <q-input outlined v-model="metodoAplicacion" label="Metodo de Aplicación" class="q-my-md q-mx-md" type="string" 
+                    :rules="[
+              (val) => !!val || 'Este campo es requerido',
+              (val) => !!val.trim() || 'Este campo no puede estar vacío',
+              (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+            ]" hide-bottom-space/>
                    
 
                     <q-card-actions align="right">
@@ -377,5 +404,17 @@ onMounted(() => {
     background-color: white;
     color: #333;
     min-width: 200px;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; 
 }
 </style>
