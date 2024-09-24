@@ -20,8 +20,7 @@ import Nomina from "../components/nomina.vue"
 import Riego from "../components/riego.vue"
 import Comprador from "../components/comprador.vue"
 import Sustrato from '../components/elaboracionSustrato.vue';
-
-
+import Fertilizacion from "../components/fertilizacin.vue"
 
   const auth = (to, from, next) => {
     if (checkAuth()) {
@@ -44,7 +43,6 @@ const checkAuth = () => {
     if (!token) return false;
     return true;
 };
-
 
   
 const routes = [
@@ -69,11 +67,13 @@ const routes = [
             {path:"/produccion",component:Produccion,beforeEnter: auth, meta: { rol: ['Administrador'] }},
             {path:"/riegos",component:Riego,beforeEnter: auth, meta: { rol: ['Administrador'] }},
             {path:"/comprador",component:Comprador,beforeEnter: auth, meta: { rol: ['Administrador'] }},
+            {path:"/fertilizacion",component:Fertilizacion,beforeEnter: auth, meta: { rol: ['Administrador'] }},
             {path: "/elaboracionSustrato",component:Sustrato,beforeEnter: auth, meta: { rol: ['Administrador'] }}
 
         ]
     }
 ];
+
 
 export const router =createRouter({
     history:createWebHashHistory(),

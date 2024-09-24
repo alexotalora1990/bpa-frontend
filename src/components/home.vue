@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <q-layout view="hHh lpR fFf">
       <q-header elevated class="bg-primary text-white" height-hint="98">
@@ -10,6 +11,7 @@
             </q-avatar>
             BUENAS PRACTICAS AGRICOLAS
           </q-toolbar-title>
+          <q-btn dense flat round icon="logout" @click="logout" />
         </q-toolbar>
       </q-header>
 
@@ -44,6 +46,7 @@
                   </q-item-section>
                 </q-item>
               </router-link>
+
             </q-item>
           </div>
 
@@ -173,8 +176,15 @@ const router = useRouter();
 const fincasStore = useFincaStore();
 let fincas = ref([]);
 
-function ir(fincaId) {
-  if (fincaId && fincaId._id) {
+
+
+import { useAdministradorStore } from '../store/administrador';
+import { routes } from "../routes/routes.js";
+import { useRouter } from 'vue-router';
+const useAdmin=useAdministradorStore()
+const router = useRouter();
+
+
 
 
     fincasStore.seleccionarFinca(fincaId._id);
