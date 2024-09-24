@@ -21,8 +21,6 @@ import Riego from "../components/riego.vue"
 import Comprador from "../components/comprador.vue"
 import Sustrato from '../components/elaboracionSustrato.vue';
 
-
-
   const auth = (to, from, next) => {
     if (checkAuth()) {
         const userAdmin = useAdministradorStore();
@@ -44,7 +42,6 @@ const checkAuth = () => {
     if (!token) return false;
     return true;
 };
-
 
   
 const routes = [
@@ -74,6 +71,7 @@ const routes = [
         ]
     }
 ];
+
 
 export const router =createRouter({
     history:createWebHashHistory(),

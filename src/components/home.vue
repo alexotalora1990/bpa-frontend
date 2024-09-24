@@ -176,7 +176,7 @@ import { useFincaStore } from "../store/fincas";
 const fincasStore = useFincaStore();
 let fincas = ref([]);
 
-import { ref } from 'vue'
+
 import { useAdministradorStore } from '../store/administrador';
 import { routes } from "../routes/routes.js";
 import { useRouter } from 'vue-router';
