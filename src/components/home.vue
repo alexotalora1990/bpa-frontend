@@ -1,51 +1,48 @@
-
 <template>
 
-  <div>
-    <q-layout view="hHh lpR fFf">
-      <q-header elevated class="bg-primary text-white" height-hint="98">
-        <q-toolbar>
-          <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
-          <q-toolbar-title align="center">
-            <q-avatar>
-              <!-- <img src=""> -->
-            </q-avatar>
-            BUENAS PRACTICAS AGRICOLAS
-          </q-toolbar-title>
-        </q-toolbar>
-      </q-header>
+  <q-layout view="hHh lpR fFf">
+    <q-header elevated class="bg-primary text-white" height-hint="98">
+      <q-toolbar>
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+        <q-toolbar-title align="center">
+          <q-avatar>
+            <!-- <img src=""> -->
+          </q-avatar>
+          BUENAS PRACTICAS AGRICOLAS
+        </q-toolbar-title>
+        <!-- he aqui el boton de log out -->
+        <q-btn dense flat round icon="logout" @click="logout" />
+      </q-toolbar>
 
-      <q-drawer show-if v-model="leftDrawerOpen" side="left" bordered>
-        <q-list>
-          <q-item clickable @click="toggleSubmenu('usuarios')">
-            <q-item-section>
-              <q-btn
-                label="Usuarios"
-                color="green"
-                text-color="black"
-                flat
-                class="full-width"
-              />
-            </q-item-section>
-            <q-item-section avatar>
-              <q-icon
-                :name="submenu.usuarios ? 'expand_less' : 'expand_more'"
-              />
-            </q-item-section>
-          </q-item>
+    </q-header>
 
-          <div v-if="submenu.usuarios" class="subitem">
-            <q-item v-for="item in usuariosItems" :key="item.label">
-              <router-link :to="item.to">
-                <q-item clickable v-ripple class="my-item">
-                  <q-item-section avatar>
-                    <q-icon :name="item.icon" class="my-icon" />
-                  </q-item-section>
-                  <q-item-section>
-                    {{ item.label }}
-                  </q-item-section>
-                </q-item>
-              </router-link>
+    <q-drawer show-if v-model="leftDrawerOpen" side="left" bordered>
+      <q-list>
+        <q-item clickable @click="toggleSubmenu('usuarios')">
+          <q-item-section>
+            <q-btn
+              label="Usuarios"
+              color="green"
+              text-color="black"
+              flat
+              class="full-width"
+            />
+          </q-item-section>
+          <q-item-section avatar>
+            <q-icon :name="submenu.usuarios ? 'expand_less' : 'expand_more'" />
+          </q-item-section>
+        </q-item>
+
+        <div v-if="submenu.usuarios" class="subitem">
+        <q-item  v-for="item in usuariosItems" :key="item.label">
+          <router-link :to="item.to">
+            <q-item clickable v-ripple class="my-item">
+              <q-item-section avatar>
+                <q-icon :name="item.icon" class="my-icon" />
+              </q-item-section>
+              <q-item-section>
+                {{ item.label }}
+              </q-item-section>
 
             </q-item>
           </div>
