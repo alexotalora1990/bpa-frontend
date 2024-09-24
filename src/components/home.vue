@@ -1,48 +1,51 @@
 <template>
 
-  <q-layout view="hHh lpR fFf">
-    <q-header elevated class="bg-primary text-white" height-hint="98">
-      <q-toolbar>
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
-        <q-toolbar-title align="center">
-          <q-avatar>
-            <!-- <img src=""> -->
-          </q-avatar>
-          BUENAS PRACTICAS AGRICOLAS
-        </q-toolbar-title>
-        <!-- he aqui el boton de log out -->
-        <q-btn dense flat round icon="logout" @click="logout" />
-      </q-toolbar>
+  <div>
+    <q-layout view="hHh lpR fFf">
+      <q-header elevated class="bg-primary text-white" height-hint="98">
+        <q-toolbar>
+          <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+          <q-toolbar-title align="center">
+            <q-avatar>
+              <!-- <img src=""> -->
+            </q-avatar>
+            BUENAS PRACTICAS AGRICOLAS
+          </q-toolbar-title>
+          <q-btn dense flat round icon="logout" @click="logout" />
+        </q-toolbar>
+      </q-header>
 
-    </q-header>
+      <q-drawer show-if v-model="leftDrawerOpen" side="left" bordered>
+        <q-list>
+          <q-item clickable @click="toggleSubmenu('usuarios')">
+            <q-item-section>
+              <q-btn
+                label="Usuarios"
+                color="green"
+                text-color="black"
+                flat
+                class="full-width"
+              />
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon
+                :name="submenu.usuarios ? 'expand_less' : 'expand_more'"
+              />
+            </q-item-section>
+          </q-item>
 
-    <q-drawer show-if v-model="leftDrawerOpen" side="left" bordered>
-      <q-list>
-        <q-item clickable @click="toggleSubmenu('usuarios')">
-          <q-item-section>
-            <q-btn
-              label="Usuarios"
-              color="green"
-              text-color="black"
-              flat
-              class="full-width"
-            />
-          </q-item-section>
-          <q-item-section avatar>
-            <q-icon :name="submenu.usuarios ? 'expand_less' : 'expand_more'" />
-          </q-item-section>
-        </q-item>
-
-        <div v-if="submenu.usuarios" class="subitem">
-        <q-item  v-for="item in usuariosItems" :key="item.label">
-          <router-link :to="item.to">
-            <q-item clickable v-ripple class="my-item">
-              <q-item-section avatar>
-                <q-icon :name="item.icon" class="my-icon" />
-              </q-item-section>
-              <q-item-section>
-                {{ item.label }}
-              </q-item-section>
+          <div v-if="submenu.usuarios" class="subitem">
+            <q-item v-for="item in usuariosItems" :key="item.label">
+              <router-link :to="item.to">
+                <q-item clickable v-ripple class="my-item">
+                  <q-item-section avatar>
+                    <q-icon :name="item.icon" class="my-icon" />
+                  </q-item-section>
+                  <q-item-section>
+                    {{ item.label }}
+                  </q-item-section>
+                </q-item>
+              </router-link>
 
             </q-item>
           </div>
@@ -144,7 +147,7 @@
         <div class="q-pa-md">
           <q-page>
             <div class="q-pa-md row items-start q-gutter-md scrollable-container" style="display: flex;">
-              <q-card v-for="finca in fincas" :key="finca._id" class="my-card" @click="handleCardClick(finca)">
+              <q-card v-for="(finca, i) in fincas" :key="i" class="my-card" @click="ir(finca)">
                 <q-img
                   :src="'https://cdn.quasar.dev/img/parallax2.jpg'"
                   class="card-image"
@@ -166,12 +169,13 @@
 </template>
 
 <script setup>
-
 import { ref, onMounted } from "vue";
+import { useRouter } from 'vue-router';
 import { useFincaStore } from "../store/fincas";
-
+const router = useRouter();
 const fincasStore = useFincaStore();
 let fincas = ref([]);
+
 
 
 import { useAdministradorStore } from '../store/administrador';
@@ -183,16 +187,19 @@ const router = useRouter();
 
 
 
+    fincasStore.seleccionarFinca(fincaId._id);
+    console.log("ID de finca seleccionada:", fincaId._id);
+  } else {
+    console.error("Error: fincaId no es válido o no contiene _id");
+  }
+}
+
 onMounted(async () => {
-  await fincasStore.getFincasActivos();
-  console.log(fincasStore.fincas); // Verifica cuántas fincas se están obteniendo
-  fincas.value = fincasStore.fincas;
+  await fincasStore.getFincasActivos(); 
+  fincas.value = fincasStore.fincas.fincaActiva;
+  console.log(fincasStore.fincas.fincaActiva);
 });
 
-const handleCardClick = (finca) => {
-  console.log("Finca seleccionada:", finca);
-  // Aquí puedes manejar la navegación o cualquier acción posterior
-};
 
 const leftDrawerOpen = ref(false);
 const submenu = ref({
@@ -207,14 +214,7 @@ const toggleLeftDrawer = () => {
 };
 
 const toggleSubmenu = (menu) => {
-
-  submenu.value[menu] = !submenu.value[menu]
-}
-const logout = () => {
-  useAdmin.logout();
-  localStorage.removeItem('selectedRoute'); 
-  router.push('/');
-
+  submenu.value[menu] = !submenu.value[menu];
 };
 
 const usuariosItems = [
