@@ -1,4 +1,3 @@
-
 <template>
 
   <div>
@@ -12,6 +11,7 @@
             </q-avatar>
             BUENAS PRACTICAS AGRICOLAS
           </q-toolbar-title>
+          <q-btn dense flat round icon="logout" @click="logout" />
         </q-toolbar>
       </q-header>
 
@@ -147,7 +147,7 @@
         <div class="q-pa-md">
           <q-page>
             <div class="q-pa-md row items-start q-gutter-md scrollable-container" style="display: flex;">
-              <q-card v-for="finca in fincas" :key="finca._id" class="my-card" @click="handleCardClick(finca)">
+              <q-card v-for="(finca, i) in fincas" :key="i" class="my-card" @click="ir(finca)">
                 <q-img
                   :src="'https://cdn.quasar.dev/img/parallax2.jpg'"
                   class="card-image"
@@ -169,33 +169,34 @@
 </template>
 
 <script setup>
-
 import { ref, onMounted } from "vue";
+import { useRouter } from 'vue-router';
 import { useFincaStore } from "../store/fincas";
+import { useAdministradorStore } from '../store/administrador';
+import { routes } from "../routes/routes.js";
+const useAdmin=useAdministradorStore()
 
+const router = useRouter();
 const fincasStore = useFincaStore();
 let fincas = ref([]);
 
 
-import { useAdministradorStore } from '../store/administrador';
-import { routes } from "../routes/routes.js";
-import { useRouter } from 'vue-router';
-const useAdmin=useAdministradorStore()
-const router = useRouter();
+
+
+
+
+
+
 
 
 
 
 onMounted(async () => {
-  await fincasStore.getFincasActivos();
-  console.log(fincasStore.fincas); // Verifica cuántas fincas se están obteniendo
-  fincas.value = fincasStore.fincas;
+  await fincasStore.getFincasActivos(); 
+  fincas.value = fincasStore.fincas.fincaActiva;
+  console.log(fincasStore.fincas.fincaActiva);
 });
 
-const handleCardClick = (finca) => {
-  console.log("Finca seleccionada:", finca);
-  // Aquí puedes manejar la navegación o cualquier acción posterior
-};
 
 const leftDrawerOpen = ref(false);
 const submenu = ref({
@@ -210,14 +211,12 @@ const toggleLeftDrawer = () => {
 };
 
 const toggleSubmenu = (menu) => {
-
-  submenu.value[menu] = !submenu.value[menu]
-}
+  submenu.value[menu] = !submenu.value[menu];
+};
 const logout = () => {
   useAdmin.logout();
   localStorage.removeItem('selectedRoute'); 
   router.push('/');
-
 };
 
 const usuariosItems = [
