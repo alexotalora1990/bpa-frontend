@@ -53,22 +53,22 @@ const routes = [
         path: "/home", component: Home,
          children: [
             { path: "/administrador", component: Administrador , beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            { path: "/finca", component: Finca, beforeEnter: auth, meta: { rol: ['Administrador'] } },
-            { path: "/cultivo", component: Cultivo,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            { path: "/parcela", component: Parcela,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            { path: "/empleados", component: Empleado,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            { path: "/clima", component: Clima,beforeEnter: auth, meta: { rol: ['Administrador'] }},     
-            { path: "/nomina", component: Nomina,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            {path:"/proveedores",component:Proveedores,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            {path:"/insumo",component:Insumos,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            {path:"/maquinaria",component:Maquinaria,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            {path:"/semilla",component:Semillas,beforeEnter: auth, meta: { rol: ['Administrador'] }},             
-            {path:"/procesos",component:Proceso,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            {path:"/produccion",component:Produccion,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            {path:"/riegos",component:Riego,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            {path:"/comprador",component:Comprador,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            {path:"/fertilizacion",component:Fertilizacion,beforeEnter: auth, meta: { rol: ['Administrador'] }},
-            {path: "/elaboracionSustrato",component:Sustrato,beforeEnter: auth, meta: { rol: ['Administrador'] }}
+            { path: "/finca", component: Finca, beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] } },
+            { path: "/cultivo", component: Cultivo,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            { path: "/parcela", component: Parcela,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            { path: "/empleados", component: Empleado,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            { path: "/clima", component: Clima,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},     
+            { path: "/nomina", component: Nomina,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            {path:"/proveedores",component:Proveedores,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            {path:"/insumo",component:Insumos,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            {path:"/maquinaria",component:Maquinaria,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            {path:"/semilla",component:Semillas,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},             
+            {path:"/procesos",component:Proceso,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            {path:"/produccion",component:Produccion,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            {path:"/riegos",component:Riego,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            {path:"/comprador",component:Comprador,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            {path:"/fertilizacion",component:Fertilizacion,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            {path: "/elaboracionSustrato",component:Sustrato,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }}
 
         ]
     }
