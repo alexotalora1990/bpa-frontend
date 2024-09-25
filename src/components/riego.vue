@@ -121,18 +121,7 @@ const reglas = {
    min8max12: val => val.length >= 8 && val.length <= 12 || 'Debe tener entre 8 y 12 dígitos',
   soloNumeros: val => /^[0-9]+$/.test(val) || 'Solo se permiten números',
 }
-function validarCampos() {
-    if (!idcultivo.value || !idempleado.value || !dosis.value || !horaInicio.value || 
-        !horaFin.value || !fenologico.value || !cantidadAgua.value || diasTransplante.value) {
-        Notify.create({
-            message: 'Por favor, completa todos los campos requeridos.',
-            color: 'negative',
-            position: 'top',
-        });
-        return false;
-    }
-    return true;
-}
+
 async function crear() {
         try {
             accion.value = 1;
@@ -189,8 +178,7 @@ async function editar() {
 
         await useRiego.putRiegos(id.value, {
             idcultivo: idcultivo.value.value,
-            idempleado: idempleado.value.value,
-           
+            idempleado: idempleado.value.value,           
             horaInicio: horaInicio.value,
             horaFin: horaFin.value,
             diasTransplante: diasTransplante.value,
@@ -218,13 +206,7 @@ async function editar() {
 }
 
 
-// function modify() {
-//     if (accion.value === 1) {
-//         crear()
-//     } else {
-//         editar()
-//     }
-// }
+
 
 async function modify() {
   try {
@@ -242,7 +224,7 @@ console.log(error);
 
     if (accion.value === 1) {
       await crear();
-    } else {
+    } else  {
       await editar();
     }
 
@@ -253,12 +235,13 @@ console.log(error);
     });
 
   } catch (error) {
+    console.error("Error en modify:", error);
     Notify.create({
       type: "negative",
       message: "Error en la operación",
       icon: "error",
     });
-    console.error("Error en modify:", error);
+   
   }
 }
 
