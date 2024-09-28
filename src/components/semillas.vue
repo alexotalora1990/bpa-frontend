@@ -39,9 +39,9 @@
             hide-bottom-space />
           <q-input outlined v-model="poderGerminativo" label="Poder Germinativo" class="q-my-md q-mx-md" type="text"
             hide-bottom-space />
-          <q-input outlined v-model="observaciones" label="Observaciones" class="q-my-md q-mx-md" type="text"
-            hide-bottom-space />
           <q-input outlined v-model="cantidad" label="Cantidad" class="q-my-md q-mx-md" type="number"
+            hide-bottom-space />
+          <q-input outlined v-model="observaciones" label="Observaciones" class="q-my-md q-mx-md" type="textarea"
             hide-bottom-space />
 
           <q-card-actions align="right">
@@ -102,15 +102,17 @@ const filter = ref("");
 
 let rows = ref([]);
 let idfinca = ref("");
-let numFactura = ref("");
-let fechaCompra = ref("");
+let nombre = ref("");
+let registroica = ref("");
+let registroinvima = ref("");
 let fechaVencimiento = ref("");
 let especie = ref("");
 let NumLote = ref("");
 let origen = ref("");
 let poderGerminativo = ref("");
-let unidadtotal = ref("");
-let total = ref("");
+let cantidad = ref("")
+let observaciones = ref("")
+
 let id = ref("");
 
 let alert = ref(false);
@@ -125,11 +127,15 @@ async function crear() {
   try {
     const r = await useSemilla.postSemillas({
       idfinca: idfinca.value.value,
+      registroica: registroica.value,
+      registroinvima: registroinvima.value,
       fechaVencimiento: fechaVencimiento.value,
       especie: especie.value,
       NumLote: NumLote.value,
       origen: origen.value,
       poderGerminativo: poderGerminativo.value,
+      cantidad: cantidad.value,
+      observaciones: observaciones.value
     });
     Notify.create({
       message: "Semilla creada correctamente!",
@@ -409,30 +415,22 @@ function cerrar() {
 
 function limpiarCampos() {
   idfinca.value = "";
-  numFactura.value = "";
-  fechaCompra.value = "";
   fechaVencimiento.value = "";
   especie.value = "";
   NumLote.value = "";
   origen.value = "";
   poderGerminativo.value = "";
-  unidadtotal.value = "";
-  total.value = "";
   accion.value = 1;
 }
 
 function validarCampos() {
   if (
     !idfinca.value ||
-    !numFactura.value ||
-    !fechaCompra.value ||
     !fechaVencimiento.value ||
     !especie.value ||
     !NumLote.value ||
     !origen.value ||
-    !poderGerminativo.value ||
-    !unidadtotal.value ||
-    !total.value
+    !poderGerminativo.value 
   ) {
     Notify.create({
       message: "Por favor, completa todos los campos requeridos.",
