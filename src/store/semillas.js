@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { ref } from "vue";
-
+import { Notify } from "quasar";
 
 
 
@@ -57,10 +57,13 @@ export const useSemillaStore = defineStore("semilla", () => {
             loading.value = true
             const r = await axios.post("semillas/agregar", data, {
             })
-            return r
+            return true
         } catch (error) {
-            loading.value = true
-            console.log(error);
+            Notify.create({
+                type: 'negative',
+                message: error.response.data.errors[0]?.msg
+            });
+            return false
         } finally {
             loading.value = false
         }
@@ -70,10 +73,14 @@ export const useSemillaStore = defineStore("semilla", () => {
             loading.value = true
             const r = await axios.put(`semillas/actualizar/${id}`, data, {
             })
-            return r
+            return true
         } catch (error) {
-            loading.value = true
-            console.log(error);
+            loading.value=true
+            Notify.create({
+                type: 'negative',
+                message: error.response.data.errors[0]?.msg
+            });
+            return false
         } finally {
             loading.value = false
         }

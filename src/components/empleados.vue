@@ -112,7 +112,6 @@
             </q-table>
         </div>
     </div>
-
 </template>
 
 <script setup>
