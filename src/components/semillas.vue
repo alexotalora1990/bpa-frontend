@@ -12,47 +12,84 @@
       <q-btn color="black" class="q-my-md q-ml-md" @click="filtrar()">Filtrar</q-btn>
     </div>
     <div>
-      <q-dialog v-model="alert" persistent>
-        <q-card class="" style="width: 700px">
-          <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
-            <div class="text-h6 text-white">
-              {{ accion == 1 ? "Crear Semilla" : "Editar Semilla" }}
-            </div>
-            <q-space />
-            <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
-          </q-card-section>
-          <q-select outlined v-model="idfinca" label="Seleccione una Finca" :options="options"
-            class="q-my-md q-mx-md" @filter="filterFn" hide-bottom-space />
-          <q-input outlined v-model="nombre" label="Nombre" class="q-my-md q-mx-md" type="text" 
-            hide-bottom-space />
-          <q-input outlined v-model="registroica" label="Registro Ica" class="q-my-md q-mx-md" type="text"
-            hide-bottom-space />
-          <q-input outlined v-model="registroinvima" label="Registro Invima" class="q-my-md q-mx-md" type="text"
-            hide-bottom-space />
-          <q-input outlined v-model="fechaVencimiento" label="Fecha de Vencimiento" class="q-my-md q-mx-md" type="date"
-            hide-bottom-space />
-          <q-input outlined v-model="especie" label="Especie" class="q-my-md q-mx-md" type="text" 
-            hide-bottom-space />
-          <q-input outlined v-model="NumLote" label="Número de Lote" class="q-my-md q-mx-md" type="number"
-            hide-bottom-space />
-          <q-input outlined v-model="origen" label="Origen" class="q-my-md q-mx-md" type="text" 
-            hide-bottom-space />
-          <q-input outlined v-model="poderGerminativo" label="Poder Germinativo" class="q-my-md q-mx-md" type="text"
-            hide-bottom-space />
-          <q-input outlined v-model="cantidad" label="Cantidad" class="q-my-md q-mx-md" type="number"
-            hide-bottom-space />
-          <q-input outlined v-model="observaciones" label="Observaciones" class="q-my-md q-mx-md" type="textarea"
-            hide-bottom-space />
-
-          <q-card-actions align="right">
-            <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
-            <q-btn @click="modify()" color="green
+      <q-form ref="formulario" @submit.prevent="modify">
+        <q-dialog v-model="alert" persistent>
+          <q-card class="" style="width: 700px">
+            <q-card-section style="background-color: #008000; margin-bottom: 20px" class="row items-center">
+              <div class="text-h6 text-white">
+                {{ accion == 1 ? "Crear Semilla" : "Editar Semilla" }}
+              </div>
+              <q-space />
+              <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
+            </q-card-section>
+            <q-select outlined v-model="idfincas" label="Seleccione una Finca" :options="options"
+              class="q-my-md q-mx-md" @filter="filterFn" hide-bottom-space
+              :rules="[(val) => !!val || 'Este campo es requerido']" />
+            <q-input outlined v-model="nombre" label="Nombre" class="q-my-md q-mx-md" type="text" hide-bottom-space
+              :rules="[
+                (val) => !!val || 'Este campo es requerido',
+                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+              ]" />
+            <q-input outlined v-model="registroica" label="Registro Ica" class="q-my-md q-mx-md" type="text"
+              hide-bottom-space :rules="[
+                (val) => !!val || 'Este campo es requerido',
+                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+              ]" />
+            <q-input outlined v-model="registroinvima" label="Registro Invima" class="q-my-md q-mx-md" type="text"
+              hide-bottom-space :rules="[
+                (val) => !!val || 'Este campo es requerido',
+                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+              ]" />
+            <q-input outlined v-model="fechaVencimiento" label="Fecha de Vencimiento" class="q-my-md q-mx-md"
+              type="date" hide-bottom-space :rules="[
+                (val) => !!val || 'Este campo es requerido',
+              ]" />
+            <q-input outlined v-model="especie" label="Especie" class="q-my-md q-mx-md" type="text" hide-bottom-space
+              :rules="[
+                (val) => !!val || 'Este campo es requerido',
+                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+              ]" />
+            <q-input outlined v-model="NumLote" label="Número de Lote" class="q-my-md q-mx-md" type="number"
+              hide-bottom-space :rules="[
+                (val) => !!val || 'Este campo es requerido',
+                (val) => val > 0 || 'El número debe ser mayor a 0',
+              ]" />
+            <q-input outlined v-model="origen" label="Origen" class="q-my-md q-mx-md" type="text" hide-bottom-space
+              :rules="[
+                (val) => !!val || 'Este campo es requerido',
+                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+              ]" />
+            <q-input outlined v-model="poderGerminativo" label="Poder Germinativo" class="q-my-md q-mx-md" type="text"
+              hide-bottom-space :rules="[
+                (val) => !!val || 'Este campo es requerido',
+                (val) => val > 0 || 'El número debe ser mayor a 0',
+              ]" />
+            <q-input outlined v-model="cantidad" label="Cantidad" class="q-my-md q-mx-md" type="number"
+              hide-bottom-space :rules="[
+                (val) => !!val || 'Este campo es requerido',
+                (val) => val > 0 || 'El número debe ser mayor a 0',
+              ]" />
+            <q-input outlined v-model="observaciones" label="Observaciones" class="q-my-md q-mx-md" type="textarea"
+              hide-bottom-space :rules="[
+                (val) => !!val || 'Este campo es requerido',
+                (val) => !!val.trim() || 'Este campo no puede estar vacío',
+                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
+              ]" />
+            <q-card-actions align="right">
+              <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+              <q-btn @click="modify()" color="green
               " class="text-white">
-              {{ accion == 1 ? "Agregar" : "Editar" }}
-            </q-btn>
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
+                {{ accion == 1 ? "Agregar" : "Editar" }}
+              </q-btn>
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+      </q-form>
     </div>
     <div style="display: flex; justify-content: center">
       <q-table title="Semillas" title-class="text-green text-weight-bolder text-h5" table-header-class="text-black"
@@ -101,7 +138,7 @@ const useSemilla = useSemillaStore();
 const filter = ref("");
 
 let rows = ref([]);
-let idfinca = ref("");
+let idfincas = ref("");
 let nombre = ref("");
 let registroica = ref("");
 let registroinvima = ref("");
@@ -112,110 +149,113 @@ let origen = ref("");
 let poderGerminativo = ref("");
 let cantidad = ref("")
 let observaciones = ref("")
+const formulario = ref(null);
 
 let id = ref("");
 
 let alert = ref(false);
 let accion = ref(1);
 
-
-
 async function crear() {
-  if (!validarCampos()) {
-    return;
-  }
-  try {
-    const r = await useSemilla.postSemillas({
-      idfinca: idfinca.value.value,
-      registroica: registroica.value,
-      registroinvima: registroinvima.value,
-      fechaVencimiento: fechaVencimiento.value,
-      especie: especie.value,
-      NumLote: NumLote.value,
-      origen: origen.value,
-      poderGerminativo: poderGerminativo.value,
-      cantidad: cantidad.value,
-      observaciones: observaciones.value
-    });
+  if (!validarCampos()) { return; }
+  const res = await useSemilla.postSemillas({
+    idfincas: idfincas.value.value,
+    nombre: nombre.value,
+    registroica: registroica.value,
+    registroinvima: registroinvima.value,
+    fechaVencimiento: fechaVencimiento.value,
+    especie: especie.value,
+    NumLote: NumLote.value,
+    origen: origen.value,
+    poderGerminativo: poderGerminativo.value,
+    cantidad: cantidad.value,
+    observaciones: observaciones.value
+  });
+  if (res == true) {
     Notify.create({
-      message: "Semilla creada correctamente!",
+      message: 'Semilla creado exitosamente!',
       position: "center",
-      color: "green",
+      color: "green"
     });
-  } catch (error) {
-    Notify.create({
-      message: "Error al crear la semilla",
-      position: "center",
-      color: "red",
-    });
+    listarSemillas();
+    limpiarCampos();
+    cerrar();
   }
-  listarSemillas();
-  limpiarCampos();
-  cerrar();
 }
-
 
 function traerDatos(semilla) {
   alert.value = true;
   accion.value = 2;
-  idfinca.value = {
-    label: semilla.idfinca.nombre,
-    value: semilla.idfinca._id,
+  idfincas.value = {
+    label: semilla.idfincas.nombre,
+    value: semilla.idfincas._id,
   };
-  numFactura.value = semilla.numFactura;
-  fechaCompra.value = semilla.fechaCompra;
+  nombre.value = semilla.nombre;
+  registroica.value = semilla.registroica;
+  registroinvima.value = semilla.registroinvima;
   fechaVencimiento.value = semilla.fechaVencimiento;
   especie.value = semilla.especie;
   NumLote.value = semilla.NumLote;
   origen.value = semilla.origen;
   poderGerminativo.value = semilla.poderGerminativo;
-  unidadtotal.value = semilla.unidadtotal;
-  total.value = semilla.total;
   id.value = semilla._id;
+  cantidad.value = semilla.cantidad;
+  observaciones.value = semilla.observaciones;
 }
-
 
 async function editar() {
-  if (!validarCampos()) {
-    return;
-  }
-  try {
-    const r = await useSemilla.putSemillas(id.value, {
-      idfinca: idfinca.value.value,
-      numFactura: numFactura.value,
-      fechaCompra: fechaCompra.value,
-      fechaVencimiento: fechaVencimiento.value,
-      especie: especie.value,
-      NumLote: NumLote.value,
-      origen: origen.value,
-      poderGerminativo: poderGerminativo.value,
-      unidadtotal: unidadtotal.value,
-      total: total.value,
-    });
+  if (!validarCampos()) return;
+  const res = await useSemilla.putSemillas(id.value, {
+    idfincas: idfincas.value.value,
+    nombre: nombre.value,
+    registroica: registroica.value,
+    registroinvima: registroinvima.value,
+    fechaVencimiento: fechaVencimiento.value,
+    especie: especie.value,
+    NumLote: NumLote.value,
+    origen: origen.value,
+    poderGerminativo: poderGerminativo.value,
+    cantidad: cantidad.value,
+    observaciones: observaciones.value
+  });
+  if (res == true) {
     Notify.create({
-      message: "Semilla actualizada correctamente!",
+      message: 'Semilla actualizada correctamente!',
       position: "center",
-      color: "green",
+      color: "green"
     });
-  } catch (error) {
-    Notify.create({
-      message: "Error al actualizar la semilla",
-      position: "center",
-      color: "red",
-    });
+    listarSemillas();
+    limpiarCampos();
+    cerrar();
   }
-  listarSemillas();
-  limpiarCampos();
-  cerrar();
 }
 
-function modify() {
-  if (accion.value === 1) {
-    crear();
-  } else {
-    editar();
+async function modify() {
+  try {
+    const valid = await formulario.value.validate();
+    if (!valid) {
+      Notify.create({
+        type: "negative",
+        message: "Por favor, complete correctamente todos los campos Correctamente",
+        icon: "error",
+      });
+      return;
+    }
+    if (accion.value === 1) {
+      await crear();
+    } else {
+      await editar();
+    }
+  } catch (error) {
+    Notify.create({
+      type: "negative",
+      message: "Error en la operación",
+      icon: "error",
+    });
+    console.error("Error en modify:", error);
   }
 }
+
 
 let fincas = [];
 let datos = {};
@@ -301,6 +341,14 @@ async function activar(semilla) {
 }
 
 const columns = ref([
+  {
+    name: 'nombre',
+    required: true,
+    label: 'Finca',
+    align: 'center',
+    field: (row) => row.idfincas.nombre,
+    sortable: true
+  },
   {
     name: "nombre",
     required: true,
@@ -409,28 +457,33 @@ function abrir() {
 }
 
 function cerrar() {
+  limpiarCampos()
   alert.value = false;
-  limpiarCampos();
 }
 
 function limpiarCampos() {
-  idfinca.value = "";
+  idfincas.value = "";
+  nombre.value = "";
+  registroica.value = "";
+  registroinvima.value = "";
   fechaVencimiento.value = "";
+  cantidad.value = "";
   especie.value = "";
   NumLote.value = "";
   origen.value = "";
   poderGerminativo.value = "";
+  observaciones.value = "";
   accion.value = 1;
 }
 
 function validarCampos() {
   if (
-    !idfinca.value ||
+    !idfincas.value ||
     !fechaVencimiento.value ||
     !especie.value ||
     !NumLote.value ||
     !origen.value ||
-    !poderGerminativo.value 
+    !poderGerminativo.value
   ) {
     Notify.create({
       message: "Por favor, completa todos los campos requeridos.",

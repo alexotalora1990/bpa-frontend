@@ -21,6 +21,7 @@ import Riego from "../components/riego.vue"
 import Comprador from "../components/comprador.vue"
 import Sustrato from '../components/elaboracionSustrato.vue';
 import Fertilizacion from "../components/fertilizacin.vue"
+import analisisSuelo from '../components/analisisSuelo.vue';
 
   const auth = (to, from, next) => {
     if (checkAuth()) {
@@ -68,8 +69,8 @@ const routes = [
             {path:"/riegos",component:Riego,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
             {path:"/comprador",component:Comprador,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
             {path:"/fertilizacion",component:Fertilizacion,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
-            {path: "/elaboracionSustrato",component:Sustrato,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }}
-
+            {path: "/elaboracionSustrato",component:Sustrato,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }},
+            {path:"/analisis",component:analisisSuelo,beforeEnter: auth, meta: { rol: ['Administrador', 'Auxiliar'] }}
         ]
     }
 ];

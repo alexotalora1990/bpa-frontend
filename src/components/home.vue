@@ -144,25 +144,6 @@
       </q-drawer>
       <q-page-container>
         <router-view />
-        <div class="q-pa-md">
-          <q-page>
-            <div class="q-pa-md row items-start q-gutter-md scrollable-container" style="display: flex;">
-              <q-card v-for="(finca, i) in fincas" :key="i" class="my-card" @click="ir(finca)">
-                <q-img
-                  :src="'https://cdn.quasar.dev/img/parallax2.jpg'"
-                  class="card-image"
-                />
-                <div class="card-content">
-                  <div class="text-h6">{{ finca.nombre }}</div>
-                  <div class="text-caption">{{ finca.departamento }} - {{ finca.ciudad }}</div>
-                </div>
-                <q-card-actions class="card-actions">
-                  <q-btn flat class="edit-button">📂<q-tooltip>Detalles</q-tooltip></q-btn>
-                </q-card-actions>
-              </q-card>
-            </div>
-          </q-page>
-        </div>
       </q-page-container>
     </q-layout>
   </div>
@@ -210,6 +191,10 @@ const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 };
 
+const ir=(finca)=>{
+  console.log(finca._id)
+}
+
 const toggleSubmenu = (menu) => {
   submenu.value[menu] = !submenu.value[menu];
 };
@@ -225,7 +210,7 @@ const usuariosItems = [
 ];
 
 const agroItems = [
-  { label: "Analisis de suelo", to: "/analisissuelo", icon: "eco" },
+  { label: "Analisis de suelo", to: "/analisis", icon: "eco" },
   { label: "Clima", to: "/clima", icon: "eco" },
   { label: "Control Plagas", to: "/controlplaga", icon: "eco" },
   { label: "Cultivos", to: "/cultivo", icon: "eco" },
