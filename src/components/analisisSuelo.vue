@@ -17,55 +17,38 @@
                             <q-space />
                             <q-btn flat dense icon="close" @click="cerrar()" class="text-white" />
                         </q-card-section>
-                        <q-select outlined v-model="idfinca" label="Seleccione una Finca" :options="options"
-                            class="q-my-md q-mx-md" @filter="filterFn" hide-bottom-space
+                        <q-select outlined v-model="idparcela" label="Seleccione una Parcela" :options="options"
+                            class="q-my-md q-mx-md" @filter="filter1" hide-bottom-space
                             :rules="[(val) => !!val || 'Este campo es requerido']" />
-                        <q-input outlined v-model="nombre" label="Nombre del Empleado" class="q-my-md q-mx-md"
+                        <q-select outlined v-model="idempleado" label="Seleccione un Empleado" :options="opciones"
+                            class="q-my-md q-mx-md" @filter="filter2" hide-bottom-space
+                            :rules="[(val) => !!val || 'Este campo es requerido']" />
+                        <q-input outlined v-model="muestra" label="Muestra" class="q-my-md q-mx-md"
                             type="text" :rules="[
                                 (val) => !!val || 'Este campo es requerido',
                                 (val) => !!val.trim() || 'Este campo no puede estar vacío',
                                 (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
                             ]" hide-bottom-space />
-                        <q-input outlined v-model="numdocumento" label="Numero de Documento" class="q-my-md q-mx-md"
+                        <q-input outlined v-model="cultivo" label="Cultivo" class="q-my-md q-mx-md"
                             type="text" :rules="[
                                 (val) => !!val || 'Este campo es requerido',
                                 (val) => !!val.trim() || 'Este campo no puede estar vacío',
-                                (val) => val.length >= 8 || 'Debe tener al menos 8 caracteres',
-                                (val) => /^[0-9]*$/.test(val) || 'Solo se permiten numeros'
+                                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
                             ]" hide-bottom-space />
-                        <q-input outlined v-model="correo" label="Correo" class="q-my-md q-mx-md" type="email" :rules="[
-                            (val) => !!val || 'Este campo es requerido',
-                            (val) => !!val.trim() || 'Este campo no puede estar vacío',
-                            (val) => /.+@.+\..+/.test(val) || 'Formato de correo no válido'
-                        ]" hide-bottom-space />
-
-                        <q-input outlined v-model="direccion" label="Dirección" class="q-my-md q-mx-md" type="text"
-                            :rules="[
+                        <q-input outlined v-model="laboratorio" label="Nombre del Laboratorio" class="q-my-md q-mx-md"
+                            type="text" :rules="[
                                 (val) => !!val || 'Este campo es requerido',
                                 (val) => !!val.trim() || 'Este campo no puede estar vacío',
-                                (val) => val.length >= 5 || 'Debe tener al menos 5 caracteres'
+                                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
                             ]" hide-bottom-space />
-
-                        <q-input outlined v-model="telefono" label="Teléfono" class="q-my-md q-mx-md" type="number"
-                            :rules="[
+                        <q-input outlined v-model="recomendaciones" label="Recomendaciones" class="q-my-md q-mx-md"
+                            type="textarea" :rules="[
                                 (val) => !!val || 'Este campo es requerido',
                                 (val) => !!val.trim() || 'Este campo no puede estar vacío',
-                                (val) => val.length === 10 || 'El número debe tener exactamente 10 caracteres',
-                                (val) => /^[0-9]*$/.test(val) || 'Solo se permiten números'
+                                (val) => val.length >= 3 || 'Debe tener al menos 3 caracteres'
                             ]" hide-bottom-space />
-
-                        <q-input outlined v-model="estudios" label="Estudios" class="q-my-md q-mx-md" type="text"
-                            :rules="[
-                                (val) => !!val || 'Este campo es requerido',
-                                (val) => !!val.trim() || 'Este campo no puede estar vacío'
-                            ]" hide-bottom-space />
-
-                        <q-input outlined v-model="descripcion" label="Descripción" class="q-my-md q-mx-md" type="text"
-                            :rules="[
-                                (val) => !!val || 'Este campo es requerido',
-                                (val) => !!val.trim() || 'Este campo no puede estar vacío',
-                                (val) => val.length >= 10 || 'Debe tener al menos 10 caracteres'
-                            ]" hide-bottom-space />
+                        <q-input outlined v-model="resultados" label="Archivo de los resultados" class="q-my-md q-mx-md"
+                            type="text" hide-bottom-space />
                         <q-card-actions align="right">
                             <q-btn @click="modify()" color="green" class="text-white">
                                 {{ accion == 1 ? "Agregar" : "Editar" }}
@@ -129,38 +112,34 @@ let accion = ref(1);
 
 const formulario = ref(null);
 let parcelas = []
-let empleados = []
 let options = ref(parcelas)
+let empleados = []
 let opciones = ref(empleados)
 
 let id = ref("")
 let idparcela = ref('');
 let idempleado = ref('');
-const nombre = ref("");
-const numdocumento = ref("");
-const correo = ref("");
-const direccion = ref("");
-const telefono = ref("");
-const estudios = ref("");
-const descripcion = ref("");
-
+const muestra = ref("");
+const cultivo = ref("");
+const laboratorio = ref("");
+const recomendaciones = ref("");
+const resultados = ref("");
 
 
 async function crear() {
     if (!validarCampos()) { return; }
-    const res = await useEmpleado.postEmpleado({
-        idfinca: idfinca.value.value,
-        nombre: nombre.value,
-        numdocumento: numdocumento.value,
-        correo: correo.value,
-        direccion: direccion.value,
-        telefono: telefono.value,
-        estudios: estudios.value,
-        descripcion: descripcion.value
+    const res = await useAnalisis.postAnalisis({
+        idparcela: idparcela.value.value,
+        idempleado: idempleado.value.value,
+        muestra: muestra.value,
+        cultivo: cultivo.value,
+        laboratorio: laboratorio.value,
+        recomendaciones: recomendaciones.value,
+        resultados: resultados.value
     });
     if (res == true) {
         Notify.create({
-            message: 'Empleado creado exitosamente!',
+            message: 'Analisis agregado exitosamente!',
             position: "center",
             color: "green"
         });
@@ -185,7 +164,7 @@ function traerDatos(empleados) {
     telefono.value = empleados.telefono;
     estudios.value = empleados.estudios;
     descripcion.value = empleados.descripcion;
-}
+} 
 
 async function editar() {
     if (!validarCampos()) return;
@@ -277,6 +256,16 @@ const listarParcelas = async () => {
     options.value = parcelas.value;
     console.log('Parcelas:', parcelas.value);
 };
+function filter1(val, update, abort) {
+    update(() => {
+        const needle = String(val).toLowerCase();
+        options.value = parcelas.value.filter(v => {
+            const label = String(v.label);
+            return label.toLowerCase().indexOf(needle) > -1;
+        });
+    });
+}
+
 const listarEmpleados = async () => {
     const data = await useEmpleado.getEmpleadosActivos();
     empleados.value = data.data.empleados.map(item => ({
@@ -286,19 +275,14 @@ const listarEmpleados = async () => {
     opciones.value = empleados.value;
     console.log('Empleados:', empleados.value);
 };
-function filter1(val, update, abort) {
-    update(() => {
-        const needle = val.toLowerCase();
-        options.value = parcelas.value.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
-    })
-}
-
 function filter2(val, update, abort) {
     update(() => {
         const needle = val.toLowerCase();
         opciones.value = empleados.value.filter(v => v.label.toLowerCase().indexOf(needle) > -1);
     })
 }
+
+
 
 // el r.data.{empleados}, empleado varia segun el rjson de la funcion get en el backend
 
@@ -393,7 +377,10 @@ const columns = ref([
         label: 'fecha',
         align: 'center',
         field: 'createdAt',
-        sortable: true
+        sortable: true,
+        format: (val) => {
+        return val.split('T')[0].split('-').reverse().join('/');
+        }
     },
     {
         name: 'estado',
@@ -426,19 +413,18 @@ function cerrar() {
 }
 
 function limpiarCampos() {
-    idfinca.value = "";
-    nombre.value = '';
-    numdocumento.value = '';
-    correo.value = '';
-    direccion.value = '';
-    telefono.value = '';
-    estudios.value = '';
-    descripcion.value = '';
+    idparcela.value = "";
+    idempleado.value = '';
+    cultivo.value = '';
+    muestra.value = '';
+    laboratorio.value = '';
+    recomendaciones.value = '';
+    resultados.value = '';
 }
 
 function validarCampos() {
-    if (!idfinca.value || !nombre.value || !numdocumento.value || !correo.value ||
-        !direccion.value || !telefono.value || !estudios.value || !descripcion.value) {
+    if (!idparcela.value || !idempleado.value || !muestra.value || !laboratorio.value || !cultivo.value ||
+        !recomendaciones.value) {
         Notify.create({
             message: 'Por favor, completa todos los campos requeridos.',
             color: 'negative',
